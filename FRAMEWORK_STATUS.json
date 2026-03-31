@@ -1,12 +1,12 @@
 {
   "name": "Cabnet Core Framework",
-  "version": "3.2.0",
-  "release_type": "shared_layout_partial_convergence",
+  "version": "3.3.0",
+  "release_type": "twig_layout_partial_parity",
   "preferred_runtime": "src",
   "legacy_layer_status": "transitional_shims",
   "recommended_next_tracks": [
-    "twig_layout_and_partial_parity",
-    "module_permissions_and_filters"
+    "module_permissions_and_filters",
+    "richer_field_metadata_for_uploads_relations_and_multilingual_content"
   ],
-  "generated_at": "2026-03-31T20:15:00+03:00"
+  "generated_at": "2026-03-31T20:55:00+03:00"
 }

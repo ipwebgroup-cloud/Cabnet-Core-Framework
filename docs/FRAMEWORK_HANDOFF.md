@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v3.2.0  
+**Version:** v3.3.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline  
 **Purpose:** Reusable base for business websites, catalogs, admin-heavy tools, and multilingual content systems
@@ -17,6 +17,7 @@
 - config layer
 - PDO database layer
 - PHP renderer
+- optional Twig renderer
 - session and flash layer
 - admin authentication starter
 - middleware pipeline
@@ -37,6 +38,8 @@
 - metadata-driven CRUD form attributes
 - layered src-first view resolution with compatibility fallback to app views
 - src-owned admin CRUD presentation package files
+- src-owned Twig layouts, partials, built-in pages, and CRUD starter views
+- logical `.php` to `.twig` template-name mapping for renderer-agnostic controllers
 
 ---
 
@@ -48,8 +51,10 @@
 - `src/Infrastructure/Repositories/CrudRepositoryContract.php`
 - `src/Infrastructure/Repositories/BaseRepository.php`
 - `src/View/TemplateResolver.php`
+- `src/View/TwigRenderer.php`
 - `src/View/ViewEngineFactory.php`
 - `src/Presentation/Views/php/admin/crud/*`
+- `src/Presentation/Views/twig/admin/crud/*`
 - `src/Generators/CrudScaffoldWriter.php`
 
 ---
@@ -65,6 +70,7 @@
 - safe incremental `src/` migration path
 - canonical field metadata feeding validation and forms
 - canonical admin CRUD presentation views living under `src/Presentation/Views`
+- canonical Twig layouts and starter CRUD views living under `src/Presentation/Views/twig`
 
 ---
 
@@ -73,15 +79,25 @@
 - role/permission matrix is not yet built
 - advanced media workflows are not yet built
 - legacy global CRUD entity definitions still exist for compatibility
-- Twig support requires Composer installation
+- Twig support still requires Composer installation
 - some integration patching remains manual by design
-- admin/public layouts still primarily live in `app/Views` until a later layout/partial convergence phase
+- generator output is still PHP-first even though the Twig runtime layer now has parity-ready starter templates
 
 ---
 
-## v3.1 view packaging convergence
+## Packaging rule
 
-- the renderer now prefers `src/Presentation/Views/*` before `app/Views/*`
-- explicit `@src/...` and `@app/...` template targeting is supported for controlled fallback behavior
-- shared admin CRUD presentation partials now live in `src/Presentation/Views/php/admin/crud`
-- generated CRUD module views now target `src/Presentation/Views/php/admin/{module}` by default
+- recent releases may be **patch-only overlays**
+- read `PATCH_MANIFEST.txt` before assuming the uploaded zip is a full repository
+- read `FRAMEWORK_STATUS.json` and this file first in every new chat
+- keep this file and `HANDOFF_PROMPT.txt` aligned whenever a new patch is produced
+
+---
+
+## v3.3 Twig layout and partial parity
+
+- the canonical Twig layer now mirrors the src-owned PHP presentation layer
+- `TwigRenderer` maps logical `.php` template names to `.twig`, so controllers do not need renderer-specific template names
+- shared Twig layouts and partials now live under `src/Presentation/Views/twig/layouts` and `src/Presentation/Views/twig/partials`
+- built-in admin/public Twig views and starter CRUD templates now live under `src/Presentation/Views/twig`
+- `app/Views/twig` files act as compatibility wrappers over the canonical src-owned Twig templates

@@ -47,7 +47,7 @@ class TwigRenderer implements Renderer
             'autoescape' => 'html',
         ]);
 
-        return $twig->render($this->normalizeTemplate($template), $data);
+        return $twig->render(self::normalizeLogicalTemplate($template), $data);
     }
 
     /** @param string|array<int|string, string> $basePath
@@ -72,21 +72,25 @@ class TwigRenderer implements Renderer
         return $normalized !== [] ? $normalized : ['default' => '.'];
     }
 
-    private function normalizeTemplate(string $template): string
+    public static function normalizeLogicalTemplate(string $template): string
     {
-        if (!str_starts_with($template, '@')) {
-            return $template;
+        $normalized = str_replace('\\', '/', trim($template));
+
+        if (str_ends_with($normalized, '.php')) {
+            return substr($normalized, 0, -4) . '.twig';
         }
 
-        $withoutMarker = substr($template, 1);
-        $parts = explode('/', $withoutMarker, 2);
-        $alias = $parts[0] ?? '';
-        $relative = $parts[1] ?? '';
-
-        if ($alias === '' || $relative === '') {
-            return ltrim($withoutMarker, '/');
+        $pathWithoutAlias = $normalized;
+        if (str_starts_with($normalized, '@')) {
+            $withoutMarker = substr($normalized, 1);
+            $parts = explode('/', $withoutMarker, 2);
+            $pathWithoutAlias = $parts[1] ?? $parts[0] ?? '';
         }
 
-        return '@' . $alias . '/' . ltrim($relative, '/');
+        if ($pathWithoutAlias !== '' && pathinfo($pathWithoutAlias, PATHINFO_EXTENSION) === '') {
+            return $normalized . '.twig';
+        }
+
+        return $normalized;
     }
 }

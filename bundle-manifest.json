@@ -1,12 +1,12 @@
 {
   "bundle": "Cabnet Core Framework",
-  "version": "3.2.0",
-  "release_name": "Shared Layout and Partial Convergence",
+  "version": "3.3.0",
+  "release_name": "Twig Layout and Partial Parity",
   "package_mode": "patch_only",
   "notes": [
-    "Includes only files changed for v3.2.",
+    "Includes only files changed for v3.3.",
     "Overlay this patch on top of the current framework tree.",
-    "Canonical shared PHP layouts and partials now live in src/Presentation/Views/php.",
-    "Built-in app/Views/php files now act as compatibility shims over src-owned templates."
+    "Canonical Twig layouts, partials, built-in pages, and generic CRUD views now live in src/Presentation/Views/twig.",
+    "TwigRenderer now maps logical .php template names to .twig so controllers can remain renderer-agnostic."
   ]
 }

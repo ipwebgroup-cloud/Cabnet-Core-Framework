@@ -1,6 +1,6 @@
-# Cabnet Core Framework v3.2.0
+# Cabnet Core Framework v3.3.0
 
-Cabnet Core v3.1 adds layered view resolution and src-owned admin presentation packaging on top of the earlier definition-driven CRUD validation, module-registry, CRUD metadata, HTTP/runtime, controller, service/repository, and renderer convergence work.
+Cabnet Core v3.3 adds src-owned Twig layout and partial parity on top of the earlier shared PHP presentation convergence, definition-driven CRUD validation, module-registry adoption, CRUD metadata convergence, HTTP/runtime convergence, and service/repository convergence work.
 
 ## What this pack is
 
@@ -24,13 +24,14 @@ Use this pack to:
 - derive admin CRUD routes, CRUD services, and admin menu links from module metadata
 - derive CRUD validation rules and admin form attributes from canonical field metadata
 - shift generated CRUD integration guidance toward `config/modules.php` as the primary integration seam
+- keep PHP and Twig presentation ownership aligned under `src/Presentation/Views`
+- let Twig reuse the same logical template names as PHP views so controllers stay renderer-agnostic
 
 ## Start here
 
-- `docs/V2_8_CRUD_METADATA_CONVERGENCE.md`
-- `docs/V2_9_MODULE_REGISTRY_ADOPTION.md`
-- `docs/V3_0_VALIDATION_FORM_METADATA_CONVERGENCE.md`
-- `docs/V3_1_VIEW_PACKAGING_CONVERGENCE.md`
+- `docs/V3_2_SHARED_LAYOUT_PARTIAL_CONVERGENCE.md`
+- `docs/V3_3_TWIG_LAYOUT_PARTIAL_PARITY.md`
+- `docs/TWIG_INTEGRATION.md`
 - `docs/FRAMEWORK_HANDOFF.md`
 - `docs/CRUD_CONVENTIONS.md`
 - `docs/ADD_NEW_ENTITY.md`

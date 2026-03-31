@@ -1,0 +1,31 @@
+{% extends '@src/layouts/admin.twig' %}
+
+{% block content %}
+{% set singularLabel = definition.label|replace({'s': ''}) %}
+{% set titleText = mode|default('create') == 'edit' ? 'Edit ' ~ singularLabel : 'Create ' ~ singularLabel %}
+{% set submitText = mode|default('create') == 'edit' ? 'Update ' ~ singularLabel : 'Create ' ~ singularLabel %}
+
+<div class="row justify-content-center">
+    <div class="col-xl-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h1 class="h3 mb-1">{{ titleText }}</h1>
+                <p class="text-secondary mb-0">Generic Twig CRUD form renderer.</p>
+            </div>
+            <a href="{{ backPath|default('/') }}" class="btn btn-outline-secondary">Back</a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <form method="post" action="{{ formAction|default('#') }}" class="row g-3">
+                    <input type="hidden" name="_token" value="{{ csrfToken|default('') }}">
+                    {% include '@src/admin/crud/form_fields.twig' %}
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-dark">{{ submitText }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% set values = old|default([]) is not empty ? old|default([]) : row|default([]) %}
+{% for name, meta in definition.fields %}
+    {% set fieldType = meta.type|default('text') %}
+    {% set label = meta.label|default(name|title) %}
+    {% set required = meta.required|default(false) %}
+    {% set value = attribute(values, name)|default('') %}
+    {% set fieldErrors = attribute(errors|default({}), name)|default([]) %}
+    {% set error = fieldErrors[0]|default('') %}
+    {% set placeholder = meta.placeholder|default('') %}
+    {% set help = meta.help|default('') %}
+    {% set rowsCount = meta.rows|default(5) < 2 ? 2 : meta.rows|default(5) %}
+    {% set minValue = meta.min is defined ? meta.min : null %}
+    {% set maxValue = meta.max is defined ? meta.max : null %}
+    {% set inputType = fieldType == 'email' ? 'email' : ((fieldType == 'integer' or fieldType == 'number') ? 'number' : 'text') %}
+
+    <div class="{{ fieldType == 'textarea' ? 'col-12' : 'col-md-6' }}">
+        <label class="form-label">{{ label }}{{ required ? ' *' : '' }}</label>
+
+        {% if fieldType == 'textarea' %}
+            <textarea
+                name="{{ name }}"
+                rows="{{ rowsCount }}"
+                class="form-control {{ error ? 'is-invalid' : '' }}"
+                {{ required ? 'required' : '' }}
+                {{ maxValue is not null ? 'maxlength="' ~ maxValue ~ '"' : '' }}
+                {{ placeholder != '' ? 'placeholder="' ~ placeholder ~ '"' : '' }}
+            >{{ value }}</textarea>
+        {% elseif fieldType == 'select' %}
+            <select
+                name="{{ name }}"
+                class="form-select {{ error ? 'is-invalid' : '' }}"
+                {{ required ? 'required' : '' }}
+            >
+                {% for optionValue, optionLabel in meta.options|default([]) %}
+                    <option value="{{ optionValue }}" {{ value|string == optionValue|string ? 'selected' : '' }}>
+                        {{ optionLabel }}
+                    </option>
+                {% endfor %}
+            </select>
+        {% else %}
+            <input
+                type="{{ inputType }}"
+                name="{{ name }}"
+                class="form-control {{ error ? 'is-invalid' : '' }}"
+                value="{{ value }}"
+                {{ required ? 'required' : '' }}
+                {{ minValue is not null and inputType == 'number' ? 'min="' ~ minValue ~ '"' : '' }}
+                {{ maxValue is not null and inputType == 'number' ? 'max="' ~ maxValue ~ '"' : '' }}
+                {{ minValue is not null and inputType != 'number' ? 'minlength="' ~ minValue ~ '"' : '' }}
+                {{ maxValue is not null and inputType != 'number' ? 'maxlength="' ~ maxValue ~ '"' : '' }}
+                {{ placeholder != '' ? 'placeholder="' ~ placeholder ~ '"' : '' }}
+            >
+        {% endif %}
+
+        {% if help != '' %}
+            <div class="form-text">{{ help }}</div>
+        {% endif %}
+
+        {% if error %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endif %}
+    </div>
+{% endfor %}

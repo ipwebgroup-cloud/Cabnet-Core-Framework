@@ -1,0 +1,24 @@
+{% extends '@src/layouts/admin.twig' %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-3">{{ appName }} Admin</h1>
+                <p class="text-secondary">Admin auth flow, CSRF service, validation layer, and Twig presentation shell are now src-owned.</p>
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Context</dt>
+                    <dd class="col-sm-9">{{ context }}</dd>
+                    <dt class="col-sm-3">Timestamp</dt>
+                    <dd class="col-sm-9">{{ now }}</dd>
+                    <dt class="col-sm-3">Signed in as</dt>
+                    <dd class="col-sm-9">{{ user.name|default('Unknown') }}</dd>
+                </dl>
+                <hr>
+                <a href="/services" class="btn btn-dark">Open Services CRUD</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

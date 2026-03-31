@@ -1,7 +1,7 @@
 # ROADMAP.md
 
 ## Current release
-- v3.2.0 — Shared Layout and Partial Convergence
+- v3.3.0 — Twig Layout and Partial Parity
 
 ## Completed convergence phases
 - v2.4 — Rendering convergence
@@ -13,8 +13,9 @@
 - v3.0 — validation and form-metadata convergence
 - v3.1 — view packaging convergence
 - v3.2 — shared layout and partial convergence
+- v3.3 — Twig layout and partial parity
 
 ## Next strongest moves
-1. twig layout and partial parity so src-owned presentation packaging covers the optional Twig layer as cleanly as the PHP layer
-2. module permissions and filter metadata so registry-driven CRUD modules can express access and listing behavior more cleanly
-3. richer field metadata for uploads, relations, and multilingual content
+1. module permissions and filter metadata so registry-driven CRUD modules can express access and listing behavior more cleanly
+2. richer field metadata for uploads, relations, and multilingual content
+3. Twig-aware generator output so generated module packs can optionally emit src-owned Twig presentation files

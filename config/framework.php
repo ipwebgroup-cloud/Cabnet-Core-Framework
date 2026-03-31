@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '3.2.0',
-    'release_name' => 'Shared Layout and Partial Convergence',
+    'version' => '3.3.0',
+    'release_name' => 'Twig Layout and Partial Parity',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -31,5 +31,7 @@ return [
         'src_presentation_view_packages' => true,
         'src_shared_layouts_and_partials' => true,
         'legacy_app_view_shims' => true,
+        'src_twig_layouts_and_partials' => true,
+        'logical_template_mapping_for_twig' => true,
     ],
 ];

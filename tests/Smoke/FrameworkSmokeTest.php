@@ -87,6 +87,9 @@ final class FrameworkSmokeTest
             'legacy_app_view_shims_delegate_to_src_presentation_templates' => 'legacyAppViewShimsDelegateToSrcPresentationTemplates',
             'built_in_services_view_resolves_from_src_presentation_layer' => 'builtInServicesViewResolvesFromSrcPresentationLayer',
             'src_crud_generator_targets_src_presentation_views' => 'srcCrudGeneratorTargetsSrcPresentationViews',
+            'twig_renderer_maps_logical_php_templates_to_twig' => 'twigRendererMapsLogicalPhpTemplatesToTwig',
+            'layered_twig_resolution_prefers_src_views_before_app_fallback' => 'layeredTwigResolutionPrefersSrcViewsBeforeAppFallback',
+            'legacy_twig_layout_shim_delegates_to_src_layout' => 'legacyTwigLayoutShimDelegatesToSrcLayout',
         ];
     }
 
@@ -752,4 +755,64 @@ final class FrameworkSmokeTest
         SmokeAssert::same('/login', $snapshot['headers']['Location'] ?? null, 'Guest admin access should redirect to login route.');
         SmokeAssert::contains('Please sign in', implode(' ', $flash['warning'] ?? []), 'Middleware should explain why access was blocked.');
     }
+
+    private function twigRendererMapsLogicalPhpTemplatesToTwig(): void
+    {
+        SmokeAssert::same(
+            'admin/login.twig',
+            \Cabnet\View\TwigRenderer::normalizeLogicalTemplate('admin/login.php'),
+            'Twig renderer should map logical admin PHP templates to Twig names.'
+        );
+
+        SmokeAssert::same(
+            '@src/admin/services/index.twig',
+            \Cabnet\View\TwigRenderer::normalizeLogicalTemplate('@src/admin/services/index.php'),
+            'Twig renderer should preserve aliases while mapping to Twig names.'
+        );
+
+        SmokeAssert::same(
+            'public/home.twig',
+            \Cabnet\View\TwigRenderer::normalizeLogicalTemplate('public/home'),
+            'Twig renderer should append the Twig extension for logical extensionless template names.'
+        );
+    }
+
+    private function layeredTwigResolutionPrefersSrcViewsBeforeAppFallback(): void
+    {
+        $resolver = new \Cabnet\View\TemplateResolver([
+            'src' => BASE_PATH . '/src/Presentation/Views/twig',
+            'app' => BASE_PATH . '/app/Views/twig',
+        ]);
+
+        $resolved = $resolver->resolve('admin/services/index.twig');
+        SmokeAssert::same(
+            BASE_PATH . '/src/Presentation/Views/twig/admin/services/index.twig',
+            $resolved,
+            'Layered Twig resolution should prefer the src-owned service index template.'
+        );
+
+        $appResolved = $resolver->resolve('@app/admin/services/index.twig');
+        SmokeAssert::same(
+            BASE_PATH . '/app/Views/twig/admin/services/index.twig',
+            $appResolved,
+            'Explicit app alias should still resolve the legacy Twig compatibility shim.'
+        );
+    }
+
+    private function legacyTwigLayoutShimDelegatesToSrcLayout(): void
+    {
+        $shim = (string)file_get_contents(BASE_PATH . '/app/Views/twig/admin/layouts/admin.twig');
+
+        SmokeAssert::contains(
+            "@src/layouts/admin.twig",
+            $shim,
+            'Legacy Twig admin layout shim should delegate to the canonical src-owned Twig layout.'
+        );
+
+        SmokeAssert::true(
+            is_file(BASE_PATH . '/src/Presentation/Views/twig/layouts/public.twig'),
+            'Canonical src-owned Twig public layout should exist.'
+        );
+    }
+
 }

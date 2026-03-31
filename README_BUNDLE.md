@@ -1,16 +1,17 @@
-# Cabnet Core Framework Bundle v3.2.0
+# Cabnet Core Framework Bundle v3.3.0
 
 This patch continues the consolidated framework bundle with the next convergence phase.
 
 ## Included in this patch
-- layered src-first PHP and Twig view resolution
-- src-owned admin CRUD presentation package files
-- updated src CRUD generator view output targets
-- release documentation and handoff notes
-- expanded smoke coverage for layered view resolution and src presentation output
+- canonical src-owned Twig layouts and shared partials
+- canonical src-owned Twig built-in page views and generic CRUD Twig views
+- logical template-name mapping from `.php` to `.twig` inside the Twig renderer
+- compatibility shims under `app/Views/twig`
+- updated release documentation, handoff notes, and roadmap guidance
+- expanded smoke coverage for logical Twig template mapping and src-first Twig resolution
 
-## v3.1 highlights
-- the renderer now searches `src/Presentation/Views/*` before `app/Views/*`
-- explicit `@app/...` and `@src/...` template targeting is supported for controlled fallback behavior
-- canonical CRUD admin views now live under `src/Presentation/Views/php/admin`
-- generated CRUD packs now emit src-owned admin presentation view files instead of legacy `app/Views` wrappers
+## v3.3 highlights
+- Twig now follows the same src-first ownership model as the PHP presentation layer
+- existing controllers can keep rendering logical `.php` template names even when the renderer is switched to Twig
+- generic admin CRUD list/form views now have Twig equivalents under `src/Presentation/Views/twig/admin/crud`
+- legacy `app/Views/twig` files act as compatibility wrappers over the canonical src-owned Twig templates

@@ -1,40 +1,42 @@
-Cabnet Core Framework v3.2.0 PATCH MANIFEST
-Package mode: patch_only
-
-Overlay these files onto the current framework tree.
+Cabnet Core Framework v3.3 — Twig Layout and Partial Parity
+Patch mode: overlay only
 
 Changed files:
-config/framework.php
 FRAMEWORK_STATUS.json
-ROADMAP.md
-app/DEPRECATIONS.md
+HANDOFF_PROMPT.txt
 README.md
 README_BUNDLE.md
-docs/FRAMEWORK_HANDOFF.md
-docs/V3_2_SHARED_LAYOUT_PARTIAL_CONVERGENCE.md
+ROADMAP.md
+app/Views/twig/admin/crud/form_fields.twig
+app/Views/twig/admin/crud/form_page.twig
+app/Views/twig/admin/crud/index_table.twig
+app/Views/twig/admin/dashboard.twig
+app/Views/twig/admin/layouts/admin.twig
+app/Views/twig/admin/login.twig
+app/Views/twig/admin/services/create.twig
+app/Views/twig/admin/services/edit.twig
+app/Views/twig/admin/services/index.twig
+app/Views/twig/layouts/admin.twig
+app/Views/twig/layouts/public.twig
+app/Views/twig/partials/flash.twig
+app/Views/twig/public/home.twig
 bundle-manifest.json
+config/framework.php
+docs/FRAMEWORK_HANDOFF.md
+docs/TWIG_INTEGRATION.md
+docs/V3_3_TWIG_LAYOUT_PARTIAL_PARITY.md
+src/Application/Controllers/BaseController.php
+src/Presentation/Views/twig/admin/crud/form_fields.twig
+src/Presentation/Views/twig/admin/crud/form_page.twig
+src/Presentation/Views/twig/admin/crud/index_table.twig
+src/Presentation/Views/twig/admin/dashboard.twig
+src/Presentation/Views/twig/admin/login.twig
+src/Presentation/Views/twig/admin/services/create.twig
+src/Presentation/Views/twig/admin/services/edit.twig
+src/Presentation/Views/twig/admin/services/index.twig
+src/Presentation/Views/twig/layouts/admin.twig
+src/Presentation/Views/twig/layouts/public.twig
+src/Presentation/Views/twig/partials/flash.twig
+src/Presentation/Views/twig/public/home.twig
+src/View/TwigRenderer.php
 tests/Smoke/FrameworkSmokeTest.php
-app/Views/php/layouts/admin.php
-app/Views/php/layouts/public.php
-app/Views/php/partials/flash.php
-app/Views/php/admin/crud/index_table.php
-app/Views/php/admin/crud/form_page.php
-app/Views/php/admin/crud/form_fields.php
-app/Views/php/admin/dashboard.php
-app/Views/php/admin/login.php
-app/Views/php/admin/services/index.php
-app/Views/php/admin/services/create.php
-app/Views/php/admin/services/edit.php
-app/Views/php/public/home.php
-src/Presentation/Views/php/layouts/admin.php
-src/Presentation/Views/php/layouts/public.php
-src/Presentation/Views/php/partials/flash.php
-src/Presentation/Views/php/admin/crud/index_table.php
-src/Presentation/Views/php/admin/crud/form_page.php
-src/Presentation/Views/php/admin/crud/form_fields.php
-src/Presentation/Views/php/admin/dashboard.php
-src/Presentation/Views/php/admin/login.php
-src/Presentation/Views/php/admin/services/index.php
-src/Presentation/Views/php/admin/services/create.php
-src/Presentation/Views/php/admin/services/edit.php
-src/Presentation/Views/php/public/home.php
