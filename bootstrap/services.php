@@ -39,8 +39,16 @@ $services = [
         return new \Cabnet\Support\ViewState($app->session());
     },
 
+
+    'relationOptionsHydrator' => function (App $app): \Cabnet\Application\Crud\RelationOptionsHydrator {
+        return new \Cabnet\Application\Crud\RelationOptionsHydrator($app->service('db'));
+    },
+
     'crudModuleRegistry' => function (App $app): \Cabnet\Application\Crud\CrudModuleRegistry {
-        return new \Cabnet\Application\Crud\CrudModuleRegistry((array)$app->config('modules', []));
+        return new \Cabnet\Application\Crud\CrudModuleRegistry(
+            (array)$app->config('modules', []),
+            $app->service('db')
+        );
     },
 
     'routeRegistry' => function (App $app): \Cabnet\Routing\RouteRegistry {

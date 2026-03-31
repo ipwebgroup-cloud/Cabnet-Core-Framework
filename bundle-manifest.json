@@ -1,12 +1,12 @@
 {
   "bundle": "Cabnet Core Framework",
-  "version": "4.0.0",
-  "release_name": "Runtime Dependency-Injection Bridge",
+  "version": "4.1.0",
+  "release_name": "Relation Filter Option Hydration",
   "package_mode": "patch_only",
   "notes": [
-    "Includes only files changed for v4.0.",
+    "Includes only files changed for v4.1.",
     "Overlay this patch on top of the current framework tree.",
-    "Controllers and named middleware aliases can now use lightweight constructor injection through the transitional legacy app bridge.",
-    "Typed service bindings now allow common runtime services to be resolved by class or interface during constructor-aware runtime construction."
+    "Relation-backed list filters can now hydrate select options from relation metadata at runtime.",
+    "Src-first scaffold output now preserves relation-backed derived filters as select controls even when options are database-backed."
   ]
 }

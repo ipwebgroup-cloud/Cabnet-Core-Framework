@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Cabnet\Application\Services;
 
 use Cabnet\Application\Crud\CrudEntityDefinition;
+use Cabnet\Application\Crud\RelationOptionsHydrator;
 use Cabnet\Infrastructure\Repositories\CrudRepositoryContract;
 use Cabnet\Support\UploadManager;
 
@@ -109,21 +110,8 @@ abstract class DefinitionCrudService extends BaseService
             return $this->resolvedDefinition;
         }
 
-        $fields = $this->definition->fields();
-
-        foreach ($fields as $field => $meta) {
-            $relation = $meta['relation'] ?? null;
-            if (!is_array($relation)) {
-                continue;
-            }
-
-            $options = $this->relationOptions($relation);
-            if ($options !== []) {
-                $fields[$field]['options'] = $options;
-            }
-        }
-
-        $this->resolvedDefinition = $this->definition->withFields($fields);
+        $hydrator = new RelationOptionsHydrator($this->db);
+        $this->resolvedDefinition = $hydrator->hydrateDefinition($this->definition);
 
         return $this->resolvedDefinition;
     }
@@ -167,49 +155,4 @@ abstract class DefinitionCrudService extends BaseService
         return $data;
     }
 
-    /**
-     * @param array<string, mixed> $relation
-     * @return array<string, string>
-     */
-    private function relationOptions(array $relation): array
-    {
-        if (!is_object($this->db) || !method_exists($this->db, 'select')) {
-            return [];
-        }
-
-        $table = $this->sanitizeIdentifier((string)($relation['table'] ?? ''));
-        $valueColumn = $this->sanitizeIdentifier((string)($relation['value_column'] ?? 'id'));
-        $labelColumn = $this->sanitizeIdentifier((string)($relation['label_column'] ?? 'name'));
-        $orderBy = $this->sanitizeIdentifier((string)($relation['order_by'] ?? $labelColumn));
-
-        if ($table === '' || $valueColumn === '' || $labelColumn === '' || $orderBy === '') {
-            return [];
-        }
-
-        $sql = sprintf(
-            'SELECT `%s` AS `value`, `%s` AS `label` FROM `%s` ORDER BY `%s` ASC',
-            $valueColumn,
-            $labelColumn,
-            $table,
-            $orderBy
-        );
-
-        $rows = $this->db->select($sql);
-
-        $options = [];
-        foreach ($rows as $row) {
-            if (!is_array($row) || !array_key_exists('value', $row)) {
-                continue;
-            }
-
-            $options[(string)$row['value']] = (string)($row['label'] ?? $row['value']);
-        }
-
-        return $options;
-    }
-
-    private function sanitizeIdentifier(string $value): string
-    {
-        return preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $value) ? $value : '';
-    }
 }

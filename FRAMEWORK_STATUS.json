@@ -1,13 +1,13 @@
 {
   "name": "Cabnet Core Framework",
-  "version": "4.0.0",
-  "release_type": "runtime_dependency_injection_bridge",
+  "version": "4.1.0",
+  "release_type": "relation_filter_option_hydration",
   "preferred_runtime": "src",
   "legacy_layer_status": "transitional_shims",
   "recommended_next_tracks": [
-    "relation_filter_option_hydration",
     "blueprint_schema_validation",
-    "service_registry_formalization"
+    "service_registry_formalization",
+    "controller_service_autowiring"
   ],
-  "generated_at": "2026-03-31T23:59:00+03:00"
+  "generated_at": "2026-04-01T00:20:00+03:00"
 }

@@ -74,6 +74,22 @@ The generator can also derive filters from field metadata shortcuts:
 - `list_filter: true`
 - `filter: { ... }`
 
+Relation-backed select filters can now hydrate their options directly from field relation metadata, so modules do not need custom list-filter glue when the field already declares a valid relation:
+
+```php
+'category_id' => [
+    'type' => 'select',
+    'label' => 'Category',
+    'filterable' => true,
+    'relation' => [
+        'table' => 'categories',
+        'value_column' => 'id',
+        'label_column' => 'name',
+        'order_by' => 'name',
+    ],
+],
+```
+
 ## Optional policy hooks
 
 For modules that need richer access logic, add a policy class:

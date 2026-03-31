@@ -8,9 +8,12 @@ use Throwable;
 
 final class CrudModuleRegistry
 {
+    private RelationOptionsHydrator $relationOptionsHydrator;
+
     /** @param array<string, array<string, mixed>> $modules */
-    public function __construct(private array $modules)
+    public function __construct(private array $modules, mixed $db = null)
     {
+        $this->relationOptionsHydrator = new RelationOptionsHydrator($db);
     }
 
     /** @return array<string, array<string, mixed>> */
@@ -218,7 +221,7 @@ final class CrudModuleRegistry
             $filters[(string)$filterKey] = $definition->listFilter($field, $metaArray);
         }
 
-        return $filters;
+        return $this->relationOptionsHydrator->hydrateFilters($definition, $filters);
     }
 
     /**

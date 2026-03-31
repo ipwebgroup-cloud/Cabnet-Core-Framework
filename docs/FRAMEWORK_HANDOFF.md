@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v4.0.0  
+**Version:** v4.1.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline
 
@@ -41,6 +41,7 @@
 - generator/runtime metadata parity for permissions, filters, middleware, menu visibility, and field-level filter shortcuts
 - built-in blueprint library and example packs for safer scaffold authoring
 - lightweight runtime dependency-injection bridge for controller and middleware construction
+- shared relation-option hydration for forms and relation-backed list filters
 
 ## Key Files to Know
 
@@ -49,6 +50,7 @@
 - `config/app.php`
 - `src/Application/Crud/CrudModuleRegistry.php`
 - `src/Application/Crud/CrudModulePolicy.php`
+- `src/Application/Crud/RelationOptionsHydrator.php`
 - `src/Application/Controllers/Admin/BaseCrudController.php`
 - `src/Application/Services/DefinitionCrudService.php`
 - `src/Bootstrap/DependencyResolver.php`
@@ -79,4 +81,5 @@
 - field metadata may use `filter`, `filterable`, or `list_filter` shortcuts
 - the framework ships with built-in blueprint examples that can be listed or resolved directly via `example:<name>` when generating CRUD scaffolds or integration patch notes
 - route-dispatched controllers and named middleware aliases can now constructor-inject registered services and simple src-owned helper classes through the transitional app bridge
+- relation-backed filters can now hydrate select options from relation metadata through the module registry without project-specific filter glue
 - runtime dispatch still falls back to direct instantiation if constructor-aware resolution cannot be completed, preserving compatibility during migration

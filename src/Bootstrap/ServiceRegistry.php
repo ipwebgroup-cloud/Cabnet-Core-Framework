@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Cabnet\Bootstrap;
 
 use Cabnet\Application\Crud\CrudModuleRegistry;
+use Cabnet\Application\Crud\RelationOptionsHydrator;
 use Cabnet\Application\Services\AdminAuthService;
 use Cabnet\Application\Services\AdminMenuService;
 use Cabnet\Application\Services\ClockService;
@@ -40,6 +41,7 @@ final class ServiceRegistry
             'uploadManager' => [UploadManager::class],
             'viewState' => [ViewState::class, 'ViewState'],
             'crudModuleRegistry' => [CrudModuleRegistry::class],
+            'relationOptionsHydrator' => [RelationOptionsHydrator::class],
             'routeRegistry' => [RouteRegistry::class, 'RouteRegistry'],
             'url' => [UrlGenerator::class, 'UrlService'],
             'renderer' => [Renderer::class, 'RendererInterface'],

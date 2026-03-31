@@ -1,4 +1,4 @@
-Cabnet Core Framework v4.0 — Runtime Dependency-Injection Bridge (patch-only overlay)
+Cabnet Core Framework v4.1 — Relation Filter Option Hydration (patch-only overlay)
 
 Apply these files over your existing framework tree:
 
@@ -13,11 +13,12 @@ Apply these files over your existing framework tree:
 - docs/ADD_NEW_ENTITY.md
 - docs/CRUD_CONVENTIONS.md
 - docs/FRAMEWORK_HANDOFF.md
-- docs/V4_0_RUNTIME_DEPENDENCY_INJECTION_BRIDGE.md
+- docs/V4_1_RELATION_FILTER_OPTION_HYDRATION.md
 - bootstrap/services.php
-- app/Core/App.php
-- src/Bootstrap/DependencyResolver.php
+- src/Application/Crud/CrudModuleRegistry.php
+- src/Application/Crud/RelationOptionsHydrator.php
+- src/Application/Services/DefinitionCrudService.php
 - src/Bootstrap/ServiceRegistry.php
-- src/Middleware/MiddlewareExecutor.php
-- src/Routing/RouteDispatcher.php
+- src/Generators/CrudScaffoldWriter.php
+- blueprints/examples/localized-services.json
 - tests/Smoke/FrameworkSmokeTest.php

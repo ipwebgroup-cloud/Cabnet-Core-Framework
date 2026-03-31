@@ -112,6 +112,8 @@ final class FrameworkSmokeTest
             'app_make_can_constructor_inject_registered_services' => 'appMakeCanConstructorInjectRegisteredServices',
             'route_dispatcher_uses_app_resolver_for_controller_construction' => 'routeDispatcherUsesAppResolverForControllerConstruction',
             'middleware_executor_uses_app_resolver_for_middleware_construction' => 'middlewareExecutorUsesAppResolverForMiddlewareConstruction',
+            'crud_module_registry_hydrates_relation_filter_options' => 'crudModuleRegistryHydratesRelationFilterOptions',
+            'src_crud_generator_preserves_relation_filter_select_type_without_inline_options' => 'srcCrudGeneratorPreservesRelationFilterSelectTypeWithoutInlineOptions',
         ];
     }
 
@@ -1420,6 +1422,69 @@ final class FrameworkSmokeTest
         SmokeAssert::same('/services', $snapshot['headers']['Location'] ?? null, 'Constructor-injected middleware should be able to return a redirect response.');
     }
 
+    private function crudModuleRegistryHydratesRelationFilterOptions(): void
+    {
+        $db = new class {
+            public function select(string $sql, array $params = []): array
+            {
+                return [
+                    ['value' => '1', 'label' => 'News'],
+                    ['value' => '2', 'label' => 'Guides'],
+                ];
+            }
+        };
+
+        $registry = new \Cabnet\Application\Crud\CrudModuleRegistry([
+            'articles' => [
+                'definition_class' => RelationFilterEntityDefinition::class,
+                'filters' => [
+                    'category_id' => [
+                        'field' => 'category_id',
+                        'type' => 'select',
+                        'placeholder' => 'All categories',
+                    ],
+                ],
+            ],
+        ], $db);
+
+        $filters = $registry->filters('articles');
+
+        SmokeAssert::same('select', $filters['category_id']['type'] ?? null, 'Relation-backed filters should preserve select typing.');
+        SmokeAssert::same('News', $filters['category_id']['options']['1'] ?? null, 'Relation-backed filters should hydrate option labels from relation metadata.');
+        SmokeAssert::same('Guides', $filters['category_id']['options']['2'] ?? null, 'Relation-backed filters should hydrate all available relation options.');
+    }
+
+    private function srcCrudGeneratorPreservesRelationFilterSelectTypeWithoutInlineOptions(): void
+    {
+        $writer = new CrudScaffoldWriter();
+        $files = $writer->buildCrudPack([
+            'entity_key' => 'articles',
+            'singular_label' => 'Article',
+            'plural_label' => 'Articles',
+            'table' => 'articles',
+            'fields' => [
+                'category_id' => [
+                    'type' => 'select',
+                    'label' => 'Category',
+                    'filterable' => true,
+                    'relation' => [
+                        'table' => 'categories',
+                        'value_column' => 'id',
+                        'label_column' => 'name',
+                        'order_by' => 'name',
+                    ],
+                ],
+            ],
+        ]);
+
+        $configSnippet = (string)($files['generated/articles_module_config.php.txt'] ?? '');
+        $notes = (string)($files['generated/articles_implementation_notes.txt'] ?? '');
+
+        SmokeAssert::contains("'field' => 'category_id'", $configSnippet, 'Relation-backed filterable fields should derive a filter entry.');
+        SmokeAssert::contains("'type' => 'select'", $configSnippet, 'Relation-backed filters should remain select controls even without inline options.');
+        SmokeAssert::contains('Generated filters: category_id.', $notes, 'Implementation notes should report derived relation filters.');
+    }
+
 }
 
 
@@ -1465,5 +1530,34 @@ final class TestConstructorInjectedMiddleware
         }
 
         return null;
+    }
+
+}
+
+
+final class RelationFilterEntityDefinition
+{
+    public static function make(): \Cabnet\Application\Crud\CrudEntityDefinition
+    {
+        return new \Cabnet\Application\Crud\CrudEntityDefinition(
+            key: 'articles',
+            label: 'Articles',
+            table: 'articles',
+            fields: [
+                'category_id' => [
+                    'type' => 'select',
+                    'label' => 'Category',
+                    'relation' => [
+                        'table' => 'categories',
+                        'value_column' => 'id',
+                        'label_column' => 'name',
+                        'order_by' => 'name',
+                    ],
+                ],
+            ],
+            listColumns: ['category_id'],
+            searchable: [],
+            defaultOrder: 'id DESC'
+        );
     }
 }

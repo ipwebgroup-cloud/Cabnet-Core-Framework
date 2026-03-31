@@ -513,7 +513,8 @@ final class {$controllerClass} extends BaseCrudController
         }
 
         $type = (string)($filterMeta['type'] ?? $fieldMeta['type'] ?? 'text');
-        if ($type === 'select' && $options === []) {
+        $relationBacked = is_array($fieldMeta['relation'] ?? null);
+        if ($type === 'select' && $options === [] && !$relationBacked) {
             $type = 'text';
         }
 

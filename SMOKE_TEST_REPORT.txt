@@ -56,6 +56,8 @@ Cabnet Core Smoke Tests
 [PASS] app_make_can_constructor_inject_registered_services
 [PASS] route_dispatcher_uses_app_resolver_for_controller_construction
 [PASS] middleware_executor_uses_app_resolver_for_middleware_construction
+[PASS] crud_module_registry_hydrates_relation_filter_options
+[PASS] src_crud_generator_preserves_relation_filter_select_type_without_inline_options
 ------------------------
-Passed: 56
+Passed: 58
 Failed: 0

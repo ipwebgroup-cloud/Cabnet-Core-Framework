@@ -38,6 +38,7 @@
       "type": "select",
       "label": "Category",
       "required": true,
+      "filterable": true,
       "relation": {
         "table": "service_categories",
         "value_column": "id",

@@ -2,8 +2,8 @@
 
 ## Current bundle
 
-- Version: v4.0.0
-- Release: Runtime Dependency-Injection Bridge
+- Version: v4.1.0
+- Release: Relation Filter Option Hydration
 - Delivery mode: patch-only overlay
 
 ## Apply order
@@ -16,6 +16,6 @@
 
 ## Highlights
 
-- runtime controller and middleware construction can now use lightweight constructor injection without replacing the legacy `App`
-- the app service map now publishes typed service bindings so common runtime services can be resolved by class/interface
-- the bridge remains compatibility-first because route and middleware dispatch still fall back to direct instantiation if constructor-aware resolution cannot be completed
+- relation-backed list filters now hydrate select options from relation metadata at runtime
+- CRUD form relation options and list-filter relation options now share the same hydration path
+- scaffolded relation filters stay `select` controls even when their options are expected to be provided by database-backed relation metadata

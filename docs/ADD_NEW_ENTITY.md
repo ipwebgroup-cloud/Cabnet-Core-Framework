@@ -48,6 +48,26 @@ Runtime-dispatched controllers and named middleware aliases can now constructor-
 
 Keep constructor injection light and runtime-safe. Prefer services and small helper objects over deep graph construction.
 
+## Relation-filter reminder
+
+Relation-backed filters no longer need per-project manual option hydration. A field like this is now enough:
+
+```php
+'category_id' => [
+    'type' => 'select',
+    'label' => 'Category',
+    'filterable' => true,
+    'relation' => [
+        'table' => 'categories',
+        'value_column' => 'id',
+        'label_column' => 'name',
+        'order_by' => 'name',
+    ],
+],
+```
+
+The framework can hydrate relation options for both forms and list filters from the same metadata.
+
 ## Generator reminder
 
 The src-first generator can now preserve:
@@ -60,4 +80,5 @@ The src-first generator can now preserve:
 - optional `policy_class` metadata in generated module config stubs
 - optional `access_roles`, `permissions`, `admin_middleware`, and `show_in_admin_menu` module metadata
 - explicit top-level `filters` metadata or field-level filter shortcuts via `filter`, `filterable`, or `list_filter`
+- relation-backed derived filters that stay `select` controls without requiring inline `options`
 - built-in example selection via `example:<name>`
