@@ -1,56 +1,15 @@
-# Legacy Layer Deprecations
+# DEPRECATIONS.md
 
-This file marks legacy classes that should gradually stop being used as the `src/` layer becomes the preferred architecture.
+## Transitional compatibility layer
 
-## Deprecated direction targets
+The `app/` layer still exists for compatibility, but canonical ownership has moved to `src/` for:
 
-### Controllers moving to `src/Application`
-- `app/Controllers/Admin/AuthController.php`
-- `app/Controllers/Admin/DashboardController.php`
-- `app/Controllers/Admin/ServiceController.php`
-- `app/Controllers/Public/HomeController.php`
-- `app/Controllers/Api/HealthController.php`
+- controllers
+- services
+- repositories
+- runtime helpers
+- CRUD definitions
 
-### Services moving to `src/Application`
-- `app/Services/BaseService.php`
-- `app/Services/AdminAuthService.php`
-- `app/Services/ServiceCrudService.php`
-- time/menu services
+## v3.0 note
 
-### Infrastructure moving to `src/Infrastructure`
-- `app/Repositories/BaseRepository.php`
-- `app/Repositories/ServiceRepository.php`
-- `app/Core/Auth/DbUserProvider.php`
-
-### Support moving to `src/Support`
-- view state
-- admin menu
-- URL generation
-
-### Runtime moving to `src/Http`, `src/Session`, `src/Security`, and `src/Routing`
-- `app/Core/Request.php`
-- `app/Core/Response.php`
-- `app/Core/Router.php`
-- `app/Core/Session/Session.php`
-- `app/Core/Session/Flash.php`
-- `app/Core/Security/Csrf.php`
-- `app/Support/Routing/RouteRegistry.php`
-- `app/Services/UrlService.php`
-
-## Rule
-
-Do not create new major framework features in legacy `app/` when a corresponding `src/` layer already exists.
-
-When compatibility is required, keep legacy classes as thin shims over the canonical `src/` implementation.
-
-
-## CRUD definition aliases
-- `app/Crud/CrudEntityDefinition.php` now exists only as a compatibility alias to `Cabnet\Application\Crud\CrudEntityDefinition`.
-- `app/Crud/Definitions/ServiceEntityDefinition.php` now exists only as a compatibility alias to `Cabnet\Application\Crud\Definitions\ServiceEntityDefinition`.
-
-
-## Module registry convergence
-- direct service registration for built-in CRUD modules should now prefer `config/modules.php` over manual entries in `bootstrap/services.php`.
-- direct admin CRUD route registration should now prefer `config/modules.php` over manual entries in `bootstrap/routes.php`.
-- direct admin sidebar item registration for CRUD modules should now prefer `config/modules.php` over hardcoded entries in `config/admin_menu.php`.
-- legacy/global CRUD controllers should continue shrinking toward thin `moduleKey()` wrappers over the canonical src CRUD base controller.
+Validation arrays hardcoded inside individual CRUD services are no longer the preferred pattern. Prefer canonical field metadata plus `DefinitionCrudService`.

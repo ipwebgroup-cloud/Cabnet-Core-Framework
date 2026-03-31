@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Cabnet\Application\Crud;
 
+use InvalidArgumentException;
+
 class CrudEntityDefinition
 {
     /**
@@ -42,6 +44,21 @@ class CrudEntityDefinition
         return $this->fields;
     }
 
+    /** @return array<string, mixed> */
+    public function field(string $field): array
+    {
+        if (!isset($this->fields[$field])) {
+            throw new InvalidArgumentException("Unknown CRUD field [{$field}] for entity [{$this->key}].");
+        }
+
+        return $this->fields[$field];
+    }
+
+    public function hasField(string $field): bool
+    {
+        return isset($this->fields[$field]);
+    }
+
     /** @return array<int, string> */
     public function listColumns(): array
     {
@@ -63,6 +80,24 @@ class CrudEntityDefinition
     public function fieldNames(): array
     {
         return array_keys($this->fields);
+    }
+
+    /** @return array<string, array<int, string>> */
+    public function validationRules(): array
+    {
+        $rules = [];
+
+        foreach ($this->fields as $field => $meta) {
+            $rules[$field] = $this->buildValidationRulesForField($field, $meta);
+        }
+
+        return $rules;
+    }
+
+    /** @return array<int, string> */
+    public function validationRulesForField(string $field): array
+    {
+        return $this->buildValidationRulesForField($field, $this->field($field));
     }
 
     /** @return array<string, mixed> */
@@ -87,11 +122,74 @@ class CrudEntityDefinition
 
         foreach ($this->fields as $field => $meta) {
             $payload[$field] = array_key_exists($field, $source)
-                ? $source[$field]
+                ? $this->normalizeInputValue($source[$field], $meta)
                 : $this->defaultValueForField($meta);
         }
 
         return $payload;
+    }
+
+    /**
+     * @param array<string, mixed> $meta
+     * @return array<int, string>
+     */
+    private function buildValidationRulesForField(string $field, array $meta): array
+    {
+        $explicitRules = $meta['rules'] ?? null;
+        if (is_string($explicitRules) && trim($explicitRules) !== '') {
+            return array_values(array_filter(array_map('trim', explode('|', $explicitRules))));
+        }
+
+        if (is_array($explicitRules) && $explicitRules !== []) {
+            return array_values(array_filter(array_map(
+                static fn (mixed $rule): ?string => is_string($rule) && trim($rule) !== '' ? trim($rule) : null,
+                $explicitRules
+            )));
+        }
+
+        $rules = [];
+
+        if (!empty($meta['required'])) {
+            $rules[] = 'required';
+        }
+
+        $type = (string)($meta['type'] ?? 'text');
+
+        switch ($type) {
+            case 'email':
+                $rules[] = 'email';
+                break;
+            case 'integer':
+            case 'number':
+                $rules[] = 'integer';
+                break;
+            default:
+                $rules[] = 'string';
+                break;
+        }
+
+        if (!empty($meta['slug']) || ($field === 'slug' && $type === 'text')) {
+            $rules[] = 'slug';
+        }
+
+        if (array_key_exists('min', $meta)) {
+            $rules[] = 'min:' . max(0, (int)$meta['min']);
+        }
+
+        if (array_key_exists('max', $meta)) {
+            $rules[] = 'max:' . max(0, (int)$meta['max']);
+        }
+
+        if ($type === 'select') {
+            $options = (array)($meta['options'] ?? []);
+            $keys = array_values(array_map(static fn (mixed $value): string => (string)$value, array_keys($options)));
+
+            if ($keys !== []) {
+                $rules[] = 'in:' . implode(',', $keys);
+            }
+        }
+
+        return array_values(array_unique($rules));
     }
 
     /** @param array<string, mixed> $meta */
@@ -110,5 +208,32 @@ class CrudEntityDefinition
         }
 
         return '';
+    }
+
+    /** @param array<string, mixed> $meta */
+    private function normalizeInputValue(mixed $value, array $meta): mixed
+    {
+        if (is_string($value)) {
+            $value = trim($value);
+        }
+
+        if (($value === null || $value === '') && array_key_exists('default', $meta)) {
+            return $meta['default'];
+        }
+
+        $type = (string)($meta['type'] ?? 'text');
+
+        if (($type === 'integer' || $type === 'number') && $value !== null && $value !== '') {
+            $validated = filter_var($value, FILTER_VALIDATE_INT);
+            if ($validated !== false) {
+                return (int)$validated;
+            }
+        }
+
+        if ($type === 'select' && $value !== null) {
+            return (string)$value;
+        }
+
+        return $value;
     }
 }

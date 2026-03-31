@@ -53,13 +53,7 @@ abstract class BaseCrudController extends BaseController
     /** @return array<string, mixed> */
     protected function inputFromRequest(object $app): array
     {
-        $payload = [];
-
-        foreach ($this->entityDefinition($app)->inputDefaults() as $field => $default) {
-            $payload[$field] = $app->request()->input($field, $default);
-        }
-
-        return $payload;
+        return $this->entityDefinition($app)->inputPayload((array)$app->request()->input());
     }
 
     public function index(object $app, array $params = []): Response

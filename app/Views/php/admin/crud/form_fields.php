@@ -14,26 +14,40 @@ $fieldError = static function(array $errors, string $field): ?string {
 };
 
 foreach ($definition->fields() as $name => $meta):
-    $type = $meta['type'] ?? 'text';
-    $label = $meta['label'] ?? ucfirst($name);
+    $type = (string)($meta['type'] ?? 'text');
+    $label = (string)($meta['label'] ?? ucfirst($name));
     $required = !empty($meta['required']);
     $value = $values[$name] ?? '';
     $error = $fieldError($errors, $name);
+    $placeholder = (string)($meta['placeholder'] ?? '');
+    $help = (string)($meta['help'] ?? '');
+    $rows = max(2, (int)($meta['rows'] ?? 5));
+    $min = isset($meta['min']) ? (int)$meta['min'] : null;
+    $max = isset($meta['max']) ? (int)$meta['max'] : null;
+    $inputType = match ($type) {
+        'email' => 'email',
+        'integer', 'number' => 'number',
+        default => 'text',
+    };
 ?>
     <div class="<?= $type === 'textarea' ? 'col-12' : 'col-md-6' ?>">
-        <label class="form-label"><?= htmlspecialchars((string)$label, ENT_QUOTES, 'UTF-8') ?><?= $required ? ' *' : '' ?></label>
+        <label class="form-label"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?><?= $required ? ' *' : '' ?></label>
 
         <?php if ($type === 'textarea'): ?>
             <textarea
                 name="<?= htmlspecialchars((string)$name, ENT_QUOTES, 'UTF-8') ?>"
-                rows="5"
+                rows="<?= (int)$rows ?>"
                 class="form-control <?= $error ? 'is-invalid' : '' ?>"
+                <?= $required ? 'required' : '' ?>
+                <?= $max !== null ? 'maxlength="' . (int)$max . '"' : '' ?>
+                <?= $placeholder !== '' ? 'placeholder="' . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . '"' : '' ?>
             ><?= htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8') ?></textarea>
 
         <?php elseif ($type === 'select'): ?>
             <select
                 name="<?= htmlspecialchars((string)$name, ENT_QUOTES, 'UTF-8') ?>"
                 class="form-select <?= $error ? 'is-invalid' : '' ?>"
+                <?= $required ? 'required' : '' ?>
             >
                 <?php foreach (($meta['options'] ?? []) as $optionValue => $optionLabel): ?>
                     <option
@@ -47,11 +61,21 @@ foreach ($definition->fields() as $name => $meta):
 
         <?php else: ?>
             <input
-                type="text"
+                type="<?= htmlspecialchars($inputType, ENT_QUOTES, 'UTF-8') ?>"
                 name="<?= htmlspecialchars((string)$name, ENT_QUOTES, 'UTF-8') ?>"
                 class="form-control <?= $error ? 'is-invalid' : '' ?>"
                 value="<?= htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8') ?>"
+                <?= $required ? 'required' : '' ?>
+                <?= $min !== null && $inputType === 'number' ? 'min="' . (int)$min . '"' : '' ?>
+                <?= $max !== null && $inputType === 'number' ? 'max="' . (int)$max . '"' : '' ?>
+                <?= $min !== null && $inputType !== 'number' ? 'minlength="' . (int)$min . '"' : '' ?>
+                <?= $max !== null && $inputType !== 'number' ? 'maxlength="' . (int)$max . '"' : '' ?>
+                <?= $placeholder !== '' ? 'placeholder="' . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . '"' : '' ?>
             >
+        <?php endif; ?>
+
+        <?php if ($help !== ''): ?>
+            <div class="form-text"><?= htmlspecialchars($help, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endif; ?>
 
         <?php if ($error): ?>

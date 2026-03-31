@@ -29,7 +29,12 @@ final class CrudScaffoldWriter
         $serviceClass = $classBase . 'CrudService';
         $controllerClass = $classBase . 'Controller';
 
-        $definitionExport = var_export($fields, true);
+        $normalizedFields = [];
+        foreach ($fields as $fieldName => $meta) {
+            $normalizedFields[$fieldName] = $this->normalizeFieldMetadata($fieldName, is_array($meta) ? $meta : []);
+        }
+
+        $definitionExport = var_export($normalizedFields, true);
         $listColumnsExport = var_export($listColumns, true);
         $searchableExport = var_export($searchable, true);
 
@@ -38,7 +43,7 @@ final class CrudScaffoldWriter
         $files["src/Application/Crud/Definitions/{$definitionClass}.php"] = "<?php
 declare(strict_types=1);
 
-namespace Cabnet\\Application\\Crud\\Definitions;
+namespace Cabnet\Application\Crud\Definitions;
 
 final class {$definitionClass}
 {
@@ -63,18 +68,19 @@ final class {$definitionClass}
         $createParams = [];
         $updateParams = [];
 
-        foreach ($fields as $fieldName => $meta) {
+        foreach ($normalizedFields as $fieldName => $meta) {
             $createColumns[] = "`{$fieldName}`";
             $insertValues[] = ":{$fieldName}";
             $updateAssignments[] = "`{$fieldName}` = :{$fieldName}";
-            $createParams[] = "            '{$fieldName}' => \$data['{$fieldName}'] ?? '',";
-            $updateParams[] = "            '{$fieldName}' => \$data['{$fieldName}'] ?? '',";
+            $defaultValue = var_export($meta['default'] ?? '', true);
+            $createParams[] = "            '{$fieldName}' => \$data['{$fieldName}'] ?? {$defaultValue},";
+            $updateParams[] = "            '{$fieldName}' => \$data['{$fieldName}'] ?? {$defaultValue},";
         }
 
         $files["src/Infrastructure/Repositories/{$repositoryClass}.php"] = "<?php
 declare(strict_types=1);
 
-namespace Cabnet\\Infrastructure\\Repositories;
+namespace Cabnet\Infrastructure\Repositories;
 
 final class {$repositoryClass} extends BaseRepository
 {
@@ -108,84 +114,21 @@ final class {$repositoryClass} extends BaseRepository
 }
 ";
 
-        $rules = [];
-        foreach ($fields as $fieldName => $meta) {
-            $fieldRules = [];
-            if (!empty($meta['required'])) {
-                $fieldRules[] = "'required'";
-            }
-            $type = (string)($meta['type'] ?? 'text');
-            $fieldRules[] = $type === 'email' ? "'email'" : "'string'";
-            if ($fieldName === 'slug') {
-                $fieldRules[] = "'slug'";
-            }
-            $fieldRules[] = $type === 'textarea' ? "'max:2000'" : "'max:255'";
-            $rules[] = "            '{$fieldName}' => [" . implode(', ', $fieldRules) . "],";
-        }
-
         $files["src/Application/Services/{$serviceClass}.php"] = "<?php
 declare(strict_types=1);
 
-namespace Cabnet\\Application\\Services;
+namespace Cabnet\Application\Services;
 
-use Cabnet\\Application\\Crud\\Definitions\\{$definitionClass};
-use Cabnet\\Infrastructure\\Repositories\\{$repositoryClass};
+use Cabnet\Application\Crud\Definitions\{$definitionClass};
+use Cabnet\Infrastructure\Repositories\{$repositoryClass};
 
-final class {$serviceClass} extends BaseService
+final class {$serviceClass} extends DefinitionCrudService
 {
     public function __construct(
-        private {$repositoryClass} \$repository,
-        private \\Validator \$validator
+        {$repositoryClass} \$repository,
+        \\Validator \$validator
     ) {
-    }
-
-    public function paginate(string \$search = '', int \$page = 1, int \$perPage = 15): array
-    {
-        return \$this->repository->findPage(
-            searchColumns: {$definitionClass}::make()->searchable(),
-            search: \$search,
-            page: \$page,
-            perPage: \$perPage,
-            orderBy: {$definitionClass}::make()->defaultOrder()
-        );
-    }
-
-    public function find(int \$id): ?array
-    {
-        return \$this->repository->findById(\$id);
-    }
-
-    public function create(array \$input): \\ValidationResult
-    {
-        \$result = \$this->validator->validate(\$input, [
-" . implode("\n", $rules) . "
-        ]);
-
-        if (!\$result->valid()) {
-            return \$result;
-        }
-
-        \$this->repository->create(\$result->data());
-        return \$result;
-    }
-
-    public function update(int \$id, array \$input): \\ValidationResult
-    {
-        \$result = \$this->validator->validate(\$input, [
-" . implode("\n", $rules) . "
-        ]);
-
-        if (!\$result->valid()) {
-            return \$result;
-        }
-
-        \$this->repository->updateById(\$id, \$result->data());
-        return \$result;
-    }
-
-    public function delete(int \$id): bool
-    {
-        return \$this->repository->deleteById(\$id);
+        parent::__construct({$definitionClass}::make(), \$repository, \$validator);
     }
 }
 ";
@@ -193,7 +136,7 @@ final class {$serviceClass} extends BaseService
         $files["src/Application/Controllers/Admin/{$controllerClass}.php"] = "<?php
 declare(strict_types=1);
 
-namespace Cabnet\\Application\\Controllers\\Admin;
+namespace Cabnet\Application\Controllers\Admin;
 
 final class {$controllerClass} extends BaseCrudController
 {
@@ -233,14 +176,14 @@ final class {$controllerClass} extends BaseCrudController
         $schemaLines = [];
         $schemaLines[] = "CREATE TABLE IF NOT EXISTS `{$table}` (";
         $schemaLines[] = '  `id` int unsigned NOT NULL AUTO_INCREMENT,';
-        foreach ($fields as $fieldName => $meta) {
+        foreach ($normalizedFields as $fieldName => $meta) {
             $type = (string)($meta['type'] ?? 'text');
             $columnType = $type === 'textarea' ? 'text' : 'varchar(255)';
 
             if ($type === 'select') {
                 $options = (array)($meta['options'] ?? []);
                 $keys = array_keys($options);
-                $default = (string)($keys[0] ?? '');
+                $default = str_replace("'", "''", (string)($meta['default'] ?? ($keys[0] ?? '')));
                 $schemaLines[] = "  `{$fieldName}` varchar(255) NOT NULL DEFAULT '{$default}',";
             } else {
                 $required = !empty($meta['required']);
@@ -256,12 +199,67 @@ final class {$controllerClass} extends BaseCrudController
         $files["generated/{$routeBase}_implementation_notes.txt"] = implode("\n", [
             'Target: src-first',
             'Add the generated module metadata block to config/modules.php.',
+            'Field metadata now carries validation and form rendering hints. Prefer editing the definition before editing the service or form partials.',
             'Admin routes, admin menu items, repository services, and CRUD services now derive from module metadata automatically.',
             'Admin PHP views remain under app/Views/php/admin until rendering is migrated fully to src/View.',
             '',
         ]);
 
         return $files;
+    }
+
+    /** @param array<string, mixed> $meta
+     *  @return array<string, mixed>
+     */
+    private function normalizeFieldMetadata(string $fieldName, array $meta): array
+    {
+        $type = (string)($meta['type'] ?? 'text');
+        $label = (string)($meta['label'] ?? $this->studly(str_replace(['-', '_'], ' ', $fieldName)));
+        $normalized = [
+            'type' => $type,
+            'label' => $label,
+            'required' => !empty($meta['required']),
+        ];
+
+        if (isset($meta['options']) && is_array($meta['options'])) {
+            $normalized['options'] = $meta['options'];
+            $optionKeys = array_keys($meta['options']);
+            $normalized['default'] = $meta['default'] ?? (string)($optionKeys[0] ?? '');
+        } elseif (array_key_exists('default', $meta)) {
+            $normalized['default'] = $meta['default'];
+        }
+
+        if (array_key_exists('placeholder', $meta)) {
+            $normalized['placeholder'] = (string)$meta['placeholder'];
+        }
+
+        if (array_key_exists('help', $meta)) {
+            $normalized['help'] = (string)$meta['help'];
+        }
+
+        if (array_key_exists('min', $meta)) {
+            $normalized['min'] = (int)$meta['min'];
+        }
+
+        if (array_key_exists('max', $meta)) {
+            $normalized['max'] = (int)$meta['max'];
+        } else {
+            $normalized['max'] = $type === 'textarea' ? 2000 : 255;
+        }
+
+        if ($type === 'textarea') {
+            $normalized['rows'] = isset($meta['rows']) ? max(2, (int)$meta['rows']) : 5;
+        }
+
+        if (!empty($meta['slug']) || $fieldName === 'slug') {
+            $normalized['slug'] = true;
+        }
+
+        if (array_key_exists('rules', $meta)) {
+            $normalized['rules'] = $meta['rules'];
+        }
+
+        return $normalized;
     }
 
     private function studly(string $value): string

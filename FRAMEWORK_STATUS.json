@@ -1,12 +1,12 @@
 {
   "name": "Cabnet Core Framework",
-  "version": "2.9.0",
-  "release_type": "module_registry_runtime_adoption",
+  "version": "3.0.0",
+  "release_type": "validation_and_form_metadata_convergence",
   "preferred_runtime": "src",
   "legacy_layer_status": "transitional_shims",
   "recommended_next_tracks": [
-    "validation_and_form_metadata_convergence",
-    "view_packaging_convergence"
+    "view_packaging_convergence",
+    "module_permissions_and_filters"
   ],
-  "generated_at": "2026-03-31T18:15:00+03:00"
+  "generated_at": "2026-03-31T18:45:00+03:00"
 }

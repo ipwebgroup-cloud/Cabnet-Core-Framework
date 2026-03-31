@@ -3,13 +3,17 @@ declare(strict_types=1);
 
 namespace Cabnet\Infrastructure\Repositories;
 
-abstract class BaseRepository
+abstract class BaseRepository implements CrudRepositoryContract
 {
     public function __construct(protected \DatabaseManager $db)
     {
     }
 
     abstract protected function table(): string;
+
+    abstract public function create(array $data): bool;
+
+    abstract public function updateById(int $id, array $data): bool;
 
     public function findAll(string $orderBy = 'id DESC'): array
     {

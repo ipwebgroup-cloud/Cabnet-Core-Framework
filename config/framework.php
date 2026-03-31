@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '2.9.0',
-    'release_name' => 'Module Registry Adoption',
+    'version' => '3.0.0',
+    'release_name' => 'Validation and Form Metadata Convergence',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -25,5 +25,7 @@ return [
         'crud_module_runtime_bootstrap' => true,
         'crud_module_menu_bootstrap' => true,
         'crud_module_generator_integration' => true,
+        'definition_driven_crud_validation' => true,
+        'metadata_driven_crud_forms' => true,
     ],
 ];

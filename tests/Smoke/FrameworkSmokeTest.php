@@ -74,6 +74,9 @@ final class FrameworkSmokeTest
             'src_service_controller_uses_src_crud_base' => 'srcServiceControllerUsesSrcCrudBase',
             'legacy_service_repository_layer_remains_shimmed_to_src' => 'legacyServiceRepositoryLayerRemainsShimmedToSrc',
             'src_crud_definition_model_is_canonical' => 'srcCrudDefinitionModelIsCanonical',
+            'crud_definition_derives_validation_rules_from_field_metadata' => 'crudDefinitionDerivesValidationRulesFromFieldMetadata',
+            'definition_driven_service_rejects_invalid_select_option' => 'definitionDrivenServiceRejectsInvalidSelectOption',
+            'crud_form_fields_render_metadata_driven_attributes' => 'crudFormFieldsRenderMetadataDrivenAttributes',
             'crud_module_registry_resolves_services_definition' => 'crudModuleRegistryResolvesServicesDefinition',
             'crud_module_bootstrap_registers_dynamic_services' => 'crudModuleBootstrapRegistersDynamicServices',
             'crud_module_bootstrap_appends_admin_routes' => 'crudModuleBootstrapAppendsAdminRoutes',
@@ -424,6 +427,67 @@ final class FrameworkSmokeTest
         );
     }
 
+    private function crudDefinitionDerivesValidationRulesFromFieldMetadata(): void
+    {
+        $definition = \Cabnet\Application\Crud\Definitions\ServiceEntityDefinition::make();
+        $rules = $definition->validationRules();
+
+        SmokeAssert::same(
+            ['required', 'string', 'min:2', 'max:255'],
+            $rules['title'] ?? null,
+            'Title field rules should be derived from field metadata.'
+        );
+
+        SmokeAssert::same(
+            ['required', 'string', 'slug', 'min:2', 'max:255'],
+            $rules['slug'] ?? null,
+            'Slug field rules should include the slug constraint derived from field metadata.'
+        );
+
+        SmokeAssert::same(
+            ['required', 'string', 'in:draft,published'],
+            $rules['status'] ?? null,
+            'Select options should become an in: validation rule.'
+        );
+    }
+
+    private function definitionDrivenServiceRejectsInvalidSelectOption(): void
+    {
+        $service = new \Cabnet\Application\Services\ServiceCrudService(
+            new class extends \Cabnet\Infrastructure\Repositories\ServiceRepository {
+                public function __construct()
+                {
+                }
+            },
+            new \Validator()
+        );
+
+        $result = $service->create([
+            'title' => 'Valid Title',
+            'slug' => 'valid-title',
+            'status' => 'archived',
+            'summary' => 'A valid summary',
+        ]);
+
+        SmokeAssert::false($result->valid(), 'Definition-driven CRUD service should reject values outside select metadata options.');
+        SmokeAssert::contains('draft, published', (string)$result->firstError('status'), 'Status validation should explain the allowed metadata-driven values.');
+    }
+
+    private function crudFormFieldsRenderMetadataDrivenAttributes(): void
+    {
+        TestEnvironment::seedRequest('GET', '/services/create');
+        $app = bootstrap_app('admin');
+        $controller = new \Cabnet\Application\Controllers\Admin\ServiceController();
+
+        $response = $controller->createForm($app);
+        $snapshot = ResponseInspector::snapshot($response);
+        $body = (string)$snapshot['body'];
+
+        SmokeAssert::contains('placeholder="premium-island-transfers"', $body, 'Form renderer should expose placeholder metadata from the canonical definition.');
+        SmokeAssert::contains('maxlength="255"', $body, 'Form renderer should expose max-length metadata from the canonical definition.');
+        SmokeAssert::contains('Lowercase letters, numbers, and hyphens only.', $body, 'Form renderer should expose help text from the canonical definition.');
+    }
+
     private function crudModuleRegistryResolvesServicesDefinition(): void
     {
         $app = bootstrap_app('admin');
@@ -531,7 +595,7 @@ final class FrameworkSmokeTest
         SmokeAssert::true(str_contains($repository, 'extends \BaseRepository') === false, 'Generated src repository should not fall back to the legacy global base.');
 
         SmokeAssert::contains('namespace Cabnet\Application\Services;', $service, 'Generated src service should stay namespaced.');
-        SmokeAssert::contains('extends BaseService', $service, 'Generated src service should extend the src service base.');
+        SmokeAssert::contains('extends DefinitionCrudService', $service, 'Generated src service should extend the canonical definition-driven CRUD service base.');
         SmokeAssert::true(str_contains($service, 'extends \BaseService') === false, 'Generated src service should not fall back to the legacy global base.');
 
         SmokeAssert::contains('namespace Cabnet\Application\Controllers\Admin;', $controller, 'Generated src controller should stay namespaced.');
