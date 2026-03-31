@@ -1,4 +1,4 @@
-# Cabnet Core Framework Bundle v2.6.0
+# Cabnet Core Framework Bundle v2.7.0
 
 This is the consolidated framework bundle built from the phase-by-phase starter process.
 
@@ -46,3 +46,9 @@ Use this as the baseline repository/project starter for your future apps.
 - canonical repository base in `src/Infrastructure/Repositories/BaseRepository.php`
 - legacy service/repository classes narrowed into compatibility shims
 - src-first generator output aligned to src-owned base inheritance
+
+## v2.7 HTTP/runtime convergence additions
+- canonical request/response/session/CSRF ownership in `src/`
+- canonical src route registry and URL generator
+- legacy runtime globals narrowed into compatibility shims
+- runtime smoke coverage expanded to redirects and src-owned URL generation

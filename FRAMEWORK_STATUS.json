@@ -1,12 +1,12 @@
 {
   "name": "Cabnet Core Framework",
-  "version": "2.6.0",
-  "release_type": "service_repository_convergence",
+  "version": "2.7.0",
+  "release_type": "http_runtime_convergence",
   "preferred_runtime": "src",
   "legacy_layer_status": "transitional_shims",
   "recommended_next_tracks": [
     "entity_definition_convergence",
-    "integration_test_expansion"
+    "generator_metadata_alignment"
   ],
-  "generated_at": "2026-03-31T15:45:00+03:00"
+  "generated_at": "2026-03-31T17:20:00+03:00"
 }

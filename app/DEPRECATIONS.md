@@ -25,6 +25,17 @@ This file marks legacy classes that should gradually stop being used as the `src
 ### Support moving to `src/Support`
 - view state
 - admin menu
+- URL generation
+
+### Runtime moving to `src/Http`, `src/Session`, `src/Security`, and `src/Routing`
+- `app/Core/Request.php`
+- `app/Core/Response.php`
+- `app/Core/Router.php`
+- `app/Core/Session/Session.php`
+- `app/Core/Session/Flash.php`
+- `app/Core/Security/Csrf.php`
+- `app/Support/Routing/RouteRegistry.php`
+- `app/Services/UrlService.php`
 
 ## Rule
 

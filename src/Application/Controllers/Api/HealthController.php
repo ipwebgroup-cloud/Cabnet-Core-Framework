@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Cabnet\Application\Controllers\Api;
 
+use Cabnet\Http\Response;
+
 final class HealthController
 {
-    public function index(object $app, array $params = []): \Response
+    public function index(object $app, array $params = []): Response
     {
         return $app->response()->json([
             'status' => 'ok',

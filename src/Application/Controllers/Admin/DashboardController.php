@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Cabnet\Application\Controllers\Admin;
 
+use Cabnet\Http\Response;
+
 final class DashboardController extends \Cabnet\Application\Controllers\BaseController
 {
-    public function index(object $app, array $params = []): \Response
+    public function index(object $app, array $params = []): Response
     {
         return $this->render($app, 'admin/dashboard.php', [
             'appName' => $app->config('app.name', 'Cabnet Core'),

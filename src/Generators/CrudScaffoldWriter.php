@@ -217,7 +217,7 @@ final class {$controllerClass} extends BaseCrudController
         return {$definitionClass}::make();
     }
 
-    public function index(object \$app, array \$params = []): \\Response
+    public function index(object \$app, array \$params = []): \\Cabnet\\Http\\Response
     {
         /** @var {$serviceFqcn} \$service */
         \$service = \$app->service('{$singularBase}Crud');
@@ -234,7 +234,7 @@ final class {$controllerClass} extends BaseCrudController
         ));
     }
 
-    public function createForm(object \$app, array \$params = []): \\Response
+    public function createForm(object \$app, array \$params = []): \\Cabnet\\Http\\Response
     {
         return \$this->render(\$app, 'admin/{$routeBase}/create.php', \$this->formViewData(
             \$app,
@@ -244,7 +244,7 @@ final class {$controllerClass} extends BaseCrudController
         ));
     }
 
-    public function store(object \$app, array \$params = []): \\Response
+    public function store(object \$app, array \$params = []): \\Cabnet\\Http\\Response
     {
         if (!\$app->csrf()->validate((string)\$app->request()->input('_token', ''))) {
             \$this->flash(\$app, 'danger', 'Invalid CSRF token.');
@@ -272,7 +272,7 @@ final class {$controllerClass} extends BaseCrudController
         return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.index'));
     }
 
-    public function editForm(object \$app, array \$params = []): \\Response
+    public function editForm(object \$app, array \$params = []): \\Cabnet\\Http\\Response
     {
         \$id = (int)(\$params['id'] ?? 0);
 
@@ -294,7 +294,7 @@ final class {$controllerClass} extends BaseCrudController
         ));
     }
 
-    public function update(object \$app, array \$params = []): \\Response
+    public function update(object \$app, array \$params = []): \\Cabnet\\Http\\Response
     {
         \$id = (int)(\$params['id'] ?? 0);
 
@@ -330,7 +330,7 @@ final class {$controllerClass} extends BaseCrudController
         return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.index'));
     }
 
-    public function destroy(object \$app, array \$params = []): \\Response
+    public function destroy(object \$app, array \$params = []): \\Cabnet\\Http\\Response
     {
         \$id = (int)(\$params['id'] ?? 0);
 

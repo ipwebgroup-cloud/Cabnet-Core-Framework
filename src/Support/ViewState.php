@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 namespace Cabnet\Support;
 
-final class ViewState
+use Cabnet\Session\Session;
+
+class ViewState
 {
-    public function __construct(private \Session $session)
+    public function __construct(private Session $session)
     {
     }
 
-    public function old(string $key = null, mixed $default = null): mixed
+    public function old(?string $key = null, mixed $default = null): mixed
     {
         $old = $this->session->get('_old_input', []);
 
@@ -24,7 +26,7 @@ final class ViewState
         return $old[$key] ?? $default;
     }
 
-    public function errors(string $key = null): mixed
+    public function errors(?string $key = null): mixed
     {
         $errors = $this->session->get('_validation_errors', []);
 
@@ -37,6 +39,12 @@ final class ViewState
         }
 
         return $errors[$key] ?? null;
+    }
+
+    public function firstError(string $key): ?string
+    {
+        $errors = $this->errors($key);
+        return is_array($errors) ? ($errors[0] ?? null) : null;
     }
 
     public function putOld(array $data): void

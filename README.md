@@ -1,6 +1,6 @@
-# Cabnet Core Framework v2.6.0
+# Cabnet Core Framework v2.7.0
 
-Cabnet Core v2.6 is the consolidated baseline plus runtime bootstrap convergence, auth hardening, a native smoke-test baseline, src-owned renderer convergence, src-owned controller base convergence, and src-owned service/repository base convergence.
+Cabnet Core v2.7 is the consolidated baseline plus runtime bootstrap convergence, auth hardening, a native smoke-test baseline, src-owned renderer convergence, src-owned controller base convergence, src-owned service/repository base convergence, and src-owned HTTP/runtime convergence.
 
 ## What this pack is
 
@@ -18,6 +18,7 @@ Use this pack to:
 - move canonical renderer ownership into `src/View` while keeping legacy wrappers
 - move canonical controller base ownership into `src/Application/Controllers` while keeping legacy controller shims
 - move canonical service/repository base ownership into `src/` while keeping legacy service/repository shims
+- move canonical request/response/session/url runtime ownership into `src/` while keeping legacy runtime shims
 - decide the next path:
   - cleanup the framework
   - or fork it into a real project starter
@@ -32,5 +33,6 @@ Use this pack to:
 - `docs/V2_4_RENDERING_CONVERGENCE.md`
 - `docs/V2_5_LEGACY_RUNTIME_REDUCTION.md`
 - `docs/V2_6_SERVICE_REPOSITORY_CONVERGENCE.md`
+- `docs/V2_7_HTTP_RUNTIME_CONVERGENCE.md`
 - `docs/V2_0_DEPRECATION_POLICY.md`
 - `docs/PROJECT_FORK_GUIDE.md`

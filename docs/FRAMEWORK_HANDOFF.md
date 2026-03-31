@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v2.6.0  
+**Version:** v2.7.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline  
 **Purpose:** Reusable base for business websites, catalogs, admin-heavy tools, and multilingual content systems
@@ -38,6 +38,7 @@ This bundle consolidates the latest framework state from the iterative phase bui
 - integration patch generation
 - documentation pack
 - smoke-test baseline for bootstrap/runtime/generator regressions
+- src-owned HTTP/runtime helpers with legacy shim compatibility
 
 ---
 

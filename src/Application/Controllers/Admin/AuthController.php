@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Cabnet\Application\Controllers\Admin;
 
+use Cabnet\Http\Response;
+
 final class AuthController extends \Cabnet\Application\Controllers\BaseController
 {
-    public function loginForm(object $app, array $params = []): \Response
+    public function loginForm(object $app, array $params = []): Response
     {
         return $this->render($app, 'admin/login.php', [
             'appName' => $app->config('app.name', 'Cabnet Core'),
@@ -14,7 +16,7 @@ final class AuthController extends \Cabnet\Application\Controllers\BaseControlle
         ]);
     }
 
-    public function login(object $app, array $params = []): \Response
+    public function login(object $app, array $params = []): Response
     {
         $csrfProtectLogin = (bool)$app->config('auth.csrf_protect_login', true);
         $loginRoute = (string)$app->config('auth.login_route', '/login');
@@ -59,7 +61,7 @@ final class AuthController extends \Cabnet\Application\Controllers\BaseControlle
         return $this->redirect($app, $loginRoute);
     }
 
-    public function logout(object $app, array $params = []): \Response
+    public function logout(object $app, array $params = []): Response
     {
         $logoutMethod = strtoupper((string)$app->config('auth.logout_method', 'POST'));
         $csrfProtectLogout = (bool)$app->config('auth.csrf_protect_logout', true);

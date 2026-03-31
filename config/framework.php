@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '2.6.0',
-    'release_name' => 'Service Repository Convergence',
+    'version' => '2.7.0',
+    'release_name' => 'HTTP Runtime Convergence',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -17,5 +17,8 @@ return [
         'src_controller_bases' => true,
         'src_service_bases' => true,
         'src_repository_bases' => true,
+        'src_http_runtime' => true,
+        'src_session_runtime' => true,
+        'src_url_generator' => true,
     ],
 ];

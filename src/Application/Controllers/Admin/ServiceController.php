@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Cabnet\Application\Controllers\Admin;
 
+use Cabnet\Http\Response;
+
 use Cabnet\Application\Crud\Definitions\ServiceEntityDefinition;
 use Cabnet\Application\Services\ServiceCrudService;
 
@@ -13,7 +15,7 @@ final class ServiceController extends BaseCrudController
         return ServiceEntityDefinition::make();
     }
 
-    public function index(object $app, array $params = []): \Response
+    public function index(object $app, array $params = []): Response
     {
         /** @var ServiceCrudService $service */
         $service = $app->service('serviceCrud');
@@ -30,7 +32,7 @@ final class ServiceController extends BaseCrudController
         ));
     }
 
-    public function createForm(object $app, array $params = []): \Response
+    public function createForm(object $app, array $params = []): Response
     {
         return $this->render($app, 'admin/services/create.php', $this->formViewData(
             $app,
@@ -40,7 +42,7 @@ final class ServiceController extends BaseCrudController
         ));
     }
 
-    public function store(object $app, array $params = []): \Response
+    public function store(object $app, array $params = []): Response
     {
         if (!$app->csrf()->validate((string)$app->request()->input('_token', ''))) {
             $this->flash($app, 'danger', 'Invalid CSRF token.');
@@ -71,7 +73,7 @@ final class ServiceController extends BaseCrudController
         return $this->redirect($app, $app->url()->route('admin.services.index'));
     }
 
-    public function editForm(object $app, array $params = []): \Response
+    public function editForm(object $app, array $params = []): Response
     {
         $id = (int)($params['id'] ?? 0);
 
@@ -93,7 +95,7 @@ final class ServiceController extends BaseCrudController
         ));
     }
 
-    public function update(object $app, array $params = []): \Response
+    public function update(object $app, array $params = []): Response
     {
         $id = (int)($params['id'] ?? 0);
 
@@ -132,7 +134,7 @@ final class ServiceController extends BaseCrudController
         return $this->redirect($app, $app->url()->route('admin.services.index'));
     }
 
-    public function destroy(object $app, array $params = []): \Response
+    public function destroy(object $app, array $params = []): Response
     {
         $id = (int)($params['id'] ?? 0);
 

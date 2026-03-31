@@ -3,14 +3,16 @@ declare(strict_types=1);
 
 namespace Cabnet\Application\Controllers;
 
+use Cabnet\Http\Response;
+
 abstract class BaseController
 {
-    protected function render(object $app, string $template, array $data = []): \Response
+    protected function render(object $app, string $template, array $data = []): Response
     {
         return $app->response()->html($app->renderer()->render($template, $data));
     }
 
-    protected function redirect(object $app, string $to): \Response
+    protected function redirect(object $app, string $to): Response
     {
         return $app->response()->redirect($to);
     }

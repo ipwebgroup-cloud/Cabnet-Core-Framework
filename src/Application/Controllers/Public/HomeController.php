@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Cabnet\Application\Controllers\PublicSite;
 
+use Cabnet\Http\Response;
+
 final class HomeController
 {
-    public function index(object $app, array $params = []): \Response
+    public function index(object $app, array $params = []): Response
     {
         $html = $app->renderer()->render('public/home.php', [
             'appName' => $app->config('app.name', 'Cabnet Core'),

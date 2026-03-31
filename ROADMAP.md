@@ -340,3 +340,19 @@ The roadmap is successful when the framework provides:
 The Cabnet Core roadmap emphasizes phased delivery, stable artifacts, and long-term reusability.
 
 This roadmap should be treated as the official sequence for building the framework.
+
+
+## v2.7 — HTTP/runtime convergence
+### Goal
+Move canonical request/response/session/URL runtime ownership into `src/` while keeping `app/` as a compatibility layer.
+
+### Deliverables
+- src HTTP request/response helpers
+- src response normalization/dispatch helpers
+- src session/flash/CSRF classes
+- src route registry and URL generator
+- legacy runtime shims
+- expanded runtime smoke tests
+
+### Outcome
+A clearer src-first runtime boundary for public/admin/API execution.

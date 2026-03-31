@@ -1,6 +1,18 @@
 <?php
 declare(strict_types=1);
 
+use Cabnet\Http\Request as RuntimeRequest;
+use Cabnet\Http\Response as RuntimeResponse;
+use Cabnet\Http\ResponseEmitter;
+use Cabnet\Http\ResponseResolver;
+use Cabnet\Middleware\MiddlewareExecutor;
+use Cabnet\Routing\RouteDispatcher;
+use Cabnet\Routing\Router as RuntimeRouter;
+use Cabnet\Security\Csrf as RuntimeCsrf;
+use Cabnet\Session\Flash as RuntimeFlash;
+use Cabnet\Session\Session as RuntimeSession;
+use Cabnet\Support\UrlGenerator;
+use Cabnet\Support\ViewState as RuntimeViewState;
 use Cabnet\View\Renderer as ViewRenderer;
 
 final class App
@@ -9,10 +21,14 @@ final class App
     private array $services;
     private array $routes;
     private string $context;
-    private Request $request;
-    private Response $response;
-    private Router $router;
+    private RuntimeRequest $request;
+    private RuntimeResponse $response;
+    private RuntimeRouter $router;
     private array $serviceCache = [];
+    private MiddlewareExecutor $middlewareExecutor;
+    private RouteDispatcher $routeDispatcher;
+    private ResponseResolver $responseResolver;
+    private ResponseEmitter $responseEmitter;
 
     public function __construct(array $config, array $services, array $routes, string $context = 'public')
     {
@@ -26,6 +42,10 @@ final class App
         $this->request = new Request();
         $this->response = new Response();
         $this->router = new Router($this->routes[$this->context] ?? []);
+        $this->middlewareExecutor = new MiddlewareExecutor((array)$this->config('middleware.aliases', []));
+        $this->routeDispatcher = new RouteDispatcher();
+        $this->responseResolver = new ResponseResolver();
+        $this->responseEmitter = new ResponseEmitter();
     }
 
     public function run(): void
@@ -33,72 +53,54 @@ final class App
         $resolved = $this->router->match($this->request->method(), $this->request()->path());
 
         if ($resolved === null) {
-            $this->response->html(
-                '<h1>404 Not Found</h1><p>No route matched: ' . htmlspecialchars($this->request()->path(), ENT_QUOTES, 'UTF-8') . '</p>',
-                404
-            )->send();
+            $this->responseEmitter->emit(
+                $this->response->html(
+                    '<h1>404 Not Found</h1><p>No route matched: ' . htmlspecialchars($this->request()->path(), ENT_QUOTES, 'UTF-8') . '</p>',
+                    404
+                )
+            );
             return;
         }
 
-        foreach ($this->middleware() as $middleware) {
-            $result = $middleware->handle($this);
-            if ($result instanceof Response) {
-                $result->send();
-                return;
-            }
-        }
-
-        $routeMiddleware = $resolved->route['middleware'] ?? [];
-        foreach ($this->resolveRouteMiddleware($routeMiddleware) as $middleware) {
-            $result = $middleware->handle($this);
-            if ($result instanceof Response) {
-                $result->send();
-                return;
-            }
-        }
-
-        $handler = $resolved->route['handler'] ?? null;
-        $params = $resolved->params ?? [];
-
-        if (is_callable($handler)) {
-            $result = $handler($this, $params);
-        } elseif (is_array($handler) && count($handler) === 2) {
-            [$class, $action] = $handler;
-            $controller = new $class();
-            $result = $controller->{$action}($this, $params);
-        } else {
-            $result = null;
-        }
-
-        if ($result instanceof Response) {
-            $result->send();
+        $globalMiddlewareResult = $this->runMiddlewareStack($this->middleware());
+        if ($globalMiddlewareResult !== null) {
+            $this->responseEmitter->emit($globalMiddlewareResult);
             return;
         }
 
-        if (is_string($result)) {
-            $this->response->html($result)->send();
+        $routeMiddlewareResult = $this->runMiddlewareNames($resolved->route->middleware);
+        if ($routeMiddlewareResult !== null) {
+            $this->responseEmitter->emit($routeMiddlewareResult);
             return;
         }
 
-        $this->response->json([
-            'status' => 'error',
-            'message' => 'Invalid route response.',
-        ], 500)->send();
+        $result = $this->routeDispatcher->dispatch($resolved->route->handler, $this, $resolved->params);
+        $this->responseEmitter->emit($this->responseResolver->resolve($result, $this->response));
     }
 
-    protected function resolveRouteMiddleware(array $names): array
+    private function runMiddlewareStack(array $stack): ?RuntimeResponse
     {
-        $aliases = $this->config('middleware.aliases', []);
-        $resolved = [];
+        foreach ($stack as $middleware) {
+            if (!is_object($middleware) || !method_exists($middleware, 'handle')) {
+                continue;
+            }
 
-        foreach ($names as $name) {
-            $class = $aliases[$name] ?? null;
-            if (is_string($class) && class_exists($class)) {
-                $resolved[] = new $class();
+            $result = $middleware->handle($this);
+            if ($result instanceof RuntimeResponse || $result instanceof \Response) {
+                return $result;
             }
         }
 
-        return $resolved;
+        return null;
+    }
+
+    private function runMiddlewareNames(array $names): ?RuntimeResponse
+    {
+        if ($names === []) {
+            return null;
+        }
+
+        return $this->middlewareExecutor->run($names, $this);
     }
 
     public function config(?string $key = null, mixed $default = null): mixed
@@ -145,20 +147,20 @@ final class App
         return $renderer;
     }
 
-    public function session(): Session
+    public function session(): RuntimeSession
     {
         $session = $this->service('session');
-        if (!$session instanceof Session) {
-            throw new RuntimeException('Session service must return Session.');
+        if (!$session instanceof RuntimeSession) {
+            throw new RuntimeException('Session service must return Cabnet\\Session\\Session.');
         }
         return $session;
     }
 
-    public function flash(): Flash
+    public function flash(): RuntimeFlash
     {
         $flash = $this->service('flash');
-        if (!$flash instanceof Flash) {
-            throw new RuntimeException('Flash service must return Flash.');
+        if (!$flash instanceof RuntimeFlash) {
+            throw new RuntimeException('Flash service must return Cabnet\\Session\\Flash.');
         }
         return $flash;
     }
@@ -172,11 +174,11 @@ final class App
         return $auth;
     }
 
-    public function csrf(): Csrf
+    public function csrf(): RuntimeCsrf
     {
         $csrf = $this->service('csrf');
-        if (!$csrf instanceof Csrf) {
-            throw new RuntimeException('CSRF service must return Csrf.');
+        if (!$csrf instanceof RuntimeCsrf) {
+            throw new RuntimeException('CSRF service must return Cabnet\\Security\\Csrf.');
         }
         return $csrf;
     }
@@ -190,20 +192,20 @@ final class App
         return $validator;
     }
 
-    public function viewState(): ViewState
+    public function viewState(): RuntimeViewState
     {
         $viewState = $this->service('viewState');
-        if (!$viewState instanceof ViewState) {
-            throw new RuntimeException('viewState service must return ViewState.');
+        if (!$viewState instanceof RuntimeViewState) {
+            throw new RuntimeException('viewState service must return Cabnet\\Support\\ViewState.');
         }
         return $viewState;
     }
 
-    public function url(): UrlService
+    public function url(): UrlGenerator
     {
         $url = $this->service('url');
-        if (!$url instanceof UrlService) {
-            throw new RuntimeException('url service must return UrlService.');
+        if (!$url instanceof UrlGenerator) {
+            throw new RuntimeException('url service must return Cabnet\\Support\\UrlGenerator.');
         }
         return $url;
     }
@@ -214,12 +216,12 @@ final class App
         return is_array($stack) ? $stack : [];
     }
 
-    public function request(): Request
+    public function request(): RuntimeRequest
     {
         return $this->request;
     }
 
-    public function response(): Response
+    public function response(): RuntimeResponse
     {
         return $this->response;
     }

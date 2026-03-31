@@ -3,22 +3,34 @@ declare(strict_types=1);
 
 namespace Cabnet\Http;
 
-final class Request
+class Request
 {
     public function method(): string
     {
-        return strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+        return strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+    }
+
+    public function isMethod(string $method): bool
+    {
+        return $this->method() === strtoupper($method);
     }
 
     public function uri(): string
     {
-        return $_SERVER['REQUEST_URI'] ?? '/';
+        return (string)($_SERVER['REQUEST_URI'] ?? '/');
     }
 
     public function path(): string
     {
         $path = parse_url($this->uri(), PHP_URL_PATH);
-        return $path ?: '/';
+        return is_string($path) && $path !== '' ? $path : '/';
+    }
+
+    public function fullUrl(): string
+    {
+        $scheme = $this->server('HTTPS') === 'on' ? 'https' : 'http';
+        $host = (string)($this->server('HTTP_HOST') ?: $this->server('SERVER_NAME') ?: 'localhost');
+        return $scheme . '://' . $host . $this->uri();
     }
 
     public function query(?string $key = null, mixed $default = null): mixed
@@ -42,5 +54,14 @@ final class Request
     public function all(): array
     {
         return array_merge($_GET, $_POST);
+    }
+
+    public function server(?string $key = null, mixed $default = null): mixed
+    {
+        if ($key === null) {
+            return $_SERVER;
+        }
+
+        return $_SERVER[$key] ?? $default;
     }
 }

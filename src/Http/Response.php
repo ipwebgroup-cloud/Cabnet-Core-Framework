@@ -3,11 +3,23 @@ declare(strict_types=1);
 
 namespace Cabnet\Http;
 
-final class Response
+class Response
 {
-    private int $statusCode = 200;
-    private array $headers = [];
-    private string $body = '';
+    protected int $statusCode = 200;
+    protected array $headers = [];
+    protected string $body = '';
+
+    public function status(int $code): self
+    {
+        $this->statusCode = $code;
+        return $this;
+    }
+
+    public function header(string $name, string $value): self
+    {
+        $this->headers[$name] = $value;
+        return $this;
+    }
 
     public function html(string $html, int $statusCode = 200): self
     {
@@ -29,7 +41,28 @@ final class Response
     {
         $this->statusCode = $statusCode;
         $this->headers['Location'] = $location;
+        $this->body = '';
         return $this;
+    }
+
+    public function statusCode(): int
+    {
+        return $this->statusCode;
+    }
+
+    public function headers(): array
+    {
+        return $this->headers;
+    }
+
+    public function body(): string
+    {
+        return $this->body;
+    }
+
+    public function isRedirect(): bool
+    {
+        return isset($this->headers['Location']) && $this->statusCode >= 300 && $this->statusCode < 400;
     }
 
     public function send(): void

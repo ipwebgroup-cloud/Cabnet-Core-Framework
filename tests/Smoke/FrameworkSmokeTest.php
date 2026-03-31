@@ -66,6 +66,11 @@ final class FrameworkSmokeTest
             'renderer_service_uses_src_contract' => 'rendererServiceUsesSrcContract',
             'legacy_php_renderer_wrapper_remains_compatible' => 'legacyPhpRendererWrapperRemainsCompatible',
             'app_runtime_named_routes_match_kernel_context' => 'appRuntimeNamedRoutesMatchKernelContext',
+            'legacy_runtime_shims_extend_src_runtime_classes' => 'legacyRuntimeShimsExtendSrcRuntimeClasses',
+            'app_container_resolves_src_runtime_services' => 'appContainerResolvesSrcRuntimeServices',
+            'src_url_generator_builds_named_admin_edit_path' => 'srcUrlGeneratorBuildsNamedAdminEditPath',
+            'invalid_service_store_csrf_redirects_to_create_route' => 'invalidServiceStoreCsrfRedirectsToCreateRoute',
+            'invalid_service_update_csrf_redirects_to_edit_route' => 'invalidServiceUpdateCsrfRedirectsToEditRoute',
             'src_service_controller_uses_src_crud_base' => 'srcServiceControllerUsesSrcCrudBase',
             'legacy_service_repository_layer_remains_shimmed_to_src' => 'legacyServiceRepositoryLayerRemainsShimmedToSrc',
             'src_crud_generator_uses_namespaced_base_classes' => 'srcCrudGeneratorUsesNamespacedBaseClasses',
@@ -236,6 +241,94 @@ final class FrameworkSmokeTest
             $runtime->namedRoutes()['admin.services.index'] ?? null,
             'AppRuntime compatibility facade should expose admin named routes through the kernel.'
         );
+    }
+
+    private function legacyRuntimeShimsExtendSrcRuntimeClasses(): void
+    {
+        SmokeAssert::true(is_subclass_of('Request', \Cabnet\Http\Request::class), 'Legacy Request should remain a shim over the src request class.');
+        SmokeAssert::true(is_subclass_of('Response', \Cabnet\Http\Response::class), 'Legacy Response should remain a shim over the src response class.');
+        SmokeAssert::true(is_subclass_of('Router', \Cabnet\Routing\Router::class), 'Legacy Router should remain a shim over the src router class.');
+        SmokeAssert::true(is_subclass_of('Session', \Cabnet\Session\Session::class), 'Legacy Session should remain a shim over the src session class.');
+        SmokeAssert::true(is_subclass_of('Flash', \Cabnet\Session\Flash::class), 'Legacy Flash should remain a shim over the src flash class.');
+        SmokeAssert::true(is_subclass_of('Csrf', \Cabnet\Security\Csrf::class), 'Legacy Csrf should remain a shim over the src CSRF class.');
+        SmokeAssert::true(is_subclass_of('RouteRegistry', \Cabnet\Routing\RouteRegistry::class), 'Legacy RouteRegistry should remain a shim over the src route registry.');
+        SmokeAssert::true(is_subclass_of('UrlService', \Cabnet\Support\UrlGenerator::class), 'Legacy UrlService should remain a shim over the src URL generator.');
+        SmokeAssert::true(is_subclass_of('ViewState', \Cabnet\Support\ViewState::class), 'Legacy ViewState should remain a shim over the src view-state helper.');
+    }
+
+    private function appContainerResolvesSrcRuntimeServices(): void
+    {
+        $app = bootstrap_app('admin');
+
+        SmokeAssert::true($app->request() instanceof \Cabnet\Http\Request, 'App request should resolve through the src HTTP request contract.');
+        SmokeAssert::true($app->response() instanceof \Cabnet\Http\Response, 'App response should resolve through the src HTTP response contract.');
+        SmokeAssert::true($app->session() instanceof \Cabnet\Session\Session, 'App session should resolve through the src session contract.');
+        SmokeAssert::true($app->flash() instanceof \Cabnet\Session\Flash, 'App flash should resolve through the src flash contract.');
+        SmokeAssert::true($app->csrf() instanceof \Cabnet\Security\Csrf, 'App CSRF should resolve through the src CSRF contract.');
+        SmokeAssert::true($app->viewState() instanceof \Cabnet\Support\ViewState, 'App view-state should resolve through the src support helper.');
+        SmokeAssert::true($app->url() instanceof \Cabnet\Support\UrlGenerator, 'App URL helper should resolve through the src URL generator.');
+        SmokeAssert::true($app->service('routeRegistry') instanceof \Cabnet\Routing\RouteRegistry, 'Route registry service should resolve through the src route registry.');
+    }
+
+    private function srcUrlGeneratorBuildsNamedAdminEditPath(): void
+    {
+        $app = bootstrap_app('admin');
+
+        SmokeAssert::same(
+            '/services/42/edit',
+            $app->url()->route('admin.services.edit', ['id' => 42]),
+            'Src URL generator should expand named admin edit routes with parameters.'
+        );
+    }
+
+    private function invalidServiceStoreCsrfRedirectsToCreateRoute(): void
+    {
+        TestEnvironment::seedRequest('POST', '/services', [
+            '_token' => 'invalid-token',
+            'title' => 'Smoke Service',
+            'slug' => 'smoke-service',
+        ]);
+
+        $app = bootstrap_app('admin');
+        $app->auth()->login([
+            'name' => 'Smoke Admin',
+            'username' => 'smoke_admin',
+            'role' => 'admin',
+        ]);
+
+        $controller = new \Cabnet\Application\Controllers\Admin\ServiceController();
+        $response = $controller->store($app);
+        $snapshot = ResponseInspector::snapshot($response);
+        $flash = $app->flash()->all();
+
+        SmokeAssert::same(302, $snapshot['statusCode'], 'Invalid create CSRF should redirect.');
+        SmokeAssert::same('/services/create', $snapshot['headers']['Location'] ?? null, 'Invalid create CSRF should redirect back to the create route.');
+        SmokeAssert::contains('Invalid CSRF token', implode(' ', $flash['danger'] ?? []), 'Invalid create CSRF should flash a danger message.');
+    }
+
+    private function invalidServiceUpdateCsrfRedirectsToEditRoute(): void
+    {
+        TestEnvironment::seedRequest('POST', '/services/42/update', [
+            '_token' => 'invalid-token',
+            'title' => 'Smoke Service',
+            'slug' => 'smoke-service',
+        ]);
+
+        $app = bootstrap_app('admin');
+        $app->auth()->login([
+            'name' => 'Smoke Admin',
+            'username' => 'smoke_admin',
+            'role' => 'admin',
+        ]);
+
+        $controller = new \Cabnet\Application\Controllers\Admin\ServiceController();
+        $response = $controller->update($app, ['id' => 42]);
+        $snapshot = ResponseInspector::snapshot($response);
+        $flash = $app->flash()->all();
+
+        SmokeAssert::same(302, $snapshot['statusCode'], 'Invalid update CSRF should redirect.');
+        SmokeAssert::same('/services/42/edit', $snapshot['headers']['Location'] ?? null, 'Invalid update CSRF should redirect back to the edit route.');
+        SmokeAssert::contains('Invalid CSRF token', implode(' ', $flash['danger'] ?? []), 'Invalid update CSRF should flash a danger message.');
     }
 
     private function srcServiceControllerUsesSrcCrudBase(): void

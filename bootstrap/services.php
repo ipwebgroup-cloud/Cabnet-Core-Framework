@@ -7,11 +7,11 @@ return [
         return $registry->makeClockService()->now();
     },
 
-    'session' => function (App $app): Session {
+    'session' => function (App $app): \Cabnet\Session\Session {
         return new Session();
     },
 
-    'flash' => function (App $app): Flash {
+    'flash' => function (App $app): \Cabnet\Session\Flash {
         return new Flash($app->session());
     },
 
@@ -19,7 +19,7 @@ return [
         return new AuthManager($app->session(), $app->config('auth', []));
     },
 
-    'csrf' => function (App $app): Csrf {
+    'csrf' => function (App $app): \Cabnet\Security\Csrf {
         return new Csrf($app->session());
     },
 
@@ -31,12 +31,12 @@ return [
         return new \Cabnet\Support\ViewState($app->session());
     },
 
-    'routeRegistry' => function (App $app): RouteRegistry {
-        return new RouteRegistry($app->namedRoutes());
+    'routeRegistry' => function (App $app): \Cabnet\Routing\RouteRegistry {
+        return new \Cabnet\Routing\RouteRegistry($app->namedRoutes());
     },
 
-    'url' => function (App $app): UrlService {
-        return new UrlService($app, $app->service('routeRegistry'));
+    'url' => function (App $app): \Cabnet\Support\UrlGenerator {
+        return new \Cabnet\Support\UrlGenerator($app, $app->service('routeRegistry'));
     },
 
     'renderer' => function (App $app): \Cabnet\View\Renderer {
