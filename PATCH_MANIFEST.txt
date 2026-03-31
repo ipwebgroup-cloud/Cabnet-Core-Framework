@@ -1,30 +1,30 @@
-Cabnet Core Framework v3.4.0 - Module Permissions and Filter Metadata
-Package mode: patch-only overlay
+Cabnet Core Framework v3.5 — Richer Field Metadata (patch-only overlay)
 
-Apply this patch on top of the current framework tree.
+Apply these files over your existing framework tree:
 
-Changed files:
-- FRAMEWORK_STATUS.json
 - HANDOFF_PROMPT.txt
+- FRAMEWORK_STATUS.json
 - README.md
 - README_BUNDLE.md
 - ROADMAP.md
 - bundle-manifest.json
 - config/framework.php
-- config/modules.php
-- docs/CRUD_CONVENTIONS.md
+- config/storage.php
+- bootstrap/services.php
 - docs/FRAMEWORK_HANDOFF.md
-- docs/V3_4_MODULE_PERMISSIONS_FILTER_METADATA.md
+- docs/V3_5_RICHER_FIELD_METADATA.md
 - src/Application/Controllers/Admin/BaseCrudController.php
-- src/Application/Controllers/BaseController.php
 - src/Application/Crud/CrudEntityDefinition.php
 - src/Application/Crud/CrudModuleBootstrap.php
-- src/Application/Crud/CrudModuleRegistry.php
 - src/Application/Services/DefinitionCrudService.php
+- src/Application/Services/ServiceCrudService.php
 - src/Generators/CrudScaffoldWriter.php
-- src/Infrastructure/Repositories/BaseRepository.php
-- src/Infrastructure/Repositories/CrudRepositoryContract.php
-- src/Presentation/Views/php/admin/crud/index_table.php
-- src/Presentation/Views/twig/admin/crud/index_table.twig
-- src/Support/AdminMenu.php
+- src/Http/Request.php
+- src/Presentation/Views/php/admin/crud/form_fields.php
+- src/Presentation/Views/php/admin/crud/form_page.php
+- src/Presentation/Views/twig/admin/crud/form_fields.twig
+- src/Presentation/Views/twig/admin/crud/form_page.twig
+- src/Support/UploadManager.php
+- app/Validation/Validator.php
+- tests/Support/TestEnvironment.php
 - tests/Smoke/FrameworkSmokeTest.php

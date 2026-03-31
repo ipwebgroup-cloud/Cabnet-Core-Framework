@@ -94,6 +94,10 @@ final class FrameworkSmokeTest
             'twig_renderer_maps_logical_php_templates_to_twig' => 'twigRendererMapsLogicalPhpTemplatesToTwig',
             'layered_twig_resolution_prefers_src_views_before_app_fallback' => 'layeredTwigResolutionPrefersSrcViewsBeforeAppFallback',
             'legacy_twig_layout_shim_delegates_to_src_layout' => 'legacyTwigLayoutShimDelegatesToSrcLayout',
+            'request_input_merges_uploaded_files_into_payload' => 'requestInputMergesUploadedFilesIntoPayload',
+            'crud_form_page_uses_multipart_for_upload_fields' => 'crudFormPageUsesMultipartForUploadFields',
+            'crud_form_fields_render_upload_relation_and_translatable_inputs' => 'crudFormFieldsRenderUploadRelationAndTranslatableInputs',
+            'definition_driven_service_persists_uploads_and_translatable_values' => 'definitionDrivenServicePersistsUploadsAndTranslatableValues',
         ];
     }
 
@@ -906,6 +910,173 @@ final class FrameworkSmokeTest
             is_file(BASE_PATH . '/src/Presentation/Views/twig/layouts/public.twig'),
             'Canonical src-owned Twig public layout should exist.'
         );
+    }
+
+    private function requestInputMergesUploadedFilesIntoPayload(): void
+    {
+        $upload = TestEnvironment::fakeUpload('hero.png', 'png-bytes', 'image/png');
+        TestEnvironment::seedRequest('POST', '/services', ['title' => 'Smoke'], [], [
+            'hero_image' => $upload,
+        ]);
+
+        $request = new \Cabnet\Http\Request();
+        $input = $request->input();
+
+        SmokeAssert::same('Smoke', $input['title'] ?? null, 'Request input should still include post values.');
+        SmokeAssert::true(is_array($input['hero_image'] ?? null), 'Request input should merge uploaded files into the payload.');
+        SmokeAssert::same('hero.png', $input['hero_image']['name'] ?? null, 'Merged upload payload should preserve file metadata.');
+    }
+
+    private function crudFormPageUsesMultipartForUploadFields(): void
+    {
+        $definition = new \Cabnet\Application\Crud\CrudEntityDefinition(
+            key: 'media',
+            label: 'Media',
+            table: 'media',
+            fields: [
+                'title' => ['type' => 'text', 'label' => 'Title', 'required' => true],
+                'hero_image' => ['type' => 'image', 'label' => 'Hero Image', 'upload' => true, 'accept' => 'image/*'],
+            ]
+        );
+
+        $renderer = new \Cabnet\View\PhpRenderer(BASE_PATH . '/src/Presentation/Views/php');
+        $output = $renderer->render('admin/crud/form_page.php', [
+            'definition' => $definition,
+            'mode' => 'create',
+            'formAction' => '/media',
+            'backPath' => '/media',
+            'csrfToken' => 'csrf-token',
+            'flashMessages' => [],
+            'authUser' => ['name' => 'Smoke Admin'],
+            'logoutCsrfToken' => 'logout-token',
+        ]);
+
+        SmokeAssert::contains('enctype="multipart/form-data"', $output, 'Upload-enabled CRUD forms should render multipart encoding.');
+    }
+
+    private function crudFormFieldsRenderUploadRelationAndTranslatableInputs(): void
+    {
+        $definition = new \Cabnet\Application\Crud\CrudEntityDefinition(
+            key: 'articles',
+            label: 'Articles',
+            table: 'articles',
+            fields: [
+                'title' => [
+                    'type' => 'text',
+                    'label' => 'Title',
+                    'required' => true,
+                    'translatable' => true,
+                    'locales' => ['en', 'el'],
+                    'max' => 255,
+                ],
+                'category_id' => [
+                    'type' => 'select',
+                    'label' => 'Category',
+                    'options' => ['1' => 'News', '2' => 'Guides'],
+                    'placeholder' => 'Choose category',
+                ],
+                'hero_image' => [
+                    'type' => 'image',
+                    'label' => 'Hero Image',
+                    'upload' => true,
+                    'accept' => 'image/*',
+                ],
+            ]
+        );
+
+        $renderer = new \Cabnet\View\PhpRenderer(BASE_PATH . '/src/Presentation/Views/php');
+        $output = $renderer->render('admin/crud/form_fields.php', [
+            'definition' => $definition,
+            'old' => ['title' => ['en' => 'Hello', 'el' => 'Γεια']],
+            'errors' => [],
+            'row' => ['hero_image' => '/assets/uploads/articles/hero.png'],
+        ]);
+
+        SmokeAssert::contains('name="title[en]"', $output, 'Translatable fields should render locale-specific inputs.');
+        SmokeAssert::contains('name="category_id"', $output, 'Relation/select fields should render select controls.');
+        SmokeAssert::contains('Choose category', $output, 'Select fields should render their placeholder option.');
+        SmokeAssert::contains('type="file"', $output, 'Upload fields should render file inputs.');
+    }
+
+    private function definitionDrivenServicePersistsUploadsAndTranslatableValues(): void
+    {
+        $definition = new \Cabnet\Application\Crud\CrudEntityDefinition(
+            key: 'articles',
+            label: 'Articles',
+            table: 'articles',
+            fields: [
+                'title' => [
+                    'type' => 'text',
+                    'label' => 'Title',
+                    'required' => true,
+                    'translatable' => true,
+                    'locales' => ['en', 'el'],
+                    'min' => 2,
+                    'max' => 255,
+                ],
+                'category_id' => [
+                    'type' => 'select',
+                    'label' => 'Category',
+                    'required' => true,
+                    'relation' => [
+                        'table' => 'categories',
+                        'value_column' => 'id',
+                        'label_column' => 'name',
+                    ],
+                ],
+                'hero_image' => [
+                    'type' => 'image',
+                    'label' => 'Hero Image',
+                    'upload' => true,
+                    'image' => true,
+                    'max_size_kb' => 512,
+                    'upload_dir' => 'articles',
+                ],
+            ]
+        );
+
+        $repository = new class implements \Cabnet\Infrastructure\Repositories\CrudRepositoryContract {
+            public array $created = [];
+            public function findPage(array $searchColumns = [], string $search = '', int $page = 1, int $perPage = 15, array $filters = [], string $orderBy = 'id DESC'): array { return ['rows' => [], 'total' => 0, 'page' => 1, 'per_page' => 15]; }
+            public function findById(int $id): ?array { return null; }
+            public function create(array $data): bool { $this->created[] = $data; return true; }
+            public function updateById(int $id, array $data): bool { return true; }
+            public function deleteById(int $id): bool { return true; }
+        };
+
+        $db = new class {
+            public function select(string $sql, array $params = []): array
+            {
+                return [
+                    ['value' => '1', 'label' => 'News'],
+                    ['value' => '2', 'label' => 'Guides'],
+                ];
+            }
+        };
+
+        $uploadPath = BASE_PATH . '/public/assets/uploads';
+        if (!is_dir($uploadPath)) {
+            mkdir($uploadPath, 0777, true);
+        }
+
+        $service = new class($definition, $repository, new \Validator(), $db, new \Cabnet\Support\UploadManager([
+            'public_uploads_path' => $uploadPath,
+            'public_uploads_url' => '/assets/uploads',
+        ])) extends \Cabnet\Application\Services\DefinitionCrudService {};
+
+        $formDefinition = $service->formDefinition();
+        SmokeAssert::same('News', $formDefinition->field('category_id')['options']['1'] ?? null, 'Relation metadata should hydrate select options for forms.');
+
+        $result = $service->create([
+            'title' => ['en' => 'Hello', 'el' => 'Γεια'],
+            'category_id' => '1',
+            'hero_image' => TestEnvironment::fakeUpload('hero.png', 'png-bytes', 'image/png'),
+        ]);
+
+        SmokeAssert::true($result->valid(), 'Definition-driven service should accept valid upload and translatable payloads.');
+        SmokeAssert::true(isset($repository->created[0]['title']) && is_string($repository->created[0]['title']), 'Translatable data should be prepared for persistence.');
+        SmokeAssert::contains('"en":"Hello"', $repository->created[0]['title'], 'Translatable persistence payload should be JSON encoded.');
+        SmokeAssert::contains('/assets/uploads/articles/', (string)($repository->created[0]['hero_image'] ?? ''), 'Upload manager should persist files into the configured public upload path.');
     }
 
 }

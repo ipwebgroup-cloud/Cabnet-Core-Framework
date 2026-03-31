@@ -191,6 +191,54 @@ class CrudEntityDefinition
         return $payload;
     }
 
+    public function usesUploads(): bool
+    {
+        foreach ($this->fields as $meta) {
+            if ($this->isUploadField($meta)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function formEncodingType(): ?string
+    {
+        return $this->usesUploads() ? 'multipart/form-data' : null;
+    }
+
+    /** @return array<int, string> */
+    public function localesForField(string $field): array
+    {
+        return $this->localesForMeta($this->field($field));
+    }
+
+    public function isTranslatableField(string $field): bool
+    {
+        return !empty($this->field($field)['translatable']);
+    }
+
+    public function isUploadFieldName(string $field): bool
+    {
+        return $this->isUploadField($this->field($field));
+    }
+
+    /**
+     * @param array<string, array<string, mixed>> $fields
+     */
+    public function withFields(array $fields): self
+    {
+        return new self(
+            key: $this->key,
+            label: $this->label,
+            table: $this->table,
+            fields: $fields,
+            listColumns: $this->listColumns,
+            searchable: $this->searchable,
+            defaultOrder: $this->defaultOrder
+        );
+    }
+
     /**
      * @param array<string, mixed> $meta
      * @return array<int, string>
@@ -210,12 +258,46 @@ class CrudEntityDefinition
         }
 
         $rules = [];
+        $type = (string)($meta['type'] ?? 'text');
 
         if (!empty($meta['required'])) {
             $rules[] = 'required';
         }
 
-        $type = (string)($meta['type'] ?? 'text');
+        if (!empty($meta['translatable'])) {
+            $rules[] = 'translatable';
+            $locales = $this->localesForMeta($meta);
+            if ($locales !== []) {
+                $rules[] = 'locales:' . implode(',', $locales);
+                if (!empty($meta['required'])) {
+                    $rules[] = 'required_locales:' . implode(',', $locales);
+                }
+            }
+
+            if (array_key_exists('min', $meta)) {
+                $rules[] = 'min:' . max(0, (int)$meta['min']);
+            }
+
+            if (array_key_exists('max', $meta)) {
+                $rules[] = 'max:' . max(0, (int)$meta['max']);
+            }
+
+            return array_values(array_unique($rules));
+        }
+
+        if ($this->isUploadField($meta)) {
+            $rules[] = 'upload';
+
+            if ($type === 'image' || !empty($meta['image'])) {
+                $rules[] = 'image';
+            }
+
+            if (array_key_exists('max_size_kb', $meta)) {
+                $rules[] = 'file_max_kb:' . max(1, (int)$meta['max_size_kb']);
+            }
+
+            return array_values(array_unique($rules));
+        }
 
         switch ($type) {
             case 'email':
@@ -257,11 +339,35 @@ class CrudEntityDefinition
     /** @param array<string, mixed> $meta */
     private function defaultValueForField(array $meta): mixed
     {
+        if (!empty($meta['translatable'])) {
+            $locales = $this->localesForMeta($meta);
+            $default = $meta['default'] ?? '';
+            $defaults = [];
+
+            if (is_array($default)) {
+                foreach ($locales as $locale) {
+                    $defaults[$locale] = isset($default[$locale]) ? (string)$default[$locale] : '';
+                }
+
+                return $defaults;
+            }
+
+            foreach ($locales as $locale) {
+                $defaults[$locale] = (string)$default;
+            }
+
+            return $defaults;
+        }
+
         if (array_key_exists('default', $meta)) {
             return $meta['default'];
         }
 
         $type = (string)($meta['type'] ?? 'text');
+
+        if ($this->isUploadField($meta)) {
+            return null;
+        }
 
         if ($type === 'select') {
             $options = (array)($meta['options'] ?? []);
@@ -275,6 +381,30 @@ class CrudEntityDefinition
     /** @param array<string, mixed> $meta */
     private function normalizeInputValue(mixed $value, array $meta): mixed
     {
+        if (!empty($meta['translatable'])) {
+            $locales = $this->localesForMeta($meta);
+            $payload = [];
+
+            if (!is_array($value)) {
+                $value = [];
+            }
+
+            foreach ($locales as $locale) {
+                $localeValue = $value[$locale] ?? '';
+                $payload[$locale] = is_string($localeValue) ? trim($localeValue) : (string)$localeValue;
+            }
+
+            return $payload;
+        }
+
+        if ($this->isUploadField($meta)) {
+            if (is_array($value)) {
+                return $value;
+            }
+
+            return is_string($value) && $value !== '' ? $value : null;
+        }
+
         if (is_string($value)) {
             $value = trim($value);
         }
@@ -297,5 +427,30 @@ class CrudEntityDefinition
         }
 
         return $value;
+    }
+
+    /** @param array<string, mixed> $meta */
+    private function isUploadField(array $meta): bool
+    {
+        $type = (string)($meta['type'] ?? 'text');
+        return !empty($meta['upload']) || $type === 'file' || $type === 'image';
+    }
+
+    /**
+     * @param array<string, mixed> $meta
+     * @return array<int, string>
+     */
+    private function localesForMeta(array $meta): array
+    {
+        $locales = $meta['locales'] ?? ['en'];
+
+        if (!is_array($locales) || $locales === []) {
+            return ['en'];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn (mixed $value): ?string => is_string($value) && trim($value) !== '' ? trim($value) : null,
+            $locales
+        )));
     }
 }

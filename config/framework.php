@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '3.4.0',
-    'release_name' => 'Module Permissions and Filter Metadata',
+    'version' => '3.5.0',
+    'release_name' => 'Richer Field Metadata',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -35,5 +35,8 @@ return [
         'logical_template_mapping_for_twig' => true,
         'crud_module_permissions' => true,
         'crud_module_filters' => true,
+        'crud_upload_metadata' => true,
+        'crud_relation_metadata' => true,
+        'crud_translatable_metadata' => true,
     ],
 ];

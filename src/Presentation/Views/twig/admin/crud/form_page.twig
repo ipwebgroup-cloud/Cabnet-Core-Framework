@@ -4,6 +4,7 @@
 {% set singularLabel = definition.label|replace({'s': ''}) %}
 {% set titleText = mode|default('create') == 'edit' ? 'Edit ' ~ singularLabel : 'Create ' ~ singularLabel %}
 {% set submitText = mode|default('create') == 'edit' ? 'Update ' ~ singularLabel : 'Create ' ~ singularLabel %}
+{% set enctype = formEnctype|default(definition.formEncodingType ?? '') %}
 
 <div class="row justify-content-center">
     <div class="col-xl-8">
@@ -17,7 +18,7 @@
 
         <div class="card shadow-sm border-0">
             <div class="card-body p-4">
-                <form method="post" action="{{ formAction|default('#') }}" class="row g-3">
+                <form method="post" action="{{ formAction|default('#') }}" class="row g-3" {{ enctype != '' ? 'enctype="' ~ enctype ~ '"' : '' }}>
                     <input type="hidden" name="_token" value="{{ csrfToken|default('') }}">
                     {% include '@src/admin/crud/form_fields.twig' %}
                     <div class="col-12">

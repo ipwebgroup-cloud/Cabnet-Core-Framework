@@ -2,8 +2,8 @@
 
 ## Current bundle
 
-- Version: v3.4.0
-- Release: Module Permissions and Filter Metadata
+- Version: v3.5.0
+- Release: Richer Field Metadata
 - Delivery mode: patch-only overlay
 
 ## Apply order
@@ -16,7 +16,6 @@
 
 ## Highlights
 
-- module-scoped CRUD action permissions now live in `config/modules.php`
-- registry-driven list filters now live in `config/modules.php`
-- shared CRUD list views now render metadata-driven filters
-- admin menu visibility now respects role-aware menu metadata through the service layer
+- CRUD field metadata now supports uploads, relation-driven selects, and translatable inputs
+- request input now merges uploaded files into the canonical CRUD payload
+- definition-driven CRUD services can hydrate relation options and persist uploads without controller rewrites

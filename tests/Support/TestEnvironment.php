@@ -33,7 +33,7 @@ final class TestEnvironment
         }
     }
 
-    public static function seedRequest(string $method, string $uri, array $post = [], array $get = []): void
+    public static function seedRequest(string $method, string $uri, array $post = [], array $get = [], array $files = []): void
     {
         self::reset();
 
@@ -45,6 +45,7 @@ final class TestEnvironment
         $_SERVER['REQUEST_URI'] = $uri;
         $_GET = array_merge($query, $get);
         $_POST = $post;
+        $_FILES = $files;
         $_REQUEST = array_merge($_GET, $_POST);
 
         if (session_status() === PHP_SESSION_ACTIVE) {
@@ -52,5 +53,24 @@ final class TestEnvironment
         }
 
         $_SERVER['PATH_INFO'] = $path;
+    }
+
+    /** @return array<string, mixed> */
+    public static function fakeUpload(string $filename, string $contents, string $mimeType = 'application/octet-stream'): array
+    {
+        $tmp = tempnam(sys_get_temp_dir(), 'cabnet_upload_');
+        if ($tmp === false) {
+            throw new \RuntimeException('Failed to create temporary upload file.');
+        }
+
+        file_put_contents($tmp, $contents);
+
+        return [
+            'name' => $filename,
+            'type' => $mimeType,
+            'tmp_name' => $tmp,
+            'error' => UPLOAD_ERR_OK,
+            'size' => filesize($tmp) ?: strlen($contents),
+        ];
     }
 }

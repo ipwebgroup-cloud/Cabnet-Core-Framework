@@ -24,6 +24,20 @@ abstract class BaseCrudController extends BaseController
         return $this->registry($app)->definition($this->moduleKey());
     }
 
+    protected function formDefinition(object $app): CrudEntityDefinition
+    {
+        $service = $this->crudService($app);
+
+        if (is_object($service) && method_exists($service, 'formDefinition')) {
+            $definition = $service->formDefinition();
+            if ($definition instanceof CrudEntityDefinition) {
+                return $definition;
+            }
+        }
+
+        return $this->entityDefinition($app);
+    }
+
     /** @return array<string, mixed> */
     protected function moduleMeta(object $app): array
     {
@@ -53,7 +67,7 @@ abstract class BaseCrudController extends BaseController
     /** @return array<string, mixed> */
     protected function inputFromRequest(object $app): array
     {
-        return $this->entityDefinition($app)->inputPayload((array)$app->request()->input());
+        return $this->formDefinition($app)->inputPayload((array)$app->request()->input());
     }
 
     public function index(object $app, array $params = []): Response
@@ -248,10 +262,13 @@ abstract class BaseCrudController extends BaseController
         string $backPath,
         array $row = []
     ): array {
+        $definition = $this->formDefinition($app);
+
         return [
             'appName' => $app->config('app.name', 'Cabnet Core'),
             'flashMessages' => $app->flash()->all(),
-            'definition' => $this->entityDefinition($app),
+            'definition' => $definition,
+            'formEnctype' => $definition->formEncodingType(),
             'csrfToken' => $app->csrf()->token(),
             'old' => $app->viewState()->old(),
             'errors' => $app->viewState()->errors(),

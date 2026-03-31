@@ -47,7 +47,9 @@ final class CrudModuleBootstrap
 
                     return new $serviceClass(
                         $app->service($repositoryService),
-                        $app->validator()
+                        $app->validator(),
+                        $app->service('db'),
+                        $app->service('uploadManager')
                     );
                 };
             }

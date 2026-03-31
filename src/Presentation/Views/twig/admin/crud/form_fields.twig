@@ -4,19 +4,73 @@
     {% set label = meta.label|default(name|title) %}
     {% set required = meta.required|default(false) %}
     {% set value = attribute(values, name)|default('') %}
-    {% set fieldErrors = attribute(errors|default({}), name)|default([]) %}
-    {% set error = fieldErrors[0]|default('') %}
+    {% set fieldErrors = errors|default({}) %}
+    {% set error = attribute(fieldErrors, name)|default([])[0]|default('') %}
     {% set placeholder = meta.placeholder|default('') %}
     {% set help = meta.help|default('') %}
     {% set rowsCount = meta.rows|default(5) < 2 ? 2 : meta.rows|default(5) %}
     {% set minValue = meta.min is defined ? meta.min : null %}
     {% set maxValue = meta.max is defined ? meta.max : null %}
     {% set inputType = fieldType == 'email' ? 'email' : ((fieldType == 'integer' or fieldType == 'number') ? 'number' : 'text') %}
+    {% set isTranslatable = meta.translatable|default(false) %}
+    {% set isUpload = definition.isUploadFieldName(name) %}
 
-    <div class="{{ fieldType == 'textarea' ? 'col-12' : 'col-md-6' }}">
+    <div class="col-12">
         <label class="form-label">{{ label }}{{ required ? ' *' : '' }}</label>
 
-        {% if fieldType == 'textarea' %}
+        {% if isTranslatable %}
+            {% set localeValues = value is iterable ? value : {} %}
+            <div class="row g-2">
+                {% for locale in definition.localesForField(name) %}
+                    {% set localeKey = name ~ '.' ~ locale %}
+                    {% set localeError = attribute(fieldErrors, localeKey)|default([])[0]|default('') %}
+                    {% set localeValue = attribute(localeValues, locale)|default('') %}
+                    <div class="{{ fieldType == 'textarea' ? 'col-12' : 'col-md-6' }}">
+                        <label class="form-label small text-uppercase text-secondary">{{ locale }}</label>
+                        {% if fieldType == 'textarea' %}
+                            <textarea
+                                name="{{ name }}[{{ locale }}]"
+                                rows="{{ rowsCount }}"
+                                class="form-control {{ localeError ? 'is-invalid' : '' }}"
+                                {{ required ? 'required' : '' }}
+                                {{ maxValue is not null ? 'maxlength="' ~ maxValue ~ '"' : '' }}
+                                {{ placeholder != '' ? 'placeholder="' ~ placeholder ~ '"' : '' }}
+                            >{{ localeValue }}</textarea>
+                        {% else %}
+                            <input
+                                type="{{ inputType }}"
+                                name="{{ name }}[{{ locale }}]"
+                                class="form-control {{ localeError ? 'is-invalid' : '' }}"
+                                value="{{ localeValue }}"
+                                {{ required ? 'required' : '' }}
+                                {{ minValue is not null and inputType != 'number' ? 'minlength="' ~ minValue ~ '"' : '' }}
+                                {{ maxValue is not null and inputType != 'number' ? 'maxlength="' ~ maxValue ~ '"' : '' }}
+                                {{ placeholder != '' ? 'placeholder="' ~ placeholder ~ '"' : '' }}
+                            >
+                        {% endif %}
+
+                        {% if localeError %}
+                            <div class="invalid-feedback d-block">{{ localeError }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+        {% elseif isUpload %}
+            {% set accept = meta.accept|default((fieldType == 'image' or meta.image|default(false)) ? 'image/*' : '') %}
+            {% set currentPath = value is iterable ? '' : value|default('') %}
+            <input
+                type="file"
+                name="{{ name }}"
+                class="form-control {{ error ? 'is-invalid' : '' }}"
+                {{ accept != '' ? 'accept="' ~ accept ~ '"' : '' }}
+                {{ required and currentPath == '' ? 'required' : '' }}
+            >
+            {% if currentPath != '' %}
+                <div class="form-text">Current file: <a href="{{ currentPath }}" target="_blank" rel="noopener noreferrer">{{ currentPath|split('/')|last }}</a></div>
+            {% endif %}
+
+        {% elseif fieldType == 'textarea' %}
             <textarea
                 name="{{ name }}"
                 rows="{{ rowsCount }}"
@@ -25,18 +79,23 @@
                 {{ maxValue is not null ? 'maxlength="' ~ maxValue ~ '"' : '' }}
                 {{ placeholder != '' ? 'placeholder="' ~ placeholder ~ '"' : '' }}
             >{{ value }}</textarea>
+
         {% elseif fieldType == 'select' %}
             <select
                 name="{{ name }}"
                 class="form-select {{ error ? 'is-invalid' : '' }}"
                 {{ required ? 'required' : '' }}
             >
-                {% for optionValue, optionLabel in meta.options|default([]) %}
+                {% if not required or placeholder != '' %}
+                    <option value="">{{ placeholder != '' ? placeholder : 'Select an option' }}</option>
+                {% endif %}
+                {% for optionValue, optionLabel in meta.options|default({}) %}
                     <option value="{{ optionValue }}" {{ value|string == optionValue|string ? 'selected' : '' }}>
                         {{ optionLabel }}
                     </option>
                 {% endfor %}
             </select>
+
         {% else %}
             <input
                 type="{{ inputType }}"
@@ -57,7 +116,7 @@
         {% endif %}
 
         {% if error %}
-            <div class="invalid-feedback">{{ error }}</div>
+            <div class="invalid-feedback d-block">{{ error }}</div>
         {% endif %}
     </div>
 {% endfor %}

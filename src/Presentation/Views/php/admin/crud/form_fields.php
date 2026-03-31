@@ -11,8 +11,9 @@ if (!$definition instanceof CrudEntityDefinition) {
     throw new RuntimeException('CRUD form fields require a CrudEntityDefinition.');
 }
 
-$fieldError = static function(array $errors, string $field): ?string {
-    return $errors[$field][0] ?? null;
+$fieldError = static function(array $errors, string $field, ?string $locale = null): ?string {
+    $key = $locale !== null ? $field . '.' . $locale : $field;
+    return $errors[$key][0] ?? null;
 };
 
 foreach ($definition->fields() as $name => $meta):
@@ -31,11 +32,71 @@ foreach ($definition->fields() as $name => $meta):
         'integer', 'number' => 'number',
         default => 'text',
     };
+    $isTranslatable = !empty($meta['translatable']);
+    $isUpload = $definition->isUploadFieldName($name);
 ?>
-    <div class="<?= $type === 'textarea' ? 'col-12' : 'col-md-6' ?>">
+    <div class="col-12">
         <label class="form-label"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?><?= $required ? ' *' : '' ?></label>
 
-        <?php if ($type === 'textarea'): ?>
+        <?php if ($isTranslatable): ?>
+            <?php
+            $locales = $definition->localesForField($name);
+            $localeValues = is_array($value) ? $value : [];
+            ?>
+            <div class="row g-2">
+                <?php foreach ($locales as $locale): ?>
+                    <?php
+                    $localeValue = (string)($localeValues[$locale] ?? '');
+                    $localeError = $fieldError($errors, $name, $locale);
+                    ?>
+                    <div class="<?= $type === 'textarea' ? 'col-12' : 'col-md-6' ?>">
+                        <label class="form-label small text-uppercase text-secondary"><?= htmlspecialchars($locale, ENT_QUOTES, 'UTF-8') ?></label>
+                        <?php if ($type === 'textarea'): ?>
+                            <textarea
+                                name="<?= htmlspecialchars((string)$name, ENT_QUOTES, 'UTF-8') ?>[<?= htmlspecialchars((string)$locale, ENT_QUOTES, 'UTF-8') ?>]"
+                                rows="<?= (int)$rows ?>"
+                                class="form-control <?= $localeError ? 'is-invalid' : '' ?>"
+                                <?= $required ? 'required' : '' ?>
+                                <?= $max !== null ? 'maxlength="' . (int)$max . '"' : '' ?>
+                                <?= $placeholder !== '' ? 'placeholder="' . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . '"' : '' ?>
+                            ><?= htmlspecialchars($localeValue, ENT_QUOTES, 'UTF-8') ?></textarea>
+                        <?php else: ?>
+                            <input
+                                type="<?= htmlspecialchars($inputType, ENT_QUOTES, 'UTF-8') ?>"
+                                name="<?= htmlspecialchars((string)$name, ENT_QUOTES, 'UTF-8') ?>[<?= htmlspecialchars((string)$locale, ENT_QUOTES, 'UTF-8') ?>]"
+                                class="form-control <?= $localeError ? 'is-invalid' : '' ?>"
+                                value="<?= htmlspecialchars($localeValue, ENT_QUOTES, 'UTF-8') ?>"
+                                <?= $required ? 'required' : '' ?>
+                                <?= $min !== null && $inputType !== 'number' ? 'minlength="' . (int)$min . '"' : '' ?>
+                                <?= $max !== null && $inputType !== 'number' ? 'maxlength="' . (int)$max . '"' : '' ?>
+                                <?= $placeholder !== '' ? 'placeholder="' . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . '"' : '' ?>
+                            >
+                        <?php endif; ?>
+
+                        <?php if ($localeError): ?>
+                            <div class="invalid-feedback d-block"><?= htmlspecialchars((string)$localeError, ENT_QUOTES, 'UTF-8') ?></div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+        <?php elseif ($isUpload): ?>
+            <?php
+            $accept = (string)($meta['accept'] ?? ($type === 'image' || !empty($meta['image']) ? 'image/*' : ''));
+            $currentPath = is_string($value) ? $value : (is_string($row[$name] ?? null) ? (string)$row[$name] : '');
+            ?>
+            <input
+                type="file"
+                name="<?= htmlspecialchars((string)$name, ENT_QUOTES, 'UTF-8') ?>"
+                class="form-control <?= $error ? 'is-invalid' : '' ?>"
+                <?= $accept !== '' ? 'accept="' . htmlspecialchars($accept, ENT_QUOTES, 'UTF-8') . '"' : '' ?>
+                <?= $required && $currentPath === '' ? 'required' : '' ?>
+            >
+            <?php if ($currentPath !== ''): ?>
+                <div class="form-text">Current file: <a href="<?= htmlspecialchars($currentPath, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars(basename($currentPath), ENT_QUOTES, 'UTF-8') ?></a></div>
+            <?php endif; ?>
+
+        <?php elseif ($type === 'textarea'): ?>
             <textarea
                 name="<?= htmlspecialchars((string)$name, ENT_QUOTES, 'UTF-8') ?>"
                 rows="<?= (int)$rows ?>"
@@ -46,12 +107,16 @@ foreach ($definition->fields() as $name => $meta):
             ><?= htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8') ?></textarea>
 
         <?php elseif ($type === 'select'): ?>
+            <?php $options = is_array($meta['options'] ?? null) ? $meta['options'] : []; ?>
             <select
                 name="<?= htmlspecialchars((string)$name, ENT_QUOTES, 'UTF-8') ?>"
                 class="form-select <?= $error ? 'is-invalid' : '' ?>"
                 <?= $required ? 'required' : '' ?>
             >
-                <?php foreach (($meta['options'] ?? []) as $optionValue => $optionLabel): ?>
+                <?php if (!$required || $placeholder !== ''): ?>
+                    <option value=""><?= htmlspecialchars($placeholder !== '' ? $placeholder : 'Select an option', ENT_QUOTES, 'UTF-8') ?></option>
+                <?php endif; ?>
+                <?php foreach ($options as $optionValue => $optionLabel): ?>
                     <option
                         value="<?= htmlspecialchars((string)$optionValue, ENT_QUOTES, 'UTF-8') ?>"
                         <?= (string)$value === (string)$optionValue ? 'selected' : '' ?>
@@ -81,7 +146,7 @@ foreach ($definition->fields() as $name => $meta):
         <?php endif; ?>
 
         <?php if ($error): ?>
-            <div class="invalid-feedback"><?= htmlspecialchars((string)$error, ENT_QUOTES, 'UTF-8') ?></div>
+            <div class="invalid-feedback d-block"><?= htmlspecialchars((string)$error, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endif; ?>
     </div>
 <?php endforeach; ?>

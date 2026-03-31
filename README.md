@@ -1,34 +1,20 @@
-# Cabnet Core Framework v3.4.0
+# Cabnet Core Framework v3.5.0
 
-Cabnet Core v3.4 adds module-scoped permissions and list-filter metadata on top of the earlier Twig parity, shared view packaging, definition-driven CRUD validation, module-registry, CRUD metadata, HTTP/runtime, controller, service/repository, and renderer convergence work.
+Cabnet Core v3.5 adds richer CRUD field metadata on top of the earlier module permissions, Twig parity, shared view packaging, definition-driven validation, module-registry, CRUD metadata, HTTP/runtime, controller, service/repository, and renderer convergence work.
 
-## What this pack is
+## What this patch adds
 
-A **source-of-truth documentation pack** for consolidating the framework after the migration-heavy v1.x series.
-
-## Purpose
-
-Use this pack to:
-- stabilize the architecture direction
-- define `src/` as the preferred framework layer
-- mark `app/` as transitional compatibility
-- harden admin authentication defaults for safer project forks
-- add a lightweight regression check for bootstrap, routes, and admin auth
-- move canonical renderer ownership into `src/View` while keeping legacy wrappers
-- move canonical controller base ownership into `src/Application/Controllers` while keeping legacy controller shims
-- move canonical service/repository base ownership into `src/` while keeping legacy service/repository shims
-- move canonical request/response/session/url runtime ownership into `src/` while keeping legacy runtime shims
-- move canonical CRUD entity-definition ownership into `src/Application/Crud` while keeping legacy aliases
-- add a module-backed CRUD metadata registry for safer generator/runtime alignment
-- derive admin CRUD routes, CRUD services, and admin menu links from module metadata
-- derive CRUD validation rules and admin form attributes from canonical field metadata
-- shift generated CRUD integration guidance toward `config/modules.php` as the primary integration seam
-- let module metadata express per-action access roles and list-filter controls
+- metadata-driven upload fields
+- metadata-driven relation-driven select fields
+- metadata-driven translatable/multilingual fields
+- request input now merges uploaded files into CRUD payloads
+- definition-driven CRUD services can now hydrate relation options and persist uploads
+- shared CRUD PHP and Twig form partials now render file, relation, and locale-aware inputs
+- generator output now preserves upload, relation, and multilingual metadata
 
 ## Start here
 
-- `docs/V3_4_MODULE_PERMISSIONS_FILTER_METADATA.md`
-- `docs/V3_3_TWIG_LAYOUT_PARTIAL_PARITY.md`
+- `docs/V3_5_RICHER_FIELD_METADATA.md`
 - `docs/FRAMEWORK_HANDOFF.md`
 - `docs/CRUD_CONVENTIONS.md`
 - `docs/ADD_NEW_ENTITY.md`

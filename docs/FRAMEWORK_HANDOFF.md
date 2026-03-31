@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v3.4.0  
+**Version:** v3.5.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline
 
@@ -33,44 +33,23 @@
 - module-registry-driven CRUD service, route, and admin menu bootstrapping
 - definition-driven CRUD validation rules
 - metadata-driven CRUD form attributes
-- layered src-first view resolution with compatibility fallback to app views
-- src-owned PHP and Twig presentation package files
-- module action permissions derived from `config/modules.php`
-- module list filters derived from `config/modules.php`
+- metadata-driven upload fields
+- metadata-driven relation selects
+- metadata-driven translatable fields
 
 ## Key Files to Know
 
 - `config/modules.php`
+- `config/storage.php`
 - `src/Application/Crud/CrudModuleRegistry.php`
 - `src/Application/Crud/CrudEntityDefinition.php`
 - `src/Application/Controllers/Admin/BaseCrudController.php`
 - `src/Application/Services/DefinitionCrudService.php`
-- `src/Infrastructure/Repositories/BaseRepository.php`
-- `src/Support/AdminMenu.php`
-- `src/Presentation/Views/php/admin/crud/index_table.php`
-- `src/Presentation/Views/twig/admin/crud/index_table.twig`
+- `src/Support/UploadManager.php`
+- `src/Http/Request.php`
+- `src/Presentation/Views/php/admin/crud/form_fields.php`
+- `src/Presentation/Views/twig/admin/crud/form_fields.twig`
 - `src/Generators/CrudScaffoldWriter.php`
-
-## Production-ready direction
-
-- framework structure
-- public/admin/API split
-- CRUD conventions
-- validation/CSRF/session patterns
-- reusable rendering flow
-- generator-based extension workflow
-- safe incremental `src/` migration path
-- canonical field metadata feeding validation and forms
-- canonical admin CRUD presentation views living under `src/Presentation/Views`
-- module metadata feeding CRUD access control and list filtering
-
-## Still starter-level
-
-- role/permission matrix is lightweight and module-scoped, not a full policy system
-- advanced media workflows are not yet built
-- legacy global CRUD entity definitions still exist for compatibility
-- Twig support requires Composer installation
-- some integration patching remains manual by design
 
 ## Current delivery model
 

@@ -17,6 +17,7 @@ $submitText = $mode === 'edit'
 $formAction = (string)($formAction ?? '#');
 $backPath = (string)($backPath ?? '/');
 $csrfToken = (string)($csrfToken ?? '');
+$formEnctype = (string)($formEnctype ?? ($definition->formEncodingType() ?? ''));
 ob_start();
 ?>
 <div class="row justify-content-center">
@@ -31,7 +32,7 @@ ob_start();
 
         <div class="card shadow-sm border-0">
             <div class="card-body p-4">
-                <form method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8') ?>" class="row g-3">
+                <form method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8') ?>" class="row g-3" <?= $formEnctype !== '' ? 'enctype="' . htmlspecialchars($formEnctype, ENT_QUOTES, 'UTF-8') . '"' : '' ?>>
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                     <?php include BASE_PATH . '/src/Presentation/Views/php/admin/crud/form_fields.php'; ?>
                     <div class="col-12">

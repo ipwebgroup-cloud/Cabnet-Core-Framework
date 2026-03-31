@@ -1,13 +1,13 @@
 {
   "name": "Cabnet Core Framework",
-  "version": "3.4.0",
-  "release_type": "module_permissions_filter_metadata",
+  "version": "3.5.0",
+  "release_type": "richer_field_metadata",
   "preferred_runtime": "src",
   "legacy_layer_status": "transitional_shims",
   "recommended_next_tracks": [
-    "field_metadata_for_uploads_relations_multilingual",
     "twig_aware_generator_output",
-    "lightweight_policy_hooks"
+    "lightweight_policy_hooks",
+    "generator_runtime_parity_cleanup"
   ],
-  "generated_at": "2026-03-31T20:45:00+03:00"
+  "generated_at": "2026-03-31T21:30:00+03:00"
 }

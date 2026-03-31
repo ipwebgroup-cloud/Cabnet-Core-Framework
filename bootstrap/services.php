@@ -27,6 +27,10 @@ $services = [
         return new Validator();
     },
 
+    'uploadManager' => function (App $app): \Cabnet\Support\UploadManager {
+        return new \Cabnet\Support\UploadManager((array)$app->config('storage', []));
+    },
+
     'viewState' => function (App $app): \Cabnet\Support\ViewState {
         return new \Cabnet\Support\ViewState($app->session());
     },

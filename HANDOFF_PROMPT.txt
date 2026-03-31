@@ -49,6 +49,8 @@ The intended direction of this framework is:
 - `app/` remains a compatibility layer with legacy shims and wrappers
 - `config/modules.php` now drives CRUD services, admin routes, admin menu visibility, module action permissions, and list-filter metadata
 - `src/Presentation/Views` owns canonical PHP and Twig layouts, partials, and built-in CRUD views
+- CRUD field metadata now also supports uploads, relation-driven selects, and translatable inputs
+- request input merges uploaded files into the definition-driven CRUD payload
 
 ## What I need from you first
 

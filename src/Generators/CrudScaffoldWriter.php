@@ -119,16 +119,19 @@ declare(strict_types=1);
 
 namespace Cabnet\Application\Services;
 
-use Cabnet\Application\Crud\Definitions\{$definitionClass};
-use Cabnet\Infrastructure\Repositories\{$repositoryClass};
+use Cabnet\Application\Crud\Definitions\\{$definitionClass};
+use Cabnet\Infrastructure\Repositories\\{$repositoryClass};
+use Cabnet\Support\UploadManager;
 
 final class {$serviceClass} extends DefinitionCrudService
 {
     public function __construct(
         {$repositoryClass} \$repository,
-        \\Validator \$validator
+        \\Validator \$validator,
+        mixed \$db = null,
+        ?UploadManager \$uploadManager = null
     ) {
-        parent::__construct({$definitionClass}::make(), \$repository, \$validator);
+        parent::__construct({$definitionClass}::make(), \$repository, \$validator, \$db, \$uploadManager);
     }
 }
 ";
@@ -185,7 +188,7 @@ final class {$controllerClass} extends BaseCrudController
         $schemaLines[] = '  `id` int unsigned NOT NULL AUTO_INCREMENT,';
         foreach ($normalizedFields as $fieldName => $meta) {
             $type = (string)($meta['type'] ?? 'text');
-            $columnType = $type === 'textarea' ? 'text' : 'varchar(255)';
+            $columnType = (!empty($meta['translatable']) || $type === 'textarea') ? 'text' : 'varchar(255)';
 
             if ($type === 'select') {
                 $options = (array)($meta['options'] ?? []);
@@ -210,6 +213,7 @@ final class {$controllerClass} extends BaseCrudController
             'Admin routes, admin menu items, repository services, and CRUD services now derive from module metadata automatically.',
             'Module metadata can now also declare per-action roles and list-filter metadata for cleaner admin behavior.',
             'Generated admin PHP views now target src/Presentation/Views/php/admin first, with app/Views/php remaining as a compatibility fallback.',
+            'Field metadata can now also describe uploads, relation-driven selects, and translatable inputs.',
             '',
         ]);
 
@@ -257,6 +261,31 @@ final class {$controllerClass} extends BaseCrudController
 
         if ($type === 'textarea') {
             $normalized['rows'] = isset($meta['rows']) ? max(2, (int)$meta['rows']) : 5;
+        }
+
+        if (!empty($meta['translatable'])) {
+            $normalized['translatable'] = true;
+            $normalized['locales'] = is_array($meta['locales'] ?? null) ? array_values($meta['locales']) : ['en'];
+        }
+
+        if ($type === 'file' || $type === 'image' || !empty($meta['upload'])) {
+            $normalized['upload'] = true;
+            if ($type === 'image' || !empty($meta['image'])) {
+                $normalized['image'] = true;
+            }
+            if (array_key_exists('accept', $meta)) {
+                $normalized['accept'] = (string)$meta['accept'];
+            }
+            if (array_key_exists('max_size_kb', $meta)) {
+                $normalized['max_size_kb'] = max(1, (int)$meta['max_size_kb']);
+            }
+            if (array_key_exists('upload_dir', $meta)) {
+                $normalized['upload_dir'] = (string)$meta['upload_dir'];
+            }
+        }
+
+        if (isset($meta['relation']) && is_array($meta['relation'])) {
+            $normalized['relation'] = $meta['relation'];
         }
 
         if (!empty($meta['slug']) || $fieldName === 'slug') {
