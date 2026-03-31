@@ -17,7 +17,21 @@ return [
         'admin_route_base' => 'admin.services',
         'admin_view_path' => 'admin/services',
         'admin_middleware' => ['session', 'admin.auth'],
+        'permissions' => [
+            'view' => ['admin', 'editor'],
+            'create' => ['admin'],
+            'edit' => ['admin'],
+            'delete' => ['admin'],
+        ],
         'show_in_admin_menu' => true,
+        'filters' => [
+            'status' => [
+                'field' => 'status',
+                'label' => 'Status',
+                'type' => 'select',
+                'placeholder' => 'All statuses',
+            ],
+        ],
         'generator_target' => 'src',
     ],
 ];

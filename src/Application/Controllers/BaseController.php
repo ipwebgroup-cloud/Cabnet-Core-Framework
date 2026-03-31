@@ -15,7 +15,7 @@ abstract class BaseController
             'logoutAction' => $app->config('auth.logout_route', '/logout'),
             'logoutCsrfToken' => $app->csrf()->token(),
             'currentPath' => $app->request()->path(),
-            'adminMenuItems' => $this->adminMenuItems(),
+            'adminMenuItems' => $this->adminMenuItems($app),
         ];
 
         return $app->response()->html($app->renderer()->render($template, array_replace($defaults, $data)));
@@ -32,8 +32,14 @@ abstract class BaseController
     }
 
     /** @return array<int, array<string, mixed>> */
-    private function adminMenuItems(): array
+    private function adminMenuItems(object $app): array
     {
+        $menu = $app->service('adminMenu');
+        if (is_object($menu) && method_exists($menu, 'visibleFor')) {
+            $items = $menu->visibleFor($app->auth()->user());
+            return is_array($items) ? $items : [];
+        }
+
         $path = BASE_PATH . '/config/admin_menu.php';
         if (!is_file($path)) {
             return [];

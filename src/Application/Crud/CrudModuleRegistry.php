@@ -113,6 +113,88 @@ final class CrudModuleRegistry
         )));
     }
 
+    /** @return array<string, array<int, string>> */
+    public function permissions(string $key): array
+    {
+        $meta = $this->meta($key);
+        $configured = $meta['permissions'] ?? null;
+        $accessRoles = $this->rolesFromMeta($meta['access_roles'] ?? null);
+        $fallback = $accessRoles !== [] ? $accessRoles : ['admin'];
+
+        $permissions = [];
+        foreach (['view', 'create', 'edit', 'delete'] as $action) {
+            $roles = [];
+            if (is_array($configured) && array_key_exists($action, $configured)) {
+                $roles = $this->rolesFromMeta($configured[$action]);
+            }
+
+            $permissions[$action] = $roles !== [] ? $roles : $fallback;
+        }
+
+        return $permissions;
+    }
+
+    /** @return array<int, string> */
+    public function actionRoles(string $key, string $action): array
+    {
+        $permissions = $this->permissions($key);
+        return $permissions[$action] ?? ['admin'];
+    }
+
+    public function allows(string $key, string $action, ?string $role): bool
+    {
+        $roles = $this->actionRoles($key, $action);
+        if (in_array('*', $roles, true)) {
+            return true;
+        }
+
+        if ($role === null || $role === '') {
+            return false;
+        }
+
+        return in_array($role, $roles, true);
+    }
+
+    /** @return array<string, array<string, mixed>> */
+    public function filters(string $key): array
+    {
+        $meta = $this->meta($key);
+        $configured = $meta['filters'] ?? [];
+        if (!is_array($configured) || $configured === []) {
+            return [];
+        }
+
+        $definition = $this->definition($key);
+        $filters = [];
+
+        foreach ($configured as $filterKey => $filterMeta) {
+            if (is_string($filterMeta)) {
+                $field = $filterMeta;
+                $filterMeta = [];
+            } else {
+                $field = (string)((is_array($filterMeta) ? ($filterMeta['field'] ?? $filterKey) : $filterKey));
+            }
+
+            if (!$definition->hasField($field)) {
+                throw new InvalidArgumentException("CRUD module [{$key}] declares filter [{$filterKey}] for unknown field [{$field}].");
+            }
+
+            $metaArray = is_array($filterMeta) ? $filterMeta : [];
+            $filters[(string)$filterKey] = $definition->listFilter($field, $metaArray);
+        }
+
+        return $filters;
+    }
+
+    /**
+     * @param array<string, mixed> $input
+     * @return array<string, mixed>
+     */
+    public function filterPayload(string $key, array $input): array
+    {
+        return $this->definition($key)->filterPayload($input, $this->filters($key));
+    }
+
     public function definition(string $key): CrudEntityDefinition
     {
         $class = $this->definitionClass($key);
@@ -144,5 +226,22 @@ final class CrudModuleRegistry
         }
 
         return $value;
+    }
+
+    /** @return array<int, string> */
+    private function rolesFromMeta(mixed $roles): array
+    {
+        if (is_string($roles) && $roles !== '') {
+            return [$roles];
+        }
+
+        if (!is_array($roles) || $roles === []) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn (mixed $value): ?string => is_string($value) && $value !== '' ? $value : null,
+            $roles
+        )));
     }
 }

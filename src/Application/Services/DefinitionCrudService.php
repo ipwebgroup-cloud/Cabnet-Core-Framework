@@ -16,13 +16,14 @@ abstract class DefinitionCrudService extends BaseService
     }
 
     /** @return array<string, mixed> */
-    public function paginate(string $search = '', int $page = 1, int $perPage = 15): array
+    public function paginate(string $search = '', int $page = 1, int $perPage = 15, array $filters = []): array
     {
         return $this->repository->findPage(
             searchColumns: $this->definition->searchable(),
             search: $search,
             page: $page,
             perPage: $perPage,
+            filters: $filters,
             orderBy: $this->definition->defaultOrder()
         );
     }

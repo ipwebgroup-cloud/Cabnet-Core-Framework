@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '3.3.0',
-    'release_name' => 'Twig Layout and Partial Parity',
+    'version' => '3.4.0',
+    'release_name' => 'Module Permissions and Filter Metadata',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -33,5 +33,7 @@ return [
         'legacy_app_view_shims' => true,
         'src_twig_layouts_and_partials' => true,
         'logical_template_mapping_for_twig' => true,
+        'crud_module_permissions' => true,
+        'crud_module_filters' => true,
     ],
 ];

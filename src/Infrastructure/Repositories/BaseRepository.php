@@ -26,13 +26,14 @@ abstract class BaseRepository implements CrudRepositoryContract
         string $search = '',
         int $page = 1,
         int $perPage = 15,
+        array $filters = [],
         string $orderBy = 'id DESC'
     ): array {
         $page = max(1, $page);
         $perPage = max(1, $perPage);
         $offset = ($page - 1) * $perPage;
 
-        [$whereSql, $params] = $this->buildSearchWhere($searchColumns, $search);
+        [$whereSql, $params] = $this->buildListWhere($searchColumns, $search, $filters);
 
         $countSql = 'SELECT COUNT(*) AS aggregate FROM `' . $this->table() . '`' . $whereSql;
         $countRow = $this->db->first($countSql, $params);
@@ -61,23 +62,55 @@ abstract class BaseRepository implements CrudRepositoryContract
         return $this->db->execute($sql, ['id' => $id]);
     }
 
-    protected function buildSearchWhere(array $columns, string $search): array
+    /**
+     * @param array<int, string> $columns
+     * @param array<string, mixed> $filters
+     * @return array{0:string,1:array<string,mixed>}
+     */
+    protected function buildListWhere(array $columns, string $search, array $filters): array
     {
+        $conditions = [];
+        $params = [];
         $search = trim($search);
 
-        if ($search === '' || empty($columns)) {
+        if ($search !== '' && !empty($columns)) {
+            $searchClauses = [];
+            foreach (array_values($columns) as $index => $column) {
+                $column = $this->sanitizeColumn($column);
+                $param = 'search_' . $index;
+                $searchClauses[] = '`' . $column . '` LIKE :' . $param;
+                $params[$param] = '%' . $search . '%';
+            }
+
+            if ($searchClauses !== []) {
+                $conditions[] = '(' . implode(' OR ', $searchClauses) . ')';
+            }
+        }
+
+        foreach ($filters as $field => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $column = $this->sanitizeColumn((string)$field);
+            $param = 'filter_' . $column;
+            $conditions[] = '`' . $column . '` = :' . $param;
+            $params[$param] = $value;
+        }
+
+        if ($conditions === []) {
             return ['', []];
         }
 
-        $clauses = [];
-        $params = [];
+        return [' WHERE ' . implode(' AND ', $conditions), $params];
+    }
 
-        foreach (array_values($columns) as $index => $column) {
-            $param = 'search_' . $index;
-            $clauses[] = '`' . $column . '` LIKE :' . $param;
-            $params[$param] = '%' . $search . '%';
+    private function sanitizeColumn(string $column): string
+    {
+        if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $column)) {
+            throw new \InvalidArgumentException("Invalid repository column [{$column}].");
         }
 
-        return [' WHERE (' . implode(' OR ', $clauses) . ')', $params];
+        return $column;
     }
 }

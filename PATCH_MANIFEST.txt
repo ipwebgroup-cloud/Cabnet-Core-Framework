@@ -1,42 +1,30 @@
-Cabnet Core Framework v3.3 — Twig Layout and Partial Parity
-Patch mode: overlay only
+Cabnet Core Framework v3.4.0 - Module Permissions and Filter Metadata
+Package mode: patch-only overlay
+
+Apply this patch on top of the current framework tree.
 
 Changed files:
-FRAMEWORK_STATUS.json
-HANDOFF_PROMPT.txt
-README.md
-README_BUNDLE.md
-ROADMAP.md
-app/Views/twig/admin/crud/form_fields.twig
-app/Views/twig/admin/crud/form_page.twig
-app/Views/twig/admin/crud/index_table.twig
-app/Views/twig/admin/dashboard.twig
-app/Views/twig/admin/layouts/admin.twig
-app/Views/twig/admin/login.twig
-app/Views/twig/admin/services/create.twig
-app/Views/twig/admin/services/edit.twig
-app/Views/twig/admin/services/index.twig
-app/Views/twig/layouts/admin.twig
-app/Views/twig/layouts/public.twig
-app/Views/twig/partials/flash.twig
-app/Views/twig/public/home.twig
-bundle-manifest.json
-config/framework.php
-docs/FRAMEWORK_HANDOFF.md
-docs/TWIG_INTEGRATION.md
-docs/V3_3_TWIG_LAYOUT_PARTIAL_PARITY.md
-src/Application/Controllers/BaseController.php
-src/Presentation/Views/twig/admin/crud/form_fields.twig
-src/Presentation/Views/twig/admin/crud/form_page.twig
-src/Presentation/Views/twig/admin/crud/index_table.twig
-src/Presentation/Views/twig/admin/dashboard.twig
-src/Presentation/Views/twig/admin/login.twig
-src/Presentation/Views/twig/admin/services/create.twig
-src/Presentation/Views/twig/admin/services/edit.twig
-src/Presentation/Views/twig/admin/services/index.twig
-src/Presentation/Views/twig/layouts/admin.twig
-src/Presentation/Views/twig/layouts/public.twig
-src/Presentation/Views/twig/partials/flash.twig
-src/Presentation/Views/twig/public/home.twig
-src/View/TwigRenderer.php
-tests/Smoke/FrameworkSmokeTest.php
+- FRAMEWORK_STATUS.json
+- HANDOFF_PROMPT.txt
+- README.md
+- README_BUNDLE.md
+- ROADMAP.md
+- bundle-manifest.json
+- config/framework.php
+- config/modules.php
+- docs/CRUD_CONVENTIONS.md
+- docs/FRAMEWORK_HANDOFF.md
+- docs/V3_4_MODULE_PERMISSIONS_FILTER_METADATA.md
+- src/Application/Controllers/Admin/BaseCrudController.php
+- src/Application/Controllers/BaseController.php
+- src/Application/Crud/CrudEntityDefinition.php
+- src/Application/Crud/CrudModuleBootstrap.php
+- src/Application/Crud/CrudModuleRegistry.php
+- src/Application/Services/DefinitionCrudService.php
+- src/Generators/CrudScaffoldWriter.php
+- src/Infrastructure/Repositories/BaseRepository.php
+- src/Infrastructure/Repositories/CrudRepositoryContract.php
+- src/Presentation/Views/php/admin/crud/index_table.php
+- src/Presentation/Views/twig/admin/crud/index_table.twig
+- src/Support/AdminMenu.php
+- tests/Smoke/FrameworkSmokeTest.php

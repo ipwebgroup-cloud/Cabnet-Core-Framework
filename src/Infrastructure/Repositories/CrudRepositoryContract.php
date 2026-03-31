@@ -11,6 +11,7 @@ interface CrudRepositoryContract
         string $search = '',
         int $page = 1,
         int $perPage = 15,
+        array $filters = [],
         string $orderBy = 'id DESC'
     ): array;
 

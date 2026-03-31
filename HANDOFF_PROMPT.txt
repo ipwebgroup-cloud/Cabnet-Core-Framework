@@ -2,27 +2,13 @@ You are continuing development of the **Cabnet Core Framework**.
 
 I am uploading the latest framework folder/zip from our previous session. Treat the uploaded files as the **current source of truth** and analyze them before making changes.
 
-## Important package handling rule
-
-The uploaded package may be either:
-
-1. a **full framework bundle**
-2. a **patch-only overlay** containing only changed files
-
-If it is patch-only, treat it as an overlay on top of the existing framework tree, not as a complete repository snapshot.
-
 ## First files to read
 
-Before changing anything, inspect these first if they exist:
-
-- `FRAMEWORK_STATUS.json`
-- `docs/FRAMEWORK_HANDOFF.md`
-- `HANDOFF_PROMPT.txt`
-- `PATCH_MANIFEST.txt`
-- `config/framework.php`
-- `config/modules.php`
-
-Then inspect the uploaded code itself.
+1. `FRAMEWORK_STATUS.json`
+2. `docs/FRAMEWORK_HANDOFF.md`
+3. `PATCH_MANIFEST.txt` if this is a patch-only zip
+4. `config/modules.php`
+5. `HANDOFF_PROMPT.txt`
 
 ## Your role
 
@@ -51,6 +37,19 @@ The intended direction of this framework is:
 - generator-assisted CRUD/module scaffolding
 - safe incremental modernization, not reckless rewrites
 
+## Current delivery model
+
+- newer packages may be **patch-only overlays** that include only changed files
+- patch packages are meant to be overlaid onto the current framework tree, not treated as full replacements
+- `HANDOFF_PROMPT.txt` is continuity-critical and must stay aligned with the current framework phase and packaging model
+
+## Current architecture notes
+
+- `src/` is the canonical home for bootstrap-aligned runtime, controllers, CRUD metadata, services/repositories, and presentation packages
+- `app/` remains a compatibility layer with legacy shims and wrappers
+- `config/modules.php` now drives CRUD services, admin routes, admin menu visibility, module action permissions, and list-filter metadata
+- `src/Presentation/Views` owns canonical PHP and Twig layouts, partials, and built-in CRUD views
+
 ## What I need from you first
 
 After reading the uploaded files, give me these sections in order:
@@ -58,7 +57,6 @@ After reading the uploaded files, give me these sections in order:
 ### 1. Current framework status
 
 Summarize:
-
 - what version/state the uploaded code appears to be in
 - whether it is still hybrid (`app/` + `src/`)
 - which parts are already migrated
@@ -68,7 +66,6 @@ Summarize:
 ### 2. Architecture map
 
 Describe the real current structure, including:
-
 - bootstrap entry flow
 - routing flow
 - middleware flow
@@ -81,7 +78,6 @@ Describe the real current structure, including:
 ### 3. Risk and quality review
 
 Identify:
-
 - fragile areas
 - duplicated logic
 - partial migrations
@@ -94,7 +90,6 @@ Identify:
 Recommend the **single best next implementation phase** to continue from the uploaded codebase.
 
 For that recommendation include:
-
 - phase name
 - objective
 - why this is the next strongest move
@@ -111,7 +106,6 @@ After the assessment, begin implementing the recommended phase directly in a car
 - preserve compatibility where reasonable
 - avoid unnecessary rewrites
 - prefer small safe improvements over grand redesigns
-- keep `HANDOFF_PROMPT.txt`, `FRAMEWORK_STATUS.json`, and `docs/FRAMEWORK_HANDOFF.md` aligned with each new patch
 - be explicit when something is uncertain
 - if the uploaded code differs from the expected framework history, trust the uploaded code over assumptions
 

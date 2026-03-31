@@ -82,6 +82,11 @@ class CrudEntityDefinition
         return array_keys($this->fields);
     }
 
+    public function fieldLabel(string $field): string
+    {
+        return (string)($this->field($field)['label'] ?? ucfirst($field));
+    }
+
     /** @return array<string, array<int, string>> */
     public function validationRules(): array
     {
@@ -124,6 +129,63 @@ class CrudEntityDefinition
             $payload[$field] = array_key_exists($field, $source)
                 ? $this->normalizeInputValue($source[$field], $meta)
                 : $this->defaultValueForField($meta);
+        }
+
+        return $payload;
+    }
+
+    public function normalizeFieldValue(string $field, mixed $value): mixed
+    {
+        return $this->normalizeInputValue($value, $this->field($field));
+    }
+
+    /** @return array<string, mixed> */
+    public function listFilter(string $field, array $meta = []): array
+    {
+        $fieldMeta = $this->field($field);
+
+        $filter = [
+            'field' => $field,
+            'query_key' => (string)($meta['query_key'] ?? $field),
+            'label' => (string)($meta['label'] ?? $fieldMeta['label'] ?? ucfirst($field)),
+            'type' => (string)($meta['type'] ?? $fieldMeta['type'] ?? 'text'),
+            'placeholder' => (string)($meta['placeholder'] ?? ''),
+            'default' => $meta['default'] ?? null,
+            'help' => (string)($meta['help'] ?? $fieldMeta['help'] ?? ''),
+        ];
+
+        if (($filter['type'] ?? 'text') === 'select') {
+            $filter['options'] = is_array($meta['options'] ?? null)
+                ? (array)$meta['options']
+                : (array)($fieldMeta['options'] ?? []);
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param array<string, mixed> $input
+     * @param array<string, array<string, mixed>> $filters
+     * @return array<string, mixed>
+     */
+    public function filterPayload(array $input, array $filters): array
+    {
+        $payload = [];
+
+        foreach ($filters as $key => $meta) {
+            $field = (string)($meta['field'] ?? $key);
+            $queryKey = (string)($meta['query_key'] ?? $key);
+            $value = $input[$queryKey] ?? null;
+
+            if (is_string($value)) {
+                $value = trim($value);
+            }
+
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $payload[$field] = $this->normalizeFieldValue($field, $value);
         }
 
         return $payload;

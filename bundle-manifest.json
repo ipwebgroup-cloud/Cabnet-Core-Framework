@@ -1,12 +1,12 @@
 {
   "bundle": "Cabnet Core Framework",
-  "version": "3.3.0",
-  "release_name": "Twig Layout and Partial Parity",
+  "version": "3.4.0",
+  "release_name": "Module Permissions and Filter Metadata",
   "package_mode": "patch_only",
   "notes": [
-    "Includes only files changed for v3.3.",
+    "Includes only files changed for v3.4.",
     "Overlay this patch on top of the current framework tree.",
-    "Canonical Twig layouts, partials, built-in pages, and generic CRUD views now live in src/Presentation/Views/twig.",
-    "TwigRenderer now maps logical .php template names to .twig so controllers can remain renderer-agnostic."
+    "config/modules.php now drives module action roles and list-filter metadata.",
+    "BaseCrudController now enforces module permissions and shared CRUD list views now render metadata-driven filters."
   ]
 }

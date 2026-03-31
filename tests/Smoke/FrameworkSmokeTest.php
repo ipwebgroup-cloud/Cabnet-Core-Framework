@@ -81,6 +81,10 @@ final class FrameworkSmokeTest
             'crud_module_bootstrap_registers_dynamic_services' => 'crudModuleBootstrapRegistersDynamicServices',
             'crud_module_bootstrap_appends_admin_routes' => 'crudModuleBootstrapAppendsAdminRoutes',
             'crud_module_bootstrap_appends_admin_menu_items' => 'crudModuleBootstrapAppendsAdminMenuItems',
+            'crud_module_registry_resolves_permissions_and_filters' => 'crudModuleRegistryResolvesPermissionsAndFilters',
+            'admin_menu_service_filters_items_by_role' => 'adminMenuServiceFiltersItemsByRole',
+            'service_create_form_redirects_when_role_lacks_permission' => 'serviceCreateFormRedirectsWhenRoleLacksPermission',
+            'crud_index_view_renders_registry_filters_and_hides_disallowed_actions' => 'crudIndexViewRendersRegistryFiltersAndHidesDisallowedActions',
             'src_crud_generator_uses_namespaced_base_classes' => 'srcCrudGeneratorUsesNamespacedBaseClasses',
             'layered_php_renderer_prefers_src_views_before_app_fallback' => 'layeredPhpRendererPrefersSrcViewsBeforeAppFallback',
             'canonical_shared_templates_resolve_from_src_presentation_layer' => 'canonicalSharedTemplatesResolveFromSrcPresentationLayer',
@@ -485,6 +489,11 @@ final class FrameworkSmokeTest
     {
         TestEnvironment::seedRequest('GET', '/services/create');
         $app = bootstrap_app('admin');
+        $app->auth()->login([
+            'name' => 'Smoke Admin',
+            'username' => 'smoke_admin',
+            'role' => 'admin',
+        ]);
         $controller = new \Cabnet\Application\Controllers\Admin\ServiceController();
 
         $response = $controller->createForm($app);
@@ -569,6 +578,90 @@ final class FrameworkSmokeTest
 
         $last = $items[count($items) - 1] ?? [];
         SmokeAssert::same('/logout', $last['path'] ?? null, 'Logout should remain the trailing admin menu action.');
+    }
+
+    private function crudModuleRegistryResolvesPermissionsAndFilters(): void
+    {
+        $app = bootstrap_app('admin');
+        /** @var \Cabnet\Application\Crud\CrudModuleRegistry $registry */
+        $registry = $app->service('crudModuleRegistry');
+
+        $permissions = $registry->permissions('services');
+        $filters = $registry->filters('services');
+        $payload = $registry->filterPayload('services', ['status' => 'draft']);
+
+        SmokeAssert::true(in_array('editor', $permissions['view'] ?? [], true), 'Services view permission should allow the editor role.');
+        SmokeAssert::same(['admin'], $permissions['create'] ?? null, 'Services create permission should remain admin-only.');
+        SmokeAssert::same('Status', $filters['status']['label'] ?? null, 'Services filter metadata should expose the configured filter label.');
+        SmokeAssert::same('select', $filters['status']['type'] ?? null, 'Services filter metadata should preserve the select type.');
+        SmokeAssert::same('draft', $payload['status'] ?? null, 'Module filter payload should normalize active filter values through the canonical CRUD definition.');
+    }
+
+    private function adminMenuServiceFiltersItemsByRole(): void
+    {
+        $app = bootstrap_app('admin');
+        /** @var \Cabnet\Support\AdminMenu $menu */
+        $menu = $app->service('adminMenu');
+
+        $editorItems = $menu->visibleFor(['role' => 'editor']);
+        $viewerItems = $menu->visibleFor(['role' => 'viewer']);
+
+        $editorLabels = array_map(static fn (array $item): string => (string)($item['label'] ?? ''), $editorItems);
+        $viewerLabels = array_map(static fn (array $item): string => (string)($item['label'] ?? ''), $viewerItems);
+
+        SmokeAssert::true(in_array('Services', $editorLabels, true), 'Editor role should see the Services admin menu item when module view permission allows it.');
+        SmokeAssert::false(in_array('Services', $viewerLabels, true), 'Unknown viewer role should not see the Services admin menu item.');
+    }
+
+    private function serviceCreateFormRedirectsWhenRoleLacksPermission(): void
+    {
+        TestEnvironment::seedRequest('GET', '/services/create');
+        $app = bootstrap_app('admin');
+        $app->auth()->login([
+            'name' => 'Editor User',
+            'username' => 'editor_user',
+            'role' => 'editor',
+        ]);
+
+        $controller = new \Cabnet\Application\Controllers\Admin\ServiceController();
+        $response = $controller->createForm($app);
+        $snapshot = ResponseInspector::snapshot($response);
+        $flash = $app->flash()->all();
+
+        SmokeAssert::same(302, $snapshot['statusCode'], 'Disallowed create access should redirect instead of rendering the form.');
+        SmokeAssert::same('/', $snapshot['headers']['Location'] ?? null, 'Disallowed create access should redirect to the admin dashboard.');
+        SmokeAssert::contains('do not have permission to create service records', strtolower(implode(' ', $flash['danger'] ?? [])), 'Permission denial should explain why create access was blocked.');
+    }
+
+    private function crudIndexViewRendersRegistryFiltersAndHidesDisallowedActions(): void
+    {
+        $app = bootstrap_app('admin');
+        $definition = \Cabnet\Application\Crud\Definitions\ServiceEntityDefinition::make();
+        /** @var \Cabnet\Application\Crud\CrudModuleRegistry $registry */
+        $registry = $app->service('crudModuleRegistry');
+
+        $output = $app->renderer()->render('admin/crud/index_table.php', [
+            'definition' => $definition,
+            'rows' => [['id' => 1, 'title' => 'Smoke', 'slug' => 'smoke', 'status' => 'draft', 'summary' => 'Summary']],
+            'search' => '',
+            'activeFilters' => ['status' => 'draft'],
+            'filterDefinitions' => $registry->filters('services'),
+            'listPath' => '/services',
+            'createPath' => '/services/create',
+            'editRouteName' => 'admin.services.edit',
+            'deleteRouteName' => 'admin.services.delete',
+            'csrfToken' => 'token-123',
+            'urlService' => $app->url(),
+            'canCreate' => false,
+            'canEdit' => true,
+            'canDelete' => false,
+        ]);
+
+        SmokeAssert::contains('name="status"', $output, 'Shared CRUD list view should render the metadata-driven status filter control.');
+        SmokeAssert::contains('All statuses', $output, 'Shared CRUD list view should render the configured filter placeholder.');
+        SmokeAssert::contains('selected', $output, 'Shared CRUD list view should preserve the active filter state.');
+        SmokeAssert::false(str_contains($output, 'btn btn-sm btn-outline-danger'), 'Shared CRUD list view should hide delete actions when module permissions deny deletion.');
+        SmokeAssert::false(str_contains($output, '>New Service<'), 'Shared CRUD list view should hide the create action when module permissions deny creation.');
     }
 
     private function canonicalSharedTemplatesResolveFromSrcPresentationLayer(): void

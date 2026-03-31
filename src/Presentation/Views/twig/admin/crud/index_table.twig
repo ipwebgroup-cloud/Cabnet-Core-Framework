@@ -2,12 +2,16 @@
 
 {% block content %}
 {% set singularLabel = definition.label|replace({'s': ''}) %}
+{% set filters = filterDefinitions|default({}) %}
+{% set queryState = {'q': search|default('')}|merge(activeFilters|default({})) %}
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
     <div>
         <h1 class="h3 mb-1">{{ definition.label }}</h1>
-        <p class="text-secondary mb-0">Reusable Twig CRUD-ready list view with search and pagination.</p>
+        <p class="text-secondary mb-0">Reusable Twig CRUD-ready list view with search, filters, and pagination.</p>
     </div>
-    <a href="{{ createPath }}" class="btn btn-dark">New {{ singularLabel }}</a>
+    {% if canCreate|default(true) %}
+        <a href="{{ createPath }}" class="btn btn-dark">New {{ singularLabel }}</a>
+    {% endif %}
 </div>
 
 <div class="card shadow-sm border-0 mb-3">
@@ -17,6 +21,23 @@
                 <label class="form-label">Search</label>
                 <input type="text" name="q" class="form-control" value="{{ search|default('') }}" placeholder="Search...">
             </div>
+            {% for filter in filters %}
+                {% set queryKey = filter.query_key|default(filter.field) %}
+                {% set filterValue = activeFilters[filter.field]|default('') %}
+                <div class="col-md-4 col-lg-3">
+                    <label class="form-label">{{ filter.label|default(queryKey|capitalize) }}</label>
+                    {% if filter.type|default('text') == 'select' %}
+                        <select name="{{ queryKey }}" class="form-select">
+                            <option value="">{{ filter.placeholder|default('All') }}</option>
+                            {% for optionValue, optionLabel in filter.options|default({}) %}
+                                <option value="{{ optionValue }}" {{ filterValue == optionValue ? 'selected' : '' }}>{{ optionLabel }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <input type="text" name="{{ queryKey }}" class="form-control" value="{{ filterValue }}" placeholder="{{ filter.placeholder|default('') }}">
+                    {% endif %}
+                </div>
+            {% endfor %}
             <div class="col-auto">
                 <button type="submit" class="btn btn-outline-dark">Apply</button>
             </div>
@@ -47,11 +68,15 @@
                         {% endfor %}
                         <td class="text-end">
                             <div class="d-inline-flex gap-2">
-                                <a href="{{ urlService.route(editRouteName, {'id': row.id|default(0)}) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <form method="post" action="{{ urlService.route(deleteRouteName, {'id': row.id|default(0)}) }}" onsubmit="return confirm('Delete this item?');">
-                                    <input type="hidden" name="_token" value="{{ csrfToken|default('') }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
+                                {% if canEdit|default(true) %}
+                                    <a href="{{ urlService.route(editRouteName, {'id': row.id|default(0)}) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                {% endif %}
+                                {% if canDelete|default(true) %}
+                                    <form method="post" action="{{ urlService.route(deleteRouteName, {'id': row.id|default(0)}) }}" onsubmit="return confirm('Delete this item?');">
+                                        <input type="hidden" name="_token" value="{{ csrfToken|default('') }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -68,15 +93,15 @@
     <nav class="mt-3">
         <ul class="pagination mb-0">
             <li class="page-item {{ paginator.page <= 1 ? 'disabled' : '' }}">
-                <a class="page-link" href="{{ listPath ~ '?' ~ ('q=' ~ (search|url_encode) ~ '&page=' ~ paginator.previousPage) }}">Previous</a>
+                <a class="page-link" href="{{ listPath ~ '?' ~ ((queryState|merge({'page': paginator.previousPage}))|url_encode) }}">Previous</a>
             </li>
             {% for pageNumber in paginator.pageRange %}
                 <li class="page-item {{ pageNumber == paginator.page ? 'active' : '' }}">
-                    <a class="page-link" href="{{ listPath ~ '?' ~ ('q=' ~ (search|url_encode) ~ '&page=' ~ pageNumber) }}">{{ pageNumber }}</a>
+                    <a class="page-link" href="{{ listPath ~ '?' ~ ((queryState|merge({'page': pageNumber}))|url_encode) }}">{{ pageNumber }}</a>
                 </li>
             {% endfor %}
             <li class="page-item {{ paginator.page >= paginator.pages ? 'disabled' : '' }}">
-                <a class="page-link" href="{{ listPath ~ '?' ~ ('q=' ~ (search|url_encode) ~ '&page=' ~ paginator.nextPage) }}">Next</a>
+                <a class="page-link" href="{{ listPath ~ '?' ~ ((queryState|merge({'page': paginator.nextPage}))|url_encode) }}">Next</a>
             </li>
         </ul>
     </nav>

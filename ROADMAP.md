@@ -1,9 +1,11 @@
 # ROADMAP.md
 
 ## Current release
-- v3.3.0 — Twig Layout and Partial Parity
+
+- v3.4.0 — Module Permissions and Filter Metadata
 
 ## Completed convergence phases
+
 - v2.4 — Rendering convergence
 - v2.5 — Legacy runtime reduction
 - v2.6 — Service/repository convergence
@@ -14,8 +16,10 @@
 - v3.1 — view packaging convergence
 - v3.2 — shared layout and partial convergence
 - v3.3 — Twig layout and partial parity
+- v3.4 — module permissions and filter metadata
 
 ## Next strongest moves
-1. module permissions and filter metadata so registry-driven CRUD modules can express access and listing behavior more cleanly
-2. richer field metadata for uploads, relations, and multilingual content
-3. Twig-aware generator output so generated module packs can optionally emit src-owned Twig presentation files
+
+1. richer field metadata for uploads, relations, and multilingual content
+2. Twig-aware generator output so generated module packs can optionally emit src-owned Twig presentation files
+3. lightweight policy hooks so module permissions can expand beyond role arrays without controller rewrites

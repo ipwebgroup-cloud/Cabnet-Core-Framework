@@ -146,6 +146,7 @@ final class CrudModuleBootstrap
                 'label' => (string)($meta['label'] ?? ucfirst(trim($path, '/'))),
                 'path' => $path,
                 'match' => $path,
+                'roles' => self::permissionRoles($meta, 'view'),
             ];
             $existingPaths[$path] = true;
         }
@@ -204,5 +205,39 @@ final class CrudModuleBootstrap
     {
         $routePrefix = '/' . trim($routePrefix, '/');
         return $routePrefix === '/' ? '/' : rtrim($routePrefix, '/');
+    }
+
+    /**
+     * @param array<string, mixed> $meta
+     * @return array<int, string>
+     */
+    private static function permissionRoles(array $meta, string $action): array
+    {
+        $configured = is_array($meta['permissions'] ?? null) ? (array)$meta['permissions'] : [];
+        $roles = self::rolesMeta($configured[$action] ?? null);
+
+        if ($roles !== []) {
+            return $roles;
+        }
+
+        $access = self::rolesMeta($meta['access_roles'] ?? null);
+        return $access !== [] ? $access : ['admin'];
+    }
+
+    /** @return array<int, string> */
+    private static function rolesMeta(mixed $roles): array
+    {
+        if (is_string($roles) && $roles !== '') {
+            return [$roles];
+        }
+
+        if (!is_array($roles) || $roles === []) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn (mixed $value): ?string => is_string($value) && $value !== '' ? $value : null,
+            $roles
+        )));
     }
 }
