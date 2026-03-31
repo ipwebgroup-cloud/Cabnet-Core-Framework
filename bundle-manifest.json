@@ -1,0 +1,883 @@
+{
+  "bundle_name": "Cabnet Core Framework Bundle",
+  "version": "v1.7.0",
+  "generated_at": "2026-03-31T11:12:54.469938+00:00",
+  "file_count": 175,
+  "files": [
+    {
+      "path": ".env.example",
+      "size": 272,
+      "sha256": "4ed3450148ed65f00f6f61f4714914409be64912d335abef3bf1ee5211a01516"
+    },
+    {
+      "path": "README.md",
+      "size": 1266,
+      "sha256": "9558cda0c1c35841087f88311a5df2d3e438790b79fff5a472a1c3c4888d7a11"
+    },
+    {
+      "path": "README_BUNDLE.md",
+      "size": 1976,
+      "sha256": "26e7c4e13de0b435c897ef1e55fde64a1ad4522d0e409ad778ab483b655a0fe5"
+    },
+    {
+      "path": "admin/index.php",
+      "size": 168,
+      "sha256": "06efb40493cd9584695f00c3a66f6e1b27830934ed013c4032e5f1874156b453"
+    },
+    {
+      "path": "api/index.php",
+      "size": 166,
+      "sha256": "1a312f5e3d73fa2cd97c14077b218f3a3eaaba2c9a6fd1df28436f552641c471"
+    },
+    {
+      "path": "app/Controllers/Admin/AuthController.php",
+      "size": 1846,
+      "sha256": "f586686fab456a992f2da3383f7b12de0e9edfe908301357455ec03c92c4f0d4"
+    },
+    {
+      "path": "app/Controllers/Admin/BaseCrudController.php",
+      "size": 1860,
+      "sha256": "fa2675f13ec85acd5e88c968443e7c3654034cbeb8ed20524594aa521ac0d282"
+    },
+    {
+      "path": "app/Controllers/Admin/DashboardController.php",
+      "size": 470,
+      "sha256": "43566a30d95a81a4d805adb55f0a4a7cac3c53e112cd33a3be637f8bb1b9ed80"
+    },
+    {
+      "path": "app/Controllers/Admin/ServiceController.php",
+      "size": 5509,
+      "sha256": "ed43b5c53eb3febf7acf4f1ac79738947f51f3336e3203c7d7d93628fba8f337"
+    },
+    {
+      "path": "app/Controllers/Api/HealthController.php",
+      "size": 355,
+      "sha256": "91e037cb8e3addc1f27274e310dc3cf23d01e5c9204d91f788d6b9bbd8525dbc"
+    },
+    {
+      "path": "app/Controllers/BaseController.php",
+      "size": 506,
+      "sha256": "d4bffa44e157f8e6905c38a9cbd1333ec69fef05b7dac1f4980c09753e1d9e9e"
+    },
+    {
+      "path": "app/Controllers/Public/HomeController.php",
+      "size": 417,
+      "sha256": "ace93a30e2a17833b765e559f30e7b6a4546e714a8c2a76d8e1287d6d4618889"
+    },
+    {
+      "path": "app/Core/App.php",
+      "size": 6501,
+      "sha256": "a5aeae82be3515db9806d2be24ba94f237c0f31ccd0bae2248764d1987c1df85"
+    },
+    {
+      "path": "app/Core/Auth/AuthManager.php",
+      "size": 952,
+      "sha256": "feaf8adbdb4c1479d0a08ca4b6efa6c895381a52a1e6533049c14bb1d1991408"
+    },
+    {
+      "path": "app/Core/Auth/DbUserProvider.php",
+      "size": 362,
+      "sha256": "69cea3b7d31af71754477ea79ea26bb4f8529a524391b0bfeae4d81c5de91ad5"
+    },
+    {
+      "path": "app/Core/Database/Connection.php",
+      "size": 1172,
+      "sha256": "5c0ca0914f8dfdd72e0102265422c9b95c95236386f1dee710a1cd66ea546de9"
+    },
+    {
+      "path": "app/Core/Database/DatabaseManager.php",
+      "size": 886,
+      "sha256": "0cd9bc9b78e66121ca59fe1c176b3f2c442fa511f5ff435f526a3f670fa5640f"
+    },
+    {
+      "path": "app/Core/Database/Migrator.php",
+      "size": 555,
+      "sha256": "269df87a69a69db543238fd9eb2515447509933640cc989462b7b2aecd66afa7"
+    },
+    {
+      "path": "app/Core/ErrorHandler.php",
+      "size": 1346,
+      "sha256": "f9209e08d4c40832126200b4bc2be49dcc7e850c31ec96fd89fe481defd2e364"
+    },
+    {
+      "path": "app/Core/Logging/FileLogger.php",
+      "size": 1262,
+      "sha256": "b23ea96997431cd6bf10b6ad6bbc9f7426fe9218e022f71a4649316933bc135e"
+    },
+    {
+      "path": "app/Core/Logging/LoggerInterface.php",
+      "size": 347,
+      "sha256": "508ff6010514bb8716c85a20c8c2dd79158d8a4a241cfe5b1aefdce5a455bee5"
+    },
+    {
+      "path": "app/Core/Rendering/PhpRenderer.php",
+      "size": 607,
+      "sha256": "351b5fafed9b20638ae22af3f68acf17e0d13a5ac6a3d31bb5fb24b35584f1bb"
+    },
+    {
+      "path": "app/Core/Rendering/RendererInterface.php",
+      "size": 136,
+      "sha256": "0493f02442d08928362f7e2dfacc67b36af70b9d49ee2655627213401259325a"
+    },
+    {
+      "path": "app/Core/Rendering/TwigRenderer.php",
+      "size": 1089,
+      "sha256": "d090ee68c04e8054be8f2b0e49d9a022d9aa30990d00b0fb0e7da38982ea00f6"
+    },
+    {
+      "path": "app/Core/Request.php",
+      "size": 898,
+      "sha256": "bca93869ac1bbb15d310637ac76feac1b8bcdde7a1a30d9bba38ddf0faab873c"
+    },
+    {
+      "path": "app/Core/Response.php",
+      "size": 1416,
+      "sha256": "6656b7e095ab0139d6bc1122f2f20d6c33c6bb1b82ba69d04300d8e84fa1916a"
+    },
+    {
+      "path": "app/Core/Router.php",
+      "size": 3349,
+      "sha256": "95e7d997d05b255d44682c6ea7097e0b252c4623295eaf234a71ab03386235ba"
+    },
+    {
+      "path": "app/Core/Security/Csrf.php",
+      "size": 682,
+      "sha256": "d0891e51898f183e5592d01e527f170b816c53da3f8f4f5543a60499ad3fa505"
+    },
+    {
+      "path": "app/Core/Session/Flash.php",
+      "size": 672,
+      "sha256": "a1e94dba3d8028ea56d8179afdb1eef16d9ab03b4b081e04334a523b5d17d7ab"
+    },
+    {
+      "path": "app/Core/Session/Session.php",
+      "size": 1182,
+      "sha256": "90a72f5bd1c99c7076a75cf433fad00029dbe62025f49aa2ca5b2712927dd635"
+    },
+    {
+      "path": "app/Crud/CrudEntityDefinition.php",
+      "size": 950,
+      "sha256": "1947e7093205b10babdac58c31305c83ccf51671446ab8de82fa2cfb22421d24"
+    },
+    {
+      "path": "app/Crud/Definitions/ServiceEntityDefinition.php",
+      "size": 903,
+      "sha256": "c5f344790fb0c985c715b2bff2b81d569f6f954ec578234df4c657f05b40048f"
+    },
+    {
+      "path": "app/DEPRECATIONS.md",
+      "size": 839,
+      "sha256": "2203e76f79c49e8a058ff8b8a01ae0663f53f744a27733d2102916c09ce697b8"
+    },
+    {
+      "path": "app/Generators/EntityGenerator.php",
+      "size": 1316,
+      "sha256": "d1320726b6f91ee222c0f3c7c8cbed21fd49233a2f6dcecf0eb786df71c91af1"
+    },
+    {
+      "path": "app/Generators/IntegrationPatcher.php",
+      "size": 4040,
+      "sha256": "07134a34b8ba6860000559a28e9c4413413549608c22684e51a48de4247b7061"
+    },
+    {
+      "path": "app/Generators/ScaffoldWriter.php",
+      "size": 15365,
+      "sha256": "cb2b8702cf0c006e284a3e9e11e3d177fa9bd5d515d83455e2e1bb76a0c3bffc"
+    },
+    {
+      "path": "app/Generators/Stubs/entity-blueprint.json",
+      "size": 774,
+      "sha256": "d27e19217260b12ee43624da454e2fc8e1eb49ac174b03292735ac5049ab2793"
+    },
+    {
+      "path": "app/Generators/Stubs/product-blueprint.json",
+      "size": 774,
+      "sha256": "589ccc4ce945f4ad468f0114a53f38c4873d531bac6b83dfd0ec9fb8cf79a642"
+    },
+    {
+      "path": "app/Middleware/AdminAuthMiddleware.php",
+      "size": 659,
+      "sha256": "9e2ca4e400f9cb8aaf33cb06301241964dd08a744826b01b0b29cd75ed0a32b1"
+    },
+    {
+      "path": "app/Middleware/MiddlewareInterface.php",
+      "size": 115,
+      "sha256": "7e6bc0fa800a5bd3e815a457750d9df629bcaa312f54ee3675c562cd036dea14"
+    },
+    {
+      "path": "app/Middleware/StartSessionMiddleware.php",
+      "size": 217,
+      "sha256": "17608ce53891a50df95ef338fb9d498b65b84f749531726348769273d016b8aa"
+    },
+    {
+      "path": "app/Repositories/BaseRepository.php",
+      "size": 2282,
+      "sha256": "cff3109c75b646c6d4752d7b1ff429df203b67273254322ba18918604e3066e7"
+    },
+    {
+      "path": "app/Repositories/ServiceRepository.php",
+      "size": 1211,
+      "sha256": "bf52783694c896f1f822ac5ea7abcbef69f34cccd3cc190b9a642b23e3aca47f"
+    },
+    {
+      "path": "app/Services/AdminAuthService.php",
+      "size": 838,
+      "sha256": "3d3c71d924a1ac1660d534522ce9b2b5e79b1f3aca51822643607e28322c9aa1"
+    },
+    {
+      "path": "app/Services/BaseService.php",
+      "size": 63,
+      "sha256": "e1c3d4b24a3ebd95986ef2a769c124eaa427fd8fffa0b9bfedb217ddf52b6d4d"
+    },
+    {
+      "path": "app/Services/ServiceCrudService.php",
+      "size": 1987,
+      "sha256": "4abb8c78c327cd3d491e6c424016acc1b9a098c130bee0462855fcf14e7fb12a"
+    },
+    {
+      "path": "app/Services/UrlService.php",
+      "size": 1335,
+      "sha256": "4538e083cb3c4aef436bb557bcb565929ca4dea14a1a7773d304b52c52de6fbb"
+    },
+    {
+      "path": "app/Support/AdminMenu.php",
+      "size": 206,
+      "sha256": "a98e48ea88804d675ced4d3fae3d83444d2c71f707651cd41a262cca7a4ecbe9"
+    },
+    {
+      "path": "app/Support/Pagination/Paginator.php",
+      "size": 1131,
+      "sha256": "3121bf9aa88fa187e34cbccc696f5f3591c514457ca49d349b5a0f38e33f40ac"
+    },
+    {
+      "path": "app/Support/Routing/RouteRegistry.php",
+      "size": 330,
+      "sha256": "41244c883437bfb5dc8e06c242166db280feb6e1a506e843a782acb55878fea7"
+    },
+    {
+      "path": "app/Support/ViewState.php",
+      "size": 1333,
+      "sha256": "11b8ff08e5fbe1d696ad36092792ad8bd84178eea770d9d7b07b028df66c45f9"
+    },
+    {
+      "path": "app/Validation/FormRequest.php",
+      "size": 262,
+      "sha256": "705baff19266bfc6c3a16829b1789d856baa8bfd5a31b0e094beb1d5ef603a64"
+    },
+    {
+      "path": "app/Validation/ValidationResult.php",
+      "size": 547,
+      "sha256": "c6b86ce58b62aba8a4ce0ea4b1474b927d22b061e5c09aa41ae4c6c0d2e9a5f3"
+    },
+    {
+      "path": "app/Validation/Validator.php",
+      "size": 2462,
+      "sha256": "382d138e015fff5278a586b1109924a139992aa068d52a4304628d7c4c3d18d7"
+    },
+    {
+      "path": "app/Views/php/admin/crud/form_fields.php",
+      "size": 2550,
+      "sha256": "929b06a44a45fa073dd001c10fcaf5b13d1442fc2d8324824c35a87370650c7e"
+    },
+    {
+      "path": "app/Views/php/admin/crud/form_page.php",
+      "size": 1911,
+      "sha256": "01d8f8fd374fc9f5d776bca55879e875f31e6a4ef08842803d6182f70a30fa76"
+    },
+    {
+      "path": "app/Views/php/admin/crud/index_table.php",
+      "size": 5171,
+      "sha256": "45b8bddbb31f9a1a31c383fc98e8cf112e541457bd7b47b21c872bffd96fee75"
+    },
+    {
+      "path": "app/Views/php/admin/dashboard.php",
+      "size": 1231,
+      "sha256": "1f7941ba31fb9812b23e6495745dab4008008138436c2c6af5f4e2df3d024ff1"
+    },
+    {
+      "path": "app/Views/php/admin/login.php",
+      "size": 1183,
+      "sha256": "e793be5f34a1adb70aaa8e8e1ba6545afcbbe7dd03dd954ba71f1930b02bf41f"
+    },
+    {
+      "path": "app/Views/php/admin/services/create.php",
+      "size": 69,
+      "sha256": "8fdf4acae7d49506a27156a2593bd9cfaf36696b4bc38dff10cccf302da54994"
+    },
+    {
+      "path": "app/Views/php/admin/services/edit.php",
+      "size": 69,
+      "sha256": "8fdf4acae7d49506a27156a2593bd9cfaf36696b4bc38dff10cccf302da54994"
+    },
+    {
+      "path": "app/Views/php/admin/services/index.php",
+      "size": 71,
+      "sha256": "83bb021f610d67ed1b824808ce682c652d3e1ed1ab304ef58cfd311c699438c9"
+    },
+    {
+      "path": "app/Views/php/layouts/admin.php",
+      "size": 2638,
+      "sha256": "50c31f10cace0f6a17451e1f377b666d418bdf3a75e932be7d198221954f9e4d"
+    },
+    {
+      "path": "app/Views/php/layouts/public.php",
+      "size": 913,
+      "sha256": "10f254eb3140939728ea2a22087c28136282f01079829e7731472de11d1e2f8b"
+    },
+    {
+      "path": "app/Views/php/partials/flash.php",
+      "size": 671,
+      "sha256": "861cf5754a415d1d276da880ef27a86626321487aad61eda35d82aef12553ee6"
+    },
+    {
+      "path": "app/Views/php/public/home.php",
+      "size": 944,
+      "sha256": "0ecf1713d1b7c0aeab2bb812bbd9330010fb3ae8d28d60f28199f79bb319f850"
+    },
+    {
+      "path": "app/Views/twig/admin/layouts/admin.twig",
+      "size": 513,
+      "sha256": "749336ff80f4a5c25e333a6a89a8f34e24a9c9cc642ee8ee18dc0892ab224405"
+    },
+    {
+      "path": "app/Views/twig/admin/services/index.twig",
+      "size": 287,
+      "sha256": "26438518fb6f9265c399b24b557f5c00980eeeb02dffb5b12cdad53192f44a93"
+    },
+    {
+      "path": "bootstrap/app.php",
+      "size": 5582,
+      "sha256": "41078a6b177f83c95cd9f28a0a50c863eed735ee8f20a808ccfc00939dcc01d6"
+    },
+    {
+      "path": "bootstrap/routes.php",
+      "size": 3169,
+      "sha256": "fc95344bbd6e169e1f9164e8a687b15876c06b8337c843eb7b97b7fc456fa9e6"
+    },
+    {
+      "path": "bootstrap/services.php",
+      "size": 3387,
+      "sha256": "380609ce558375b3c42c95831244c6e959f04361540ff0a417dc039b2a562ef0"
+    },
+    {
+      "path": "bundle-manifest.json",
+      "size": 28458,
+      "sha256": "46e7c35130dd4b2d8279ccf8cee820644fcb4a0abb4f605a9c626d2d03575655"
+    },
+    {
+      "path": "composer.json",
+      "size": 364,
+      "sha256": "08330e4a1e47b374524af0d70a2c2268e3ea939244f880dc3edcbff4efec37f7"
+    },
+    {
+      "path": "config/admin_menu.php",
+      "size": 344,
+      "sha256": "04ed1d891d25bc3278993d8f0743c2ce3b6e44e71bc41ee5d7322c2509b965fc"
+    },
+    {
+      "path": "config/app.php",
+      "size": 281,
+      "sha256": "24685d05fa2429a74956422b91af737b143e1def11274998c99b9a000ceb1f22"
+    },
+    {
+      "path": "config/auth.php",
+      "size": 184,
+      "sha256": "e160298dd21e9009d2845a8b0c2fc23108f6db5345b0ec42e01032e9d36d8f3c"
+    },
+    {
+      "path": "config/database.php",
+      "size": 433,
+      "sha256": "1d78f33c616855d63f9965b2a40d80d3a11474f235294631216d4d73da738628"
+    },
+    {
+      "path": "config/framework.php",
+      "size": 340,
+      "sha256": "f58c375f99efad644190b84bb7cd14be14ef590f5e5f88dc8ca07824d2c79b1b"
+    },
+    {
+      "path": "config/logging.php",
+      "size": 250,
+      "sha256": "6d92a32bdac3d97cb1cfefa02c4bb8d6c7ba18bcfa8545541b40287ca07fa03c"
+    },
+    {
+      "path": "config/mail.php",
+      "size": 145,
+      "sha256": "f86de861e67f9e3da0489d862f1b0e64cbe2c417b9c7aee910e1627dc006ecac"
+    },
+    {
+      "path": "config/middleware.php",
+      "size": 299,
+      "sha256": "c241470e5476b82d49f8a1ca834df4210fc6c32cc277cf987d5587400e1a27a7"
+    },
+    {
+      "path": "config/modules.php",
+      "size": 168,
+      "sha256": "a03d97f2023fcd4a5598fc5654ad21243e9cdd59550c6e03a76a120acabbd352"
+    },
+    {
+      "path": "config/seo.php",
+      "size": 200,
+      "sha256": "df1ffad22a7575581cafca839a4e29cb16e5f3fcd3eee4cb1258959a66fc9ef1"
+    },
+    {
+      "path": "config/storage.php",
+      "size": 263,
+      "sha256": "ef1588b4638e15a44d3634b1e15fbc2c8f7147d094fba3133b5f4440a15c3e12"
+    },
+    {
+      "path": "database/schema/services.sql",
+      "size": 437,
+      "sha256": "e4936d32c52f7b6f281eb10f7e23f618b5becd02e24067cd5e7ae666a1f5a3cb"
+    },
+    {
+      "path": "database/schema/users.sql",
+      "size": 454,
+      "sha256": "96ca1277fb71c0fe358a8aa84903744a31b6b66dabbc67cc66434b1488be0bec"
+    },
+    {
+      "path": "docs/ADD_NEW_ENTITY.md",
+      "size": 2251,
+      "sha256": "3e95b4046a08d8828e136ca1fbddd4a80dd5d4f6a51d7372852cff104bf92d17"
+    },
+    {
+      "path": "docs/CRUD_CONVENTIONS.md",
+      "size": 1165,
+      "sha256": "857b3f098c88f2d4cf8c6711d89c4481af545c317c0b4c419b6d8541f10c0cdc"
+    },
+    {
+      "path": "docs/DIRECT_CODE_GENERATION.md",
+      "size": 774,
+      "sha256": "e941d602ddd99ec1ed17137db303ccaa5f5fe2e66bd3a1d6f53100a2bd80468c"
+    },
+    {
+      "path": "docs/ENTITY_DEFINITIONS.md",
+      "size": 847,
+      "sha256": "6d22dfd414bd8b589cc7c9e77bdf909d4329c1bb4c2980a31ea27ed7d135edc8"
+    },
+    {
+      "path": "docs/FILE_WRITING_GENERATOR.md",
+      "size": 784,
+      "sha256": "244abf04847aef2b55d9d2f866a16bdf5f6256bb26137013417fb6fac52f1936"
+    },
+    {
+      "path": "docs/FRAMEWORK_HANDOFF.md",
+      "size": 4079,
+      "sha256": "b35231bba2ad6eb8b067dcd02f270d2c80b9eb0990674e73bcac6d46fccaa0ad"
+    },
+    {
+      "path": "docs/MODULE_GENERATOR_PLAN.md",
+      "size": 1002,
+      "sha256": "56f625b943f498f1efc337fc871a65b30705c2d2fe84722f64ab59d617e59375"
+    },
+    {
+      "path": "docs/PHASE10_NOTES.md",
+      "size": 572,
+      "sha256": "a25036e1b81ebb46cde579017969613dc5ce799dc480b9bf8f31307f2586b12e"
+    },
+    {
+      "path": "docs/PHASE11_NOTES.md",
+      "size": 466,
+      "sha256": "40b9396ea99f47e5cf1bbe2dcf1ef9652dddaadc380b30594f51fc4c17487f00"
+    },
+    {
+      "path": "docs/PHASE12_NOTES.md",
+      "size": 490,
+      "sha256": "1357200d1ed47712ef043795f7db1b04bd123e10b05ea21b60815575a184a3b1"
+    },
+    {
+      "path": "docs/PHASE9_NOTES.md",
+      "size": 543,
+      "sha256": "958085d9cb8b92db910d63f7d91b87c1bff659fcb0ce199f62b1fc23a878cdd5"
+    },
+    {
+      "path": "docs/ROUTE_HELPERS.md",
+      "size": 667,
+      "sha256": "b97ba080fd69259aeeb2828cc43cff1374bc56f474ed882fe247830aca88e689"
+    },
+    {
+      "path": "docs/SAFE_INTEGRATION_MODE.md",
+      "size": 940,
+      "sha256": "c97f8ff2a6d5eb8bffb4d5423fc19958e7585c78a3a842ff71937819f1ea910f"
+    },
+    {
+      "path": "docs/TWIG_INTEGRATION.md",
+      "size": 766,
+      "sha256": "9712405e60a2106dd935e41d79a12a96b89ada49de3dc348592a71772822308e"
+    },
+    {
+      "path": "docs/V1_1_HARDENING_PLAN.md",
+      "size": 917,
+      "sha256": "84ef37c4a25a4b5b1f5bbb6c3c1df5b4f5b66a4620d54e84ec5af48d8e19e786"
+    },
+    {
+      "path": "docs/V1_1_IMPLEMENTATION_NOTES.md",
+      "size": 909,
+      "sha256": "1e77f4404ef8ff3e890784328b7d5a27483baf5eee070f80169d1067c93c94dd"
+    },
+    {
+      "path": "docs/V1_2_IMPLEMENTATION_NOTES.md",
+      "size": 756,
+      "sha256": "4e748194edbd39d92dd2bb9830a7fc94de06f2b8d7510d43f528544b764de26a"
+    },
+    {
+      "path": "docs/V1_2_MODERNIZATION_PLAN.md",
+      "size": 924,
+      "sha256": "5e8c1b524566f99724de72225f25211c3cd7bc14ec5f4a5ecc3047fe2d960d10"
+    },
+    {
+      "path": "docs/V1_3_IMPLEMENTATION_NOTES.md",
+      "size": 680,
+      "sha256": "cc607a9f4547cf5300a254072588826b86d46b45bf3f29fe611e20299732ab7f"
+    },
+    {
+      "path": "docs/V1_3_RUNTIME_MIGRATION_PLAN.md",
+      "size": 963,
+      "sha256": "726e78cd84dbb16c26db9fc8c53a1d128522dd287de09ef982ff280f0766097d"
+    },
+    {
+      "path": "docs/V1_4_CORE_UNIFICATION_PLAN.md",
+      "size": 915,
+      "sha256": "c1d76cfab8737ad0bf02db184e8129cc711f4da25b9dd0100165d0094f8ae00c"
+    },
+    {
+      "path": "docs/V1_4_IMPLEMENTATION_NOTES.md",
+      "size": 662,
+      "sha256": "c821c9bac536a525360635e55fb62a467b8dbcf198dbd13cb807d52636d4af56"
+    },
+    {
+      "path": "docs/V1_5_IMPLEMENTATION_NOTES.md",
+      "size": 688,
+      "sha256": "68b2618c889a796807f41dfa438873df0768a725d4ecef71679ccf1a2e9f9ddd"
+    },
+    {
+      "path": "docs/V1_5_SERVICE_CONTROLLER_MIGRATION_PLAN.md",
+      "size": 1084,
+      "sha256": "0a91f758abbe219342d3b1277ce70fadf170db8398dd2f74dacec5187843c15a"
+    },
+    {
+      "path": "docs/V1_6_CRUD_MIGRATION_PLAN.md",
+      "size": 834,
+      "sha256": "17832ed28cf0dbec14d23d1d2b88d8ebb7113e375f74e6a2f623da4638d21287"
+    },
+    {
+      "path": "docs/V1_6_IMPLEMENTATION_NOTES.md",
+      "size": 586,
+      "sha256": "bfa376e1f972a226a5e9453272f36b833326b6ef3b6541565a1a8b9232952af9"
+    },
+    {
+      "path": "docs/V1_7_IMPLEMENTATION_NOTES.md",
+      "size": 563,
+      "sha256": "bdb452c2de37a0e643f12250d10059cdfb3796e78d2fd01f2a8ded6690696fb2"
+    },
+    {
+      "path": "docs/V1_7_LEGACY_REDUCTION_PLAN.md",
+      "size": 773,
+      "sha256": "7abd2d68d21c6bc5c1ac404bedade21286cc4ce8a53fc44214b374b0c670d260"
+    },
+    {
+      "path": "generated/example_product_module/app/Controllers/Admin/ProductController.php",
+      "size": 55,
+      "sha256": "719d04571f3020489f8883c6de304f6d5c72b20f25b8e5d625ec46aa89a615b7"
+    },
+    {
+      "path": "generated/example_product_module/app/Crud/Definitions/ProductEntityDefinition.php",
+      "size": 55,
+      "sha256": "eb4ee0a01e4733c102859f6aa4fb31e8c7ecc3820c894d118f65f86735e83342"
+    },
+    {
+      "path": "generated/example_product_module/app/Repositories/ProductRepository.php",
+      "size": 55,
+      "sha256": "42a0e24b40769e6e2bd5bd8a6b6d48b5788c33fdf5603b30a78f6b5d496f68fe"
+    },
+    {
+      "path": "generated/example_product_module/app/Services/ProductCrudService.php",
+      "size": 52,
+      "sha256": "58ea0ef4c43cfda1f57c91bd7abfc80109d8308a59ea8992e860a4a80be46d8d"
+    },
+    {
+      "path": "generated/example_product_module/app/Views/php/admin/products/create.php",
+      "size": 69,
+      "sha256": "8fdf4acae7d49506a27156a2593bd9cfaf36696b4bc38dff10cccf302da54994"
+    },
+    {
+      "path": "generated/example_product_module/app/Views/php/admin/products/edit.php",
+      "size": 69,
+      "sha256": "8fdf4acae7d49506a27156a2593bd9cfaf36696b4bc38dff10cccf302da54994"
+    },
+    {
+      "path": "generated/example_product_module/app/Views/php/admin/products/index.php",
+      "size": 71,
+      "sha256": "83bb021f610d67ed1b824808ce682c652d3e1ed1ab304ef58cfd311c699438c9"
+    },
+    {
+      "path": "generated/example_product_module/generated/route_snippets.php.txt",
+      "size": 48,
+      "sha256": "95acebae8024511cb342a0cdbe22a514c9358a8bb06144a85b3226b74657666b"
+    },
+    {
+      "path": "generated/example_product_module/generated/service_registration.php.txt",
+      "size": 54,
+      "sha256": "9474b4fa996b71de2ff5ffd0b460e1a81aad417e36845258de48121fb9045464"
+    },
+    {
+      "path": "generated/full_example_product_module/app/Controllers/Admin/ProductController.php",
+      "size": 5509,
+      "sha256": "47301d787e941562e486015cef6e82d9f5c0140cad02eeb1a0dec8d27dbbd41c"
+    },
+    {
+      "path": "generated/full_example_product_module/app/Crud/Definitions/ProductEntityDefinition.php",
+      "size": 1460,
+      "sha256": "b0347912b35b661e81c7e5d5bbbba2710f4e772842a0a0fd82a96fd517b77ae5"
+    },
+    {
+      "path": "generated/full_example_product_module/app/Repositories/ProductRepository.php",
+      "size": 1247,
+      "sha256": "1d6da1c9388a14d1de916413385a3b4c66fa2564fdbd265d886ab959e674b4ab"
+    },
+    {
+      "path": "generated/full_example_product_module/app/Services/ProductCrudService.php",
+      "size": 1871,
+      "sha256": "17f4c30bd634b10f418809a21158f9de50e4b2437bcc3c7029b9a6552cf5b916"
+    },
+    {
+      "path": "generated/full_example_product_module/app/Views/php/admin/products/create.php",
+      "size": 69,
+      "sha256": "8fdf4acae7d49506a27156a2593bd9cfaf36696b4bc38dff10cccf302da54994"
+    },
+    {
+      "path": "generated/full_example_product_module/app/Views/php/admin/products/edit.php",
+      "size": 69,
+      "sha256": "8fdf4acae7d49506a27156a2593bd9cfaf36696b4bc38dff10cccf302da54994"
+    },
+    {
+      "path": "generated/full_example_product_module/app/Views/php/admin/products/index.php",
+      "size": 71,
+      "sha256": "83bb021f610d67ed1b824808ce682c652d3e1ed1ab304ef58cfd311c699438c9"
+    },
+    {
+      "path": "generated/full_example_product_module/database/schema/products.sql",
+      "size": 396,
+      "sha256": "00fc116496b6296c8f5d108ed66db031c45bd048b31fb4e7ad123359cb6d8b4c"
+    },
+    {
+      "path": "generated/full_example_product_module/generated/products_route_snippets.php.txt",
+      "size": 825,
+      "sha256": "0d21a00b7dbe11515075b317bd0f77d6ea13d2dde47f7068e8338bad1c5b2359"
+    },
+    {
+      "path": "generated/full_example_product_module/generated/products_service_registration.php.txt",
+      "size": 297,
+      "sha256": "aa0e23c96dba6e2a70e2ebcbe820bd5d54a8b75a2b195b60609f6c2d5c7cd2fa"
+    },
+    {
+      "path": "generated/integration_examples/bootstrap_requires.patch.txt",
+      "size": 284,
+      "sha256": "a4fade666833b5fd836af56c01162179e2f8194b023bde101ea144222926874c"
+    },
+    {
+      "path": "generated/integration_examples/routes.patch.txt",
+      "size": 873,
+      "sha256": "c8497d786314c7a1ac151f824b45a086008b4dccd72ae55f0e7cd94940c4e406"
+    },
+    {
+      "path": "generated/integration_examples/services.patch.txt",
+      "size": 333,
+      "sha256": "d9f121de69f82bc16af4aa84e0e8d0814ef7f500821d1904a901be7297641f5e"
+    },
+    {
+      "path": "generated/integration_examples/sidebar.patch.txt",
+      "size": 140,
+      "sha256": "53936d224d098f327e525ed33873b1609aaaebf92af275264ae89eaba32b7a39"
+    },
+    {
+      "path": "public/index.php",
+      "size": 169,
+      "sha256": "7c709777300d487046065710d04de99aa540137b61603d27c649b42ae802b90e"
+    },
+    {
+      "path": "scripts/create-admin-user.php",
+      "size": 880,
+      "sha256": "74fda116b685878be0f6fa264529a3965d920a922a7cb476a9d988af6c77034d"
+    },
+    {
+      "path": "scripts/generate-crud-pack.php",
+      "size": 1082,
+      "sha256": "7618fa1d9134b6536690b435d597fd82d2b0de2363fe02d9863514e0cabbac9d"
+    },
+    {
+      "path": "scripts/generate-entity.php",
+      "size": 546,
+      "sha256": "a22fe121b91936217a31664d0a2a797e64cd96129af048bcd0767cd4f551da80"
+    },
+    {
+      "path": "scripts/generate-integration-patches.php",
+      "size": 1104,
+      "sha256": "aafe1130249a931057ca091d9d3632cd0015271313344496a34e800989095a79"
+    },
+    {
+      "path": "scripts/migrate.php",
+      "size": 583,
+      "sha256": "8e8d961e341d2b394b95d872283eb6a0af8019d69d8d8c1641f702d5b03bde77"
+    },
+    {
+      "path": "src/AppRuntime.php",
+      "size": 2354,
+      "sha256": "5c828a2cda09313b5054da961de57c9b6f5c7c591709d2b2be2cb7995d91f7ba"
+    },
+    {
+      "path": "src/Application/Controllers/Admin/AuthController.php",
+      "size": 1997,
+      "sha256": "08e57b0ac1923327b8d8b025297d0a43af7b8d318a91a37126169823524aea0d"
+    },
+    {
+      "path": "src/Application/Controllers/Admin/DashboardController.php",
+      "size": 573,
+      "sha256": "58e2a2d275d2a2e3dbf46e1fbb6685e4d15cba02ff6ed780fa535e07dd69b29a"
+    },
+    {
+      "path": "src/Application/Controllers/Admin/ServiceController.php",
+      "size": 5702,
+      "sha256": "d04ed6b6cddf127d73894756f5bd53cad3d753ee3702f680457c2aa94742340a"
+    },
+    {
+      "path": "src/Application/Controllers/Api/HealthController.php",
+      "size": 511,
+      "sha256": "6d197d592fcfdb1855be9e7b2fc01500c7b30602fce3c4e7679c77a66d2885f7"
+    },
+    {
+      "path": "src/Application/Controllers/Public/HomeController.php",
+      "size": 525,
+      "sha256": "4b2dab5a3e6a4f29421a52fd4e6e4f559b394aba73a22f2b766061ac0fa4f80e"
+    },
+    {
+      "path": "src/Application/Crud/Definitions/ServiceEntityDefinition.php",
+      "size": 953,
+      "sha256": "9d02bdae911dbf5d5eb70fd88ec84dbab571b862244eeb49ce3177bc4235122d"
+    },
+    {
+      "path": "src/Application/Services/AdminAuthService.php",
+      "size": 907,
+      "sha256": "fd2983a64eb1eb1201fb76dee143538c53e855658cf93e17806bb275a4afecd3"
+    },
+    {
+      "path": "src/Application/Services/AdminMenuService.php",
+      "size": 253,
+      "sha256": "9bfc158dcaf5b77d52056c3f20792fcee7cbcb1722d2d284d714e8feb5d290c3"
+    },
+    {
+      "path": "src/Application/Services/ClockService.php",
+      "size": 173,
+      "sha256": "a9ce936bf6c59dc59a7dcde30fa87866848ea83f4bf58ff8f05bd34720c1d6f3"
+    },
+    {
+      "path": "src/Application/Services/ServiceCrudService.php",
+      "size": 2073,
+      "sha256": "a6feddbfc763dd7ae8834007272c2c6b8787dc0e2c30aae303fe829799d5f965"
+    },
+    {
+      "path": "src/Bootstrap/ConfigLoader.php",
+      "size": 918,
+      "sha256": "28c31194fe1e3d7a632521cdeebd4835134c87817d17f24c8347b0f136dbe4f1"
+    },
+    {
+      "path": "src/Bootstrap/Kernel.php",
+      "size": 3573,
+      "sha256": "8dc3c1faf5da24aecd36be38b6c9eacc4c7cfed967999c5815c237982c390af0"
+    },
+    {
+      "path": "src/Bootstrap/LegacyAppFactory.php",
+      "size": 383,
+      "sha256": "943463472418b012201c9e4ad80c13148fbcff85ed1205c20d4c8f090e6949f1"
+    },
+    {
+      "path": "src/Bootstrap/ServiceRegistry.php",
+      "size": 623,
+      "sha256": "067ca7d32d11fe2cc032aa1d13224134a17398ae5ed8c5ce55eece101ce2750d"
+    },
+    {
+      "path": "src/Core/ErrorHandler.php",
+      "size": 1447,
+      "sha256": "140ed2992e70fe13e4fbff72bf0b25eb0240aaf03e6f5efb1ce055406189695b"
+    },
+    {
+      "path": "src/Core/Logging/FileLogger.php",
+      "size": 1294,
+      "sha256": "efb827f7f4c4b7db76ba2d18534371e8f5f221818b71886109d49ff6b94641d3"
+    },
+    {
+      "path": "src/Core/Logging/LoggerInterface.php",
+      "size": 379,
+      "sha256": "ac7a07571c74e17c0e3c67cb504a134729ec3fd36158e8fdc64687b7e1ce63f6"
+    },
+    {
+      "path": "src/Generators/StubTemplateRenderer.php",
+      "size": 377,
+      "sha256": "ef53fee0bb198b14001b71332d05ff2367af0461bc100194865eadc9f8c6fea7"
+    },
+    {
+      "path": "src/Generators/Templates/controller.stub",
+      "size": 215,
+      "sha256": "1057da90af0542c7f93204f7f055d18edeee09fad20e6a7f0c222fef9567c2de"
+    },
+    {
+      "path": "src/Generators/Templates/repository.stub",
+      "size": 170,
+      "sha256": "dd7719455747ef2972b41845735f0ab0d8002ba38cd83297aac11e6e9445d1af"
+    },
+    {
+      "path": "src/Generators/Templates/service.stub",
+      "size": 85,
+      "sha256": "061869ee0d43929dcb275e647c0eb1247ab4a26fff7a88f1487123173c6598e8"
+    },
+    {
+      "path": "src/Http/Request.php",
+      "size": 900,
+      "sha256": "6da067057f788a3c7549f4e15c2f8bd74720947961e158161138ab4dd361b70b"
+    },
+    {
+      "path": "src/Http/Response.php",
+      "size": 1161,
+      "sha256": "8868d1cd3257fdd0d5e11832260b77f5c6ad3e7c162cac2b1759ec41dda35a50"
+    },
+    {
+      "path": "src/Infrastructure/Auth/DbUserProvider.php",
+      "size": 402,
+      "sha256": "2ad02ad488fcc9e283c90ef2ca18daea3a384eb51c773da71d8485f3a3c1e595"
+    },
+    {
+      "path": "src/Infrastructure/Repositories/ServiceRepository.php",
+      "size": 1305,
+      "sha256": "a842d3d9e3a00aebc6c0b3f705cd5d028d6dbe7996d2fe41f9caf3d603cf1f9c"
+    },
+    {
+      "path": "src/Middleware/MiddlewareExecutor.php",
+      "size": 832,
+      "sha256": "5e46cd5b8bc7d3026788d3eb697e851779d965b9313478bc6fa909d6b901649c"
+    },
+    {
+      "path": "src/Routing/ResolvedRoute.php",
+      "size": 227,
+      "sha256": "8c714db9e6204f2f8232521d88f1c6adb58a10de5bbdfd7412e6ac64b0c1f496"
+    },
+    {
+      "path": "src/Routing/RouteDefinition.php",
+      "size": 1199,
+      "sha256": "8ff72bb569893b236000c3018af4bc618f980a903d19cc84468e6de14824034f"
+    },
+    {
+      "path": "src/Routing/Router.php",
+      "size": 1735,
+      "sha256": "5e01ea64b3dfb54abbf4bfce2a6782ac828430a21fa06a33b6d133088be65533"
+    },
+    {
+      "path": "src/Support/AdminMenu.php",
+      "size": 233,
+      "sha256": "7dad225000fe68384e1d01f64c78f433b5c1129c05e0f7ce38eed45370bc95c9"
+    },
+    {
+      "path": "src/Support/ViewState.php",
+      "size": 1192,
+      "sha256": "c844e201d04c7a3c4544225c0b871d0723065cdf40058acdd77b58e722b69714"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+    'productRepository' => function (App $app): ProductRepository {
+        return new ProductRepository($app->service('db'));
+    },
+
+    'productCrud' => function (App $app): ProductCrudService {
+        return new ProductCrudService(
+            $app->service('productRepository'),
+            $app->validator()
+        );
+    },

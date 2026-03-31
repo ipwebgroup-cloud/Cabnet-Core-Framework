@@ -1,0 +1,1 @@
+// Example generated service registration placeholder

@@ -1,0 +1,6 @@
+        ['method' => 'GET', 'path' => '/products', 'handler' => [ProductController::class, 'index'], 'name' => 'admin.products.index'],
+        ['method' => 'GET', 'path' => '/products/create', 'handler' => [ProductController::class, 'createForm'], 'name' => 'admin.products.create'],
+        ['method' => 'POST', 'path' => '/products', 'handler' => [ProductController::class, 'store'], 'name' => 'admin.products.store'],
+        ['method' => 'GET', 'path' => '/products/{id}/edit', 'handler' => [ProductController::class, 'editForm'], 'name' => 'admin.products.edit'],
+        ['method' => 'POST', 'path' => '/products/{id}/update', 'handler' => [ProductController::class, 'update'], 'name' => 'admin.products.update'],
+        ['method' => 'POST', 'path' => '/products/{id}/delete', 'handler' => [ProductController::class, 'destroy'], 'name' => 'admin.products.delete'],

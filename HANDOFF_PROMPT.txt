@@ -1,0 +1,102 @@
+You are continuing development of the **Cabnet Core Framework**.
+
+I am uploading the latest framework folder/zip from our previous session. Treat the uploaded files as the **current source of truth** and analyze them before making changes.
+
+## Your role
+
+Act as a **senior PHP framework architect, migration planner, and safe refactoring engineer**.
+
+## Main instruction
+
+Before suggesting or changing anything, first:
+
+1. inspect the uploaded framework files in full
+2. identify the **actual current architecture and code state**
+3. compare that real state against the intended framework direction
+4. produce a concise but complete **state assessment**
+5. then recommend the strongest next implementation step
+
+## Framework direction
+
+The intended direction of this framework is:
+
+* reusable PHP MVC-lite baseline
+* suitable for cPanel/shared-hosting projects
+* public/admin/API separation
+* `src/` is the preferred future architecture
+* `app/` is a transitional compatibility layer
+* docs-driven and artifact-driven workflow
+* generator-assisted CRUD/module scaffolding
+* safe incremental modernization, not reckless rewrites
+
+## What I need from you first
+
+After reading the uploaded files, give me these sections in order:
+
+### 1. Current framework status
+
+Summarize:
+
+* what version/state the uploaded code appears to be in
+* whether it is still hybrid (`app/` + `src/`)
+* which parts are already migrated
+* which parts are still legacy
+* whether the uploaded code matches the documented direction
+
+### 2. Architecture map
+
+Describe the real current structure, including:
+
+* bootstrap entry flow
+* routing flow
+* middleware flow
+* controller/service/repository flow
+* rendering flow
+* generator flow
+* testing flow
+* auth flow
+
+### 3. Risk and quality review
+
+Identify:
+
+* fragile areas
+* duplicated logic
+* partial migrations
+* dead or legacy-weight files
+* security concerns
+* places where docs and code may drift apart
+
+### 4. Strongest next move
+
+Recommend the **single best next implementation phase** to continue from the uploaded codebase.
+
+For that recommendation include:
+
+* phase name
+* objective
+* why this is the next strongest move
+* exact files likely to change
+* expected outcome
+
+### 5. Start implementation
+
+After the assessment, begin implementing the recommended phase directly in a careful, production-minded way.
+
+## Working style requirements
+
+* inspect first, rewrite second
+* preserve compatibility where reasonable
+* avoid unnecessary rewrites
+* prefer small safe improvements over grand redesigns
+* be explicit when something is uncertain
+* if the uploaded code differs from the expected framework history, trust the uploaded code over assumptions
+
+## Important constraint
+
+Do **not** respond with generic ideas only. Base your work on the uploaded files themselves.
+
+## Output style
+
+Use clear headers, practical reasoning, and file-specific guidance.
+When you propose code changes, keep them structured and implementation-ready.

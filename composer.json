@@ -1,0 +1,23 @@
+{
+  "name": "cabnet/core-framework",
+  "description": "Cabnet Core Framework v2.0 consolidation baseline",
+  "type": "project",
+  "require": {
+    "php": ">=8.1"
+  },
+  "suggest": {
+    "twig/twig": "Enable Twig rendering support"
+  },
+  "autoload": {
+    "psr-4": {
+      "Cabnet\\": "src/"
+    },
+    "classmap": [
+      "app/",
+      "bootstrap/"
+    ]
+  },
+  "scripts": {
+    "smoke-test": "php scripts/run-smoke-tests.php"
+  }
+}

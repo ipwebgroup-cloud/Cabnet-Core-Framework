@@ -1,0 +1,45 @@
+{
+  "entity_key": "services",
+  "singular_label": "Service",
+  "plural_label": "Services",
+  "table": "services",
+  "fields": {
+    "title": {
+      "type": "text",
+      "label": "Title",
+      "required": true
+    },
+    "slug": {
+      "type": "text",
+      "label": "Slug",
+      "required": true
+    },
+    "status": {
+      "type": "select",
+      "label": "Status",
+      "required": true,
+      "options": {
+        "draft": "Draft",
+        "published": "Published"
+      }
+    },
+    "summary": {
+      "type": "textarea",
+      "label": "Summary",
+      "required": false
+    }
+  },
+  "list_columns": [
+    "id",
+    "title",
+    "slug",
+    "status",
+    "summary"
+  ],
+  "searchable": [
+    "title",
+    "slug",
+    "summary"
+  ],
+  "default_order": "id DESC"
+}

@@ -1,0 +1,1 @@
+            <a class="nav-link text-white <?= str_starts_with($currentPath, '/products') ? 'fw-bold' : '' ?>" href="/products">Products</a>

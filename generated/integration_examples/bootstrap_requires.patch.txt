@@ -1,0 +1,4 @@
+require_once BASE_PATH . '/app/Crud/Definitions/ProductEntityDefinition.php';
+require_once BASE_PATH . '/app/Controllers/Admin/ProductController.php';
+require_once BASE_PATH . '/app/Repositories/ProductRepository.php';
+require_once BASE_PATH . '/app/Services/ProductCrudService.php';
