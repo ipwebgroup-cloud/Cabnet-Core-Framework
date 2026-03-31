@@ -1,0 +1,87 @@
+{
+  "example_name": "Localized Services",
+  "example_summary": "Richer service blueprint showing Twig output, translatable fields, uploads, relations, permissions, and a policy hook.",
+  "example_tags": ["twig", "translatable", "relations", "policy"],
+  "entity_key": "services",
+  "singular_label": "Service",
+  "plural_label": "Services",
+  "table": "services",
+  "view_engines": ["php", "twig"],
+  "access_roles": ["admin", "editor"],
+  "permissions": {
+    "view": ["admin", "editor"],
+    "create": ["admin"],
+    "edit": ["admin"],
+    "delete": ["admin"]
+  },
+  "admin_middleware": ["session", "admin.auth", "audit"],
+  "show_in_admin_menu": true,
+  "policy_class": "\\App\\Policies\\ServicePolicy",
+  "fields": {
+    "title": {
+      "type": "text",
+      "label": "Title",
+      "required": true,
+      "translatable": true,
+      "locales": ["en", "el"],
+      "filter": {
+        "placeholder": "Search title"
+      }
+    },
+    "slug": {
+      "type": "text",
+      "label": "Slug",
+      "required": true,
+      "slug": true
+    },
+    "service_category_id": {
+      "type": "select",
+      "label": "Category",
+      "required": true,
+      "relation": {
+        "table": "service_categories",
+        "value_column": "id",
+        "label_column": "title",
+        "order_by": "title"
+      }
+    },
+    "hero_image": {
+      "type": "image",
+      "label": "Hero Image",
+      "required": false,
+      "upload": true,
+      "upload_dir": "services/hero",
+      "accept": "image/*",
+      "max_size_kb": 4096
+    },
+    "status": {
+      "type": "select",
+      "label": "Status",
+      "required": true,
+      "options": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "filterable": true
+    },
+    "summary": {
+      "type": "textarea",
+      "label": "Summary",
+      "required": false,
+      "rows": 5,
+      "translatable": true,
+      "locales": ["en", "el"]
+    }
+  },
+  "list_columns": ["id", "title", "service_category_id", "status"],
+  "searchable": ["title", "slug", "summary"],
+  "default_order": "id DESC",
+  "filters": {
+    "status": {
+      "field": "status",
+      "type": "select",
+      "placeholder": "All statuses"
+    }
+  }
+}

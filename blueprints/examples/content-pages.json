@@ -1,0 +1,53 @@
+{
+  "example_name": "Content Pages",
+  "example_summary": "Simple editorial CRUD blueprint with status filtering and PHP admin views.",
+  "example_tags": ["starter", "filters", "editorial"],
+  "entity_key": "pages",
+  "singular_label": "Page",
+  "plural_label": "Pages",
+  "table": "pages",
+  "view_engines": ["php"],
+  "access_roles": ["admin", "editor"],
+  "permissions": {
+    "view": ["admin", "editor"],
+    "create": ["admin", "editor"],
+    "edit": ["admin", "editor"],
+    "delete": ["admin"]
+  },
+  "fields": {
+    "title": {
+      "type": "text",
+      "label": "Title",
+      "required": true,
+      "max": 160,
+      "filter": {
+        "placeholder": "Search title"
+      }
+    },
+    "slug": {
+      "type": "text",
+      "label": "Slug",
+      "required": true,
+      "slug": true
+    },
+    "status": {
+      "type": "select",
+      "label": "Status",
+      "required": true,
+      "options": {
+        "draft": "Draft",
+        "published": "Published"
+      },
+      "filterable": true
+    },
+    "body": {
+      "type": "textarea",
+      "label": "Body",
+      "rows": 8,
+      "required": false
+    }
+  },
+  "list_columns": ["id", "title", "slug", "status"],
+  "searchable": ["title", "slug", "body"],
+  "default_order": "id DESC"
+}

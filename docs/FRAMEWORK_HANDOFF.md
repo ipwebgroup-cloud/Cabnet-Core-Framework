@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v3.8.0  
+**Version:** v3.9.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline
 
@@ -39,6 +39,7 @@
 - Twig-aware CRUD generator output for src-owned admin scaffolds
 - lightweight module policy hooks for controller authorization and admin-menu visibility
 - generator/runtime metadata parity for permissions, filters, middleware, menu visibility, and field-level filter shortcuts
+- built-in blueprint library and example packs for safer scaffold authoring
 
 ## Key Files to Know
 
@@ -55,7 +56,10 @@
 - `src/Presentation/Views/php/admin/crud/form_fields.php`
 - `src/Presentation/Views/twig/admin/crud/form_fields.twig`
 - `src/Generators/CrudScaffoldWriter.php`
+- `src/Generators/BlueprintLibrary.php`
 - `scripts/generate-crud-pack.php`
+- `scripts/generate-integration-patches.php`
+- `blueprints/examples/`
 
 ## Current delivery model
 
@@ -66,8 +70,8 @@
 ## Current phase notes
 
 - role-array permissions remain the default safe authorization path
-- modules may now optionally declare a `policy_class` or in-memory `policy` object that implements `Cabnet\Application\Crud\CrudModulePolicy`
-- policy hooks can return `true` or `false` to make an explicit decision, or `null` to defer to the existing role-array fallback
+- modules may optionally declare a `policy_class` or in-memory `policy` object that implements `Cabnet\Application\Crud\CrudModulePolicy`
 - controller authorization and admin-menu visibility now share the same policy-aware module access path
-- src-first CRUD generation can now preserve optional `access_roles`, per-action `permissions`, `admin_middleware`, `show_in_admin_menu`, and explicit `filters`
-- field metadata may now use `filter`, `filterable`, or `list_filter` shortcuts so list filters survive generation with less manual editing
+- src-first CRUD generation can preserve optional `access_roles`, per-action `permissions`, `admin_middleware`, `show_in_admin_menu`, and explicit `filters`
+- field metadata may use `filter`, `filterable`, or `list_filter` shortcuts
+- the framework now ships with built-in blueprint examples that can be listed or resolved directly via `example:<name>` when generating CRUD scaffolds or integration patch notes

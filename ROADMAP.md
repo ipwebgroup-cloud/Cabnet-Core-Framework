@@ -2,7 +2,7 @@
 
 ## Current release
 
-- v3.8.0 — Generator Metadata Parity Cleanup
+- v3.9.0 — Blueprint Library and Examples
 
 ## Completed convergence phases
 
@@ -21,9 +21,10 @@
 - v3.6 — Twig-aware generator output for src-owned CRUD module scaffolds
 - v3.7 — lightweight policy hooks for module authorization and admin menu visibility
 - v3.8 — generator/runtime metadata parity cleanup for CRUD scaffolds
+- v3.9 — built-in blueprint library and executable example packs for safer scaffold authoring
 
 ## Next strongest moves
 
-1. module blueprint authoring examples so patch-based continuation work has fewer ambiguous scaffold inputs
-2. runtime dependency-injection bridge so middleware/controller/service construction becomes less dependent on direct instantiation
-3. relation-filter option hydration so relation-backed list filters can become first-class selects without custom per-project glue
+1. runtime dependency-injection bridge so middleware/controller/service construction becomes less dependent on direct instantiation
+2. relation-filter option hydration so relation-backed list filters can become first-class selects without custom per-project glue
+3. blueprint schema validation so malformed scaffold blueprints fail earlier with clearer authoring feedback

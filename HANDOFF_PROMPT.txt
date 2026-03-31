@@ -49,12 +49,12 @@ The intended direction of this framework is:
 - `app/` remains a compatibility layer with legacy shims and wrappers
 - `config/modules.php` now drives CRUD services, admin routes, admin menu visibility, module action permissions, list-filter metadata, and optional policy hooks
 - `src/Presentation/Views` owns canonical PHP and Twig layouts, partials, and built-in CRUD views
-- CRUD field metadata now also supports uploads, relation-driven selects, and translatable inputs
+- CRUD field metadata supports uploads, relation-driven selects, translatable inputs, and filter shortcuts
 - request input merges uploaded files into the definition-driven CRUD payload
-- src-first CRUD generation can now optionally emit Twig admin view stubs alongside PHP output
-- module authorization can now stay role-based by default or be extended with lightweight `policy_class` / `policy` hooks
-- src-first CRUD generation now also preserves optional module metadata such as `access_roles`, `permissions`, `admin_middleware`, `show_in_admin_menu`, and list `filters`
-- field metadata can now expose filter shortcuts through `filter`, `filterable`, or `list_filter`
+- src-first CRUD generation can optionally emit Twig admin view stubs alongside PHP output
+- module authorization can stay role-based by default or be extended with lightweight `policy_class` / `policy` hooks
+- src-first CRUD generation preserves optional module metadata such as `access_roles`, `permissions`, `admin_middleware`, `show_in_admin_menu`, and list `filters`
+- the framework now also ships with a built-in blueprint library under `blueprints/examples/`, and both generator scripts can resolve examples via `example:<name>` or show them with `--list-examples`
 
 ## What I need from you first
 

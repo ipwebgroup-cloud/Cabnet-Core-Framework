@@ -1,4 +1,4 @@
-Cabnet Core Framework v3.8 — Generator Metadata Parity Cleanup (patch-only overlay)
+Cabnet Core Framework v3.9 — Blueprint Library and Examples (patch-only overlay)
 
 Apply these files over your existing framework tree:
 
@@ -8,11 +8,20 @@ Apply these files over your existing framework tree:
 - README.md
 - README_BUNDLE.md
 - ROADMAP.md
+- STARTER_FOLDER_TREE.md
 - bundle-manifest.json
 - config/framework.php
 - docs/ADD_NEW_ENTITY.md
 - docs/CRUD_CONVENTIONS.md
+- docs/FILE_WRITING_GENERATOR.md
 - docs/FRAMEWORK_HANDOFF.md
-- docs/V3_8_GENERATOR_METADATA_PARITY_CLEANUP.md
-- src/Generators/CrudScaffoldWriter.php
+- docs/SAFE_INTEGRATION_MODE.md
+- docs/V3_9_BLUEPRINT_LIBRARY_AND_EXAMPLES.md
+- scripts/generate-crud-pack.php
+- scripts/generate-integration-patches.php
+- src/Generators/BlueprintLibrary.php
 - tests/Smoke/FrameworkSmokeTest.php
+- blueprints/examples/README.md
+- blueprints/examples/content-pages.json
+- blueprints/examples/media-assets.json
+- blueprints/examples/localized-services.json

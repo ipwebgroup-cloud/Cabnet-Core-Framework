@@ -1,0 +1,72 @@
+{
+  "example_name": "Media Assets",
+  "example_summary": "Upload-oriented blueprint with file and image fields plus explicit status filters.",
+  "example_tags": ["uploads", "media", "assets"],
+  "entity_key": "media_assets",
+  "singular_label": "Media Asset",
+  "plural_label": "Media Assets",
+  "table": "media_assets",
+  "view_engines": ["php"],
+  "access_roles": ["admin"],
+  "permissions": {
+    "view": ["admin"],
+    "create": ["admin"],
+    "edit": ["admin"],
+    "delete": ["admin"]
+  },
+  "fields": {
+    "title": {
+      "type": "text",
+      "label": "Title",
+      "required": true,
+      "filter": {
+        "placeholder": "Search asset title"
+      }
+    },
+    "asset_file": {
+      "type": "file",
+      "label": "File",
+      "required": true,
+      "upload": true,
+      "upload_dir": "media/assets",
+      "max_size_kb": 8192,
+      "help": "Primary downloadable asset file."
+    },
+    "preview_image": {
+      "type": "image",
+      "label": "Preview Image",
+      "required": false,
+      "upload": true,
+      "upload_dir": "media/previews",
+      "accept": "image/*",
+      "max_size_kb": 4096
+    },
+    "status": {
+      "type": "select",
+      "label": "Status",
+      "required": true,
+      "options": {
+        "private": "Private",
+        "public": "Public",
+        "archived": "Archived"
+      },
+      "filterable": true
+    },
+    "alt_text": {
+      "type": "textarea",
+      "label": "Alt Text",
+      "required": false,
+      "rows": 3
+    }
+  },
+  "list_columns": ["id", "title", "status", "asset_file", "preview_image"],
+  "searchable": ["title", "alt_text"],
+  "default_order": "id DESC",
+  "filters": {
+    "status": {
+      "field": "status",
+      "type": "select",
+      "placeholder": "All statuses"
+    }
+  }
+}

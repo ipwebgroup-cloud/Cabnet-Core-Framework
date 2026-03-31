@@ -2,26 +2,21 @@
 
 ## Purpose
 
-This phase upgrades the generator from a naming helper into a file-writing scaffold generator.
+This phase upgraded the generator from a naming helper into a file-writing scaffold generator.
 
-## New components
+## Current usage
 
-- `ScaffoldWriter`
-- `scripts/generate-crud-pack.php`
-- example blueprint: `product-blueprint.json`
+You can now generate from:
 
-## What it generates
-
-From one blueprint JSON file, the generator now creates starter scaffold artifacts such as:
-
-- route snippet file
-- service registration snippet file
-- generated module notes
+- a direct JSON path
+- a built-in example alias like `example:content-pages`
 
 ## Suggested usage
 
 ```bash
-php scripts/generate-crud-pack.php app/Generators/Stubs/product-blueprint.json
+php scripts/generate-crud-pack.php --list-examples
+php scripts/generate-crud-pack.php example:content-pages
+php scripts/generate-crud-pack.php blueprints/examples/localized-services.json generated/localized_services
 ```
 
 ## Output
@@ -34,4 +29,4 @@ By default, files are written under:
 
 ## Safety note
 
-This phase writes generated files into a separate output directory, not directly into the live framework tree.
+The generator writes into a separate output directory, not directly into the live framework tree.

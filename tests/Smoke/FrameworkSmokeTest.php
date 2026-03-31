@@ -8,6 +8,7 @@ use AdminAuthMiddleware;
 use Cabnet\Application\Controllers\Admin\AuthController;
 use Cabnet\AppRuntime;
 use Cabnet\Bootstrap\Kernel;
+use Cabnet\Generators\BlueprintLibrary;
 use Cabnet\Generators\CrudScaffoldWriter;
 use Cabnet\Routing\Router;
 use Tests\Support\ResponseInspector;
@@ -98,6 +99,9 @@ final class FrameworkSmokeTest
             'src_crud_generator_preserves_module_permission_metadata' => 'srcCrudGeneratorPreservesModulePermissionMetadata',
             'src_crud_generator_preserves_explicit_filter_metadata' => 'srcCrudGeneratorPreservesExplicitFilterMetadata',
             'src_crud_generator_derives_filter_metadata_from_field_shortcuts' => 'srcCrudGeneratorDerivesFilterMetadataFromFieldShortcuts',
+            'blueprint_library_lists_built_in_examples' => 'blueprintLibraryListsBuiltInExamples',
+            'blueprint_library_resolves_named_examples' => 'blueprintLibraryResolvesNamedExamples',
+            'src_crud_generator_can_build_from_builtin_localized_service_example' => 'srcCrudGeneratorCanBuildFromBuiltInLocalizedServiceExample',
             'twig_renderer_maps_logical_php_templates_to_twig' => 'twigRendererMapsLogicalPhpTemplatesToTwig',
             'layered_twig_resolution_prefers_src_views_before_app_fallback' => 'layeredTwigResolutionPrefersSrcViewsBeforeAppFallback',
             'legacy_twig_layout_shim_delegates_to_src_layout' => 'legacyTwigLayoutShimDelegatesToSrcLayout',
@@ -1105,6 +1109,50 @@ final class FrameworkSmokeTest
         SmokeAssert::contains("'placeholder' => 'Search title'", $configSnippet, 'Derived field filters should preserve custom placeholder metadata.');
         SmokeAssert::false(str_contains($configSnippet, "'image_path' => array ("), 'Upload fields should not automatically derive list filters.');
         SmokeAssert::contains('Generated filters: status, title.', $notes, 'Implementation notes should summarize derived filters for the scaffold.');
+    }
+
+
+    private function blueprintLibraryListsBuiltInExamples(): void
+    {
+        $examples = BlueprintLibrary::listExamples(BASE_PATH);
+
+        SmokeAssert::arrayHasKey('content-pages', $examples, 'Blueprint library should expose the content-pages example.');
+        SmokeAssert::arrayHasKey('media-assets', $examples, 'Blueprint library should expose the media-assets example.');
+        SmokeAssert::arrayHasKey('localized-services', $examples, 'Blueprint library should expose the localized-services example.');
+        SmokeAssert::same('services', $examples['localized-services']['entity_key'] ?? null, 'Localized services example should preserve its entity key.');
+        SmokeAssert::contains('translatable', implode(', ', $examples['localized-services']['feature_tags'] ?? []), 'Localized services example should advertise translatable support.');
+    }
+
+    private function blueprintLibraryResolvesNamedExamples(): void
+    {
+        $resolved = BlueprintLibrary::resolvePath(BASE_PATH, 'example:localized-services');
+
+        SmokeAssert::same(
+            BASE_PATH . '/blueprints/examples/localized-services.json',
+            $resolved,
+            'Blueprint library should resolve built-in example aliases to canonical example files.'
+        );
+    }
+
+    private function srcCrudGeneratorCanBuildFromBuiltInLocalizedServiceExample(): void
+    {
+        $blueprint = BlueprintLibrary::load(BASE_PATH, 'example:localized-services');
+        SmokeAssert::true(is_array($blueprint), 'Built-in localized service blueprint should load as an array.');
+
+        $writer = new CrudScaffoldWriter();
+        $files = $writer->buildCrudPack($blueprint);
+
+        $configSnippet = (string)($files['generated/services_module_config.php.txt'] ?? '');
+        $definition = (string)($files['src/Application/Crud/Definitions/ServiceEntityDefinition.php'] ?? '');
+        $notes = (string)($files['generated/services_implementation_notes.txt'] ?? '');
+
+        SmokeAssert::contains("'policy_class' => \App\Policies\ServicePolicy::class", $configSnippet, 'Built-in localized service blueprint should preserve policy_class metadata in generated config.');
+        SmokeAssert::contains("'admin_middleware' => array (", $configSnippet, 'Built-in localized service blueprint should preserve admin middleware metadata.');
+        SmokeAssert::contains("'audit'", $configSnippet, 'Built-in localized service blueprint should preserve custom middleware entries.');
+        SmokeAssert::contains("'translatable' => true", $definition, 'Built-in localized service blueprint should preserve translatable field metadata in the generated definition.');
+        SmokeAssert::contains("'table' => 'service_categories'", $definition, 'Built-in localized service blueprint should preserve relation metadata in the generated definition.');
+        SmokeAssert::arrayHasKey('src/Presentation/Views/twig/admin/services/index.twig', $files, 'Built-in localized service blueprint should emit Twig CRUD views.');
+        SmokeAssert::contains('Requested view engines: php, twig.', $notes, 'Built-in localized service blueprint should preserve multi-engine view output in implementation notes.');
     }
 
     private function twigRendererMapsLogicalPhpTemplatesToTwig(): void

@@ -4,36 +4,23 @@
 
 This phase adds a safe integration-helper layer on top of the CRUD code generator.
 
-## New components
+## Current usage
 
-- `IntegrationPatcher`
-- `scripts/generate-integration-patches.php`
+The integration helper now accepts:
 
-## What it generates
+- a direct JSON blueprint path
+- a built-in example alias like `example:media-assets`
+- `--list-examples` to show the built-in example catalog
 
-From the same blueprint JSON, the patch helper now emits reviewable snippets for:
+## Example usage
 
-- `bootstrap/routes.php`
-- `bootstrap/services.php`
-- admin sidebar navigation
-- additional `require_once` lines for bootstrap loading
-
-## Why this matters
-
-The framework can now produce both:
-- the new module code pack
-- the integration snippets needed to wire it into the framework
-
-This reduces manual copy-paste and lowers the chance of missing steps.
+```bash
+php scripts/generate-integration-patches.php --list-examples
+php scripts/generate-integration-patches.php example:media-assets
+```
 
 ## Safety model
 
 The system still does **not** auto-modify framework files in place.
 
 Instead, it writes patch-ready text files for review first.
-
-## Example usage
-
-```bash
-php scripts/generate-integration-patches.php app/Generators/Stubs/product-blueprint.json
-```
