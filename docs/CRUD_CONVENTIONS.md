@@ -31,3 +31,5 @@ Prefer metadata-driven validation through `CrudEntityDefinition::validationRules
 ## Form direction
 
 Prefer metadata-driven form rendering through the shared CRUD partials before creating custom hand-written field markup.
+
+- Canonical CRUD presentation files now live under `src/Presentation/Views/php/admin`, with `app/Views/php` retained as a compatibility fallback.

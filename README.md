@@ -1,6 +1,6 @@
-# Cabnet Core Framework v3.0.0
+# Cabnet Core Framework v3.1.0
 
-Cabnet Core v3.0 adds definition-driven CRUD validation and metadata-driven form rendering on top of the earlier module-registry, CRUD metadata, HTTP/runtime, controller, service/repository, and renderer convergence work.
+Cabnet Core v3.1 adds layered view resolution and src-owned admin presentation packaging on top of the earlier definition-driven CRUD validation, module-registry, CRUD metadata, HTTP/runtime, controller, service/repository, and renderer convergence work.
 
 ## What this pack is
 
@@ -30,6 +30,7 @@ Use this pack to:
 - `docs/V2_8_CRUD_METADATA_CONVERGENCE.md`
 - `docs/V2_9_MODULE_REGISTRY_ADOPTION.md`
 - `docs/V3_0_VALIDATION_FORM_METADATA_CONVERGENCE.md`
+- `docs/V3_1_VIEW_PACKAGING_CONVERGENCE.md`
 - `docs/FRAMEWORK_HANDOFF.md`
 - `docs/CRUD_CONVENTIONS.md`
 - `docs/ADD_NEW_ENTITY.md`

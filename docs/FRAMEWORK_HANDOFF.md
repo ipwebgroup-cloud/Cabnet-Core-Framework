@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v3.0.0  
+**Version:** v3.1.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline  
 **Purpose:** Reusable base for business websites, catalogs, admin-heavy tools, and multilingual content systems
@@ -35,6 +35,8 @@
 - module-registry-driven CRUD service, route, and admin menu bootstrapping
 - definition-driven CRUD validation rules
 - metadata-driven CRUD form attributes
+- layered src-first view resolution with compatibility fallback to app views
+- src-owned admin CRUD presentation package files
 
 ---
 
@@ -45,7 +47,9 @@
 - `src/Application/Services/ServiceCrudService.php`
 - `src/Infrastructure/Repositories/CrudRepositoryContract.php`
 - `src/Infrastructure/Repositories/BaseRepository.php`
-- `app/Views/php/admin/crud/form_fields.php`
+- `src/View/TemplateResolver.php`
+- `src/View/ViewEngineFactory.php`
+- `src/Presentation/Views/php/admin/crud/*`
 - `src/Generators/CrudScaffoldWriter.php`
 
 ---
@@ -60,6 +64,7 @@
 - generator-based extension workflow
 - safe incremental `src/` migration path
 - canonical field metadata feeding validation and forms
+- canonical admin CRUD presentation views living under `src/Presentation/Views`
 
 ---
 
@@ -70,12 +75,13 @@
 - legacy global CRUD entity definitions still exist for compatibility
 - Twig support requires Composer installation
 - some integration patching remains manual by design
+- admin/public layouts still primarily live in `app/Views` until a later layout/partial convergence phase
 
 ---
 
-## v3.0 validation and form metadata convergence
+## v3.1 view packaging convergence
 
-- CRUD field metadata now acts as the canonical source for validation rules and form rendering hints
-- `DefinitionCrudService` centralizes shared CRUD create/update validation flow
-- `ServiceCrudService` is now a thin definition-driven wrapper
-- generator output now emits richer field metadata instead of repeating validation logic in every service
+- the renderer now prefers `src/Presentation/Views/*` before `app/Views/*`
+- explicit `@src/...` and `@app/...` template targeting is supported for controlled fallback behavior
+- shared admin CRUD presentation partials now live in `src/Presentation/Views/php/admin/crud`
+- generated CRUD module views now target `src/Presentation/Views/php/admin/{module}` by default

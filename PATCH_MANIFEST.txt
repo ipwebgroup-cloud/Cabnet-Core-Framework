@@ -1,14 +1,33 @@
-Cabnet Core Framework v3.0.0 — Validation and Form Metadata Convergence
-Patch type: overlay patch (changed files only)
-Base expected: v2.9 module-registry adoption state
+Cabnet Core Framework v3.1.0 — View Packaging Convergence
+Package mode: patch-only overlay
 
-Apply by copying these files over the existing framework tree, preserving paths.
+Apply these files on top of your current framework tree.
+This patch includes only files changed for v3.1.
 
-Included changes:
-- CRUD field metadata now derives validation rules
-- shared DefinitionCrudService added
-- ServiceCrudService reduced to a thin definition-driven wrapper
-- CRUD form partial now renders metadata-driven attributes/help text
-- CRUD generator now emits richer field metadata and definition-driven services
-- validator now supports in: rules and works without mbstring
-- smoke suite expanded and passing: 27/27
+Changed files:
+FRAMEWORK_STATUS.json
+README.md
+README_BUNDLE.md
+ROADMAP.md
+bundle-manifest.json
+config/framework.php
+docs/ADD_NEW_ENTITY.md
+docs/CRUD_CONVENTIONS.md
+docs/FRAMEWORK_HANDOFF.md
+docs/V3_1_VIEW_PACKAGING_CONVERGENCE.md
+src/Generators/CrudScaffoldWriter.php
+src/View/PhpRenderer.php
+src/View/TemplateResolver.php
+src/View/TwigRenderer.php
+src/View/ViewEngineFactory.php
+tests/Smoke/FrameworkSmokeTest.php
+src/Presentation/Views/php/admin/crud/index_table.php
+src/Presentation/Views/php/admin/crud/form_fields.php
+src/Presentation/Views/php/admin/crud/form_page.php
+src/Presentation/Views/php/admin/services/index.php
+src/Presentation/Views/php/admin/services/create.php
+src/Presentation/Views/php/admin/services/edit.php
+
+Validation:
+- PHP lint passed for all changed PHP files
+- Smoke suite passed: 29/29

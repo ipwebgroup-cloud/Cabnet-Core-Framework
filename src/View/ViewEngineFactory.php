@@ -14,9 +14,27 @@ final class ViewEngineFactory
     public function make(): Renderer
     {
         return match ($this->engine) {
-            'twig' => new TwigRenderer($this->basePath . '/app/Views/twig'),
-            'php' => new PhpRenderer($this->basePath . '/app/Views/php'),
-            default => new PhpRenderer($this->basePath . '/app/Views/php'),
+            'twig' => new TwigRenderer($this->twigRoots()),
+            'php' => new PhpRenderer($this->phpRoots()),
+            default => new PhpRenderer($this->phpRoots()),
         };
+    }
+
+    /** @return array<string, string> */
+    private function phpRoots(): array
+    {
+        return [
+            'src' => $this->basePath . '/src/Presentation/Views/php',
+            'app' => $this->basePath . '/app/Views/php',
+        ];
+    }
+
+    /** @return array<string, string> */
+    private function twigRoots(): array
+    {
+        return [
+            'src' => $this->basePath . '/src/Presentation/Views/twig',
+            'app' => $this->basePath . '/app/Views/twig',
+        ];
     }
 }

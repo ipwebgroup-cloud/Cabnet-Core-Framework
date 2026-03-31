@@ -82,6 +82,8 @@ final class FrameworkSmokeTest
             'crud_module_bootstrap_appends_admin_routes' => 'crudModuleBootstrapAppendsAdminRoutes',
             'crud_module_bootstrap_appends_admin_menu_items' => 'crudModuleBootstrapAppendsAdminMenuItems',
             'src_crud_generator_uses_namespaced_base_classes' => 'srcCrudGeneratorUsesNamespacedBaseClasses',
+            'layered_php_renderer_prefers_src_views_before_app_fallback' => 'layeredPhpRendererPrefersSrcViewsBeforeAppFallback',
+            'src_crud_generator_targets_src_presentation_views' => 'srcCrudGeneratorTargetsSrcPresentationViews',
         ];
     }
 
@@ -561,6 +563,58 @@ final class FrameworkSmokeTest
 
         $last = $items[count($items) - 1] ?? [];
         SmokeAssert::same('/logout', $last['path'] ?? null, 'Logout should remain the trailing admin menu action.');
+    }
+
+    private function layeredPhpRendererPrefersSrcViewsBeforeAppFallback(): void
+    {
+        $tempBase = sys_get_temp_dir() . '/cabnet_layered_view_' . uniqid('', true);
+        $srcRoot = $tempBase . '/src';
+        $appRoot = $tempBase . '/app';
+
+        if (!mkdir($srcRoot . '/admin', 0777, true) && !is_dir($srcRoot . '/admin')) {
+            throw new \RuntimeException('Failed to create temporary src view directory.');
+        }
+
+        if (!mkdir($appRoot . '/admin', 0777, true) && !is_dir($appRoot . '/admin')) {
+            throw new \RuntimeException('Failed to create temporary app view directory.');
+        }
+
+        file_put_contents($srcRoot . '/admin/example.php', '<p>src-layer</p>');
+        file_put_contents($appRoot . '/admin/example.php', '<p>app-layer</p>');
+
+        $renderer = new \Cabnet\View\PhpRenderer([
+            'src' => $srcRoot,
+            'app' => $appRoot,
+        ]);
+
+        SmokeAssert::contains('src-layer', $renderer->render('admin/example.php'), 'Layered renderer should prefer src views when both roots contain the same template.');
+        SmokeAssert::contains('app-layer', $renderer->render('@app/admin/example.php'), 'Layered renderer should still allow explicit app-view fallback targeting.');
+    }
+
+    private function srcCrudGeneratorTargetsSrcPresentationViews(): void
+    {
+        $writer = new CrudScaffoldWriter();
+        $files = $writer->buildCrudPack([
+            'entity_key' => 'products',
+            'singular_label' => 'Product',
+            'plural_label' => 'Products',
+            'table' => 'products',
+            'fields' => [
+                'title' => ['type' => 'text', 'required' => true],
+                'slug' => ['type' => 'text', 'required' => true],
+            ],
+            'list_columns' => ['id', 'title', 'slug'],
+            'searchable' => ['title', 'slug'],
+            'default_order' => 'id DESC',
+        ]);
+
+        $indexView = $files['src/Presentation/Views/php/admin/products/index.php'] ?? '';
+        $createView = $files['src/Presentation/Views/php/admin/products/create.php'] ?? '';
+        $notes = $files['generated/products_implementation_notes.txt'] ?? '';
+
+        SmokeAssert::contains("include BASE_PATH . '/src/Presentation/Views/php/admin/crud/index_table.php';", $indexView, 'Generated CRUD index view should target the src presentation CRUD partial.');
+        SmokeAssert::contains("include BASE_PATH . '/src/Presentation/Views/php/admin/crud/form_page.php';", $createView, 'Generated CRUD form view should target the src presentation CRUD form partial.');
+        SmokeAssert::contains('src/Presentation/Views/php/admin', $notes, 'Generated implementation notes should describe src-owned admin presentation views as the preferred target.');
     }
 
     private function srcCrudGeneratorUsesNamespacedBaseClasses(): void

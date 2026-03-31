@@ -7,9 +7,13 @@ use RuntimeException;
 
 class TwigRenderer implements Renderer
 {
-    public function __construct(
-        private string $basePath
-    ) {
+    /** @var array<string, string> */
+    private array $basePaths;
+
+    /** @param string|array<int|string, string> $basePath */
+    public function __construct(string|array $basePath)
+    {
+        $this->basePaths = $this->normalizeBasePaths($basePath);
     }
 
     public function render(string $template, array $data = []): string
@@ -20,12 +24,69 @@ class TwigRenderer implements Renderer
             );
         }
 
-        $loader = new \Twig\Loader\FilesystemLoader($this->basePath);
+        $loader = new \Twig\Loader\FilesystemLoader();
+        $registered = false;
+        foreach ($this->basePaths as $alias => $path) {
+            if (!is_dir($path)) {
+                continue;
+            }
+
+            $loader->addPath($path);
+            if ($alias !== 'default') {
+                $loader->addPath($path, $alias);
+            }
+            $registered = true;
+        }
+
+        if (!$registered) {
+            throw new RuntimeException('No Twig view directories were found for the configured renderer roots.');
+        }
+
         $twig = new \Twig\Environment($loader, [
             'cache' => false,
             'autoescape' => 'html',
         ]);
 
-        return $twig->render($template, $data);
+        return $twig->render($this->normalizeTemplate($template), $data);
+    }
+
+    /** @param string|array<int|string, string> $basePath
+     *  @return array<string, string>
+     */
+    private function normalizeBasePaths(string|array $basePath): array
+    {
+        if (is_string($basePath)) {
+            return ['default' => rtrim($basePath, '/')];
+        }
+
+        $normalized = [];
+        foreach ($basePath as $key => $value) {
+            if (!is_string($value) || $value === '') {
+                continue;
+            }
+
+            $alias = is_string($key) && $key !== '' ? $key : 'path_' . count($normalized);
+            $normalized[$alias] = rtrim($value, '/');
+        }
+
+        return $normalized !== [] ? $normalized : ['default' => '.'];
+    }
+
+    private function normalizeTemplate(string $template): string
+    {
+        if (!str_starts_with($template, '@')) {
+            return $template;
+        }
+
+        $withoutMarker = substr($template, 1);
+        $parts = explode('/', $withoutMarker, 2);
+        $alias = $parts[0] ?? '';
+        $relative = $parts[1] ?? '';
+
+        if ($alias === '' || $relative === '') {
+            return ltrim($withoutMarker, '/');
+        }
+
+        return '@' . $alias . '/' . ltrim($relative, '/');
     }
 }

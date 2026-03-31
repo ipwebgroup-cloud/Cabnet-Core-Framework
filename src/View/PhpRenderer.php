@@ -7,9 +7,9 @@ class PhpRenderer implements Renderer
 {
     private TemplateResolver $resolver;
 
-    public function __construct(
-        private string $basePath
-    ) {
+    /** @param string|array<int|string, string> $basePath */
+    public function __construct(string|array $basePath)
+    {
         $this->resolver = new TemplateResolver($basePath);
     }
 

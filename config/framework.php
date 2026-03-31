@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '3.0.0',
-    'release_name' => 'Validation and Form Metadata Convergence',
+    'version' => '3.1.0',
+    'release_name' => 'View Packaging Convergence',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -27,5 +27,7 @@ return [
         'crud_module_generator_integration' => true,
         'definition_driven_crud_validation' => true,
         'metadata_driven_crud_forms' => true,
+        'layered_view_resolution' => true,
+        'src_presentation_view_packages' => true,
     ],
 ];

@@ -24,3 +24,5 @@ For each field, decide:
 ## v3.0 note
 
 With v3.0, canonical field metadata is the preferred source for both validation and CRUD form behavior.
+
+- Generated admin PHP views now target `src/Presentation/Views/php/admin/{module}` first.

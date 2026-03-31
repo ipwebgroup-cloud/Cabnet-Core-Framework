@@ -1,17 +1,16 @@
-# Cabnet Core Framework Bundle v3.0.0
+# Cabnet Core Framework Bundle v3.1.0
 
 This patch continues the consolidated framework bundle with the next convergence phase.
 
 ## Included in this patch
-- definition-driven CRUD validation base
-- metadata-driven CRUD form rendering
-- updated service/repository contracts
-- updated src CRUD generator output
+- layered src-first PHP and Twig view resolution
+- src-owned admin CRUD presentation package files
+- updated src CRUD generator view output targets
 - release documentation and handoff notes
-- expanded smoke coverage
+- expanded smoke coverage for layered view resolution and src presentation output
 
-## v3.0 highlights
-- canonical CRUD field definitions now derive validator rule sets automatically
-- canonical CRUD services can inherit shared create/update validation behavior from `DefinitionCrudService`
-- canonical admin CRUD forms now render attributes like `required`, `maxlength`, placeholders, and help text from the definition metadata
-- generated src CRUD packs now emit field metadata suitable for both validation and form rendering
+## v3.1 highlights
+- the renderer now searches `src/Presentation/Views/*` before `app/Views/*`
+- explicit `@app/...` and `@src/...` template targeting is supported for controlled fallback behavior
+- canonical CRUD admin views now live under `src/Presentation/Views/php/admin`
+- generated CRUD packs now emit src-owned admin presentation view files instead of legacy `app/Views` wrappers

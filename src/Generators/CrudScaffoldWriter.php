@@ -147,9 +147,9 @@ final class {$controllerClass} extends BaseCrudController
 }
 ";
 
-        $files["app/Views/php/admin/{$routeBase}/index.php"] = "<?php\ninclude BASE_PATH . '/app/Views/php/admin/crud/index_table.php';\n";
-        $files["app/Views/php/admin/{$routeBase}/create.php"] = "<?php\ninclude BASE_PATH . '/app/Views/php/admin/crud/form_page.php';\n";
-        $files["app/Views/php/admin/{$routeBase}/edit.php"] = "<?php\ninclude BASE_PATH . '/app/Views/php/admin/crud/form_page.php';\n";
+        $files["src/Presentation/Views/php/admin/{$routeBase}/index.php"] = "<?php\ninclude BASE_PATH . '/src/Presentation/Views/php/admin/crud/index_table.php';\n";
+        $files["src/Presentation/Views/php/admin/{$routeBase}/create.php"] = "<?php\ninclude BASE_PATH . '/src/Presentation/Views/php/admin/crud/form_page.php';\n";
+        $files["src/Presentation/Views/php/admin/{$routeBase}/edit.php"] = "<?php\ninclude BASE_PATH . '/src/Presentation/Views/php/admin/crud/form_page.php';\n";
 
         $files["generated/{$routeBase}_module_config.php.txt"] = implode("\n", [
             "'{$routeBase}' => [",
@@ -201,7 +201,7 @@ final class {$controllerClass} extends BaseCrudController
             'Add the generated module metadata block to config/modules.php.',
             'Field metadata now carries validation and form rendering hints. Prefer editing the definition before editing the service or form partials.',
             'Admin routes, admin menu items, repository services, and CRUD services now derive from module metadata automatically.',
-            'Admin PHP views remain under app/Views/php/admin until rendering is migrated fully to src/View.',
+            'Generated admin PHP views now target src/Presentation/Views/php/admin first, with app/Views/php remaining as a compatibility fallback.',
             '',
         ]);
 
