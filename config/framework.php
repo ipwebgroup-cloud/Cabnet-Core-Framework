@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '3.5.0',
-    'release_name' => 'Richer Field Metadata',
+    'version' => '3.6.0',
+    'release_name' => 'Twig-Aware Generator Output',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -38,5 +38,6 @@ return [
         'crud_upload_metadata' => true,
         'crud_relation_metadata' => true,
         'crud_translatable_metadata' => true,
+        'twig_aware_generator_output' => true,
     ],
 ];

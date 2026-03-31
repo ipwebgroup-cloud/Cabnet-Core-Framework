@@ -6,9 +6,11 @@ define('BASE_PATH', dirname(__DIR__));
 $flags = array_values(array_filter(array_slice($argv, 1), static fn (string $arg): bool => str_starts_with($arg, '--')));
 $args = array_values(array_filter(array_slice($argv, 1), static fn (string $arg): bool => !str_starts_with($arg, '--')));
 $legacyMode = in_array('--legacy', $flags, true);
+$twigMode = in_array('--twig', $flags, true);
+$twigOnlyMode = in_array('--twig-only', $flags, true);
 
 if (count($args) < 1) {
-    echo "Usage: php scripts/generate-crud-pack.php <blueprint-json-path> [output-dir] [--legacy]\n";
+    echo "Usage: php scripts/generate-crud-pack.php <blueprint-json-path> [output-dir] [--legacy] [--twig] [--twig-only]\n";
     exit(1);
 }
 
@@ -26,6 +28,20 @@ $data = json_decode((string)$raw, true);
 if (!is_array($data)) {
     echo "Invalid blueprint JSON.\n";
     exit(1);
+}
+
+if ($twigOnlyMode) {
+    $data['view_engines'] = ['twig'];
+} elseif ($twigMode) {
+    $existing = $data['view_engines'] ?? ($data['view_engine'] ?? ['php']);
+    if (is_string($existing)) {
+        $existing = [$existing];
+    }
+    $existing[] = 'twig';
+    $data['view_engines'] = array_values(array_unique(array_filter(array_map(
+        static fn (mixed $engine): string => is_string($engine) ? strtolower(trim($engine)) : '',
+        (array)$existing
+    ))));
 }
 
 if ($legacyMode) {
@@ -51,6 +67,22 @@ foreach ($files as $relative => $content) {
 }
 
 echo 'Done. Output directory: ' . $outputDir . PHP_EOL;
-echo $legacyMode
-    ? "Generation target: legacy app/\n"
-    : "Generation target: src-first (views remain under app/Views/php until rendering migration completes).\n";
+
+if ($legacyMode) {
+    echo "Generation target: legacy app/\n";
+    exit(0);
+}
+
+$viewEngines = $data['view_engines'] ?? ($data['view_engine'] ?? ['php']);
+if (is_string($viewEngines)) {
+    $viewEngines = [$viewEngines];
+}
+$viewEngines = array_values(array_unique(array_filter(array_map(
+    static fn (mixed $engine): string => is_string($engine) ? strtolower(trim($engine)) : '',
+    (array)$viewEngines
+))));
+if ($viewEngines === []) {
+    $viewEngines = ['php'];
+}
+
+echo 'Generation target: src-first (' . implode(', ', $viewEngines) . ")\n";

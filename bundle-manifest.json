@@ -1,12 +1,12 @@
 {
   "bundle": "Cabnet Core Framework",
-  "version": "3.5.0",
-  "release_name": "Richer Field Metadata",
+  "version": "3.6.0",
+  "release_name": "Twig-Aware Generator Output",
   "package_mode": "patch_only",
   "notes": [
-    "Includes only files changed for v3.5.",
+    "Includes only files changed for v3.6.",
     "Overlay this patch on top of the current framework tree.",
-    "CRUD field metadata now supports uploads, relation-driven selects, and translatable inputs.",
-    "Request input merges uploaded files and definition-driven CRUD services can now hydrate relation options and persist uploads."
+    "The src-first CRUD generator now understands renderer targets and can emit src-owned Twig admin view stubs.",
+    "Generated implementation notes now explain how PHP and Twig presentation outputs map to config/app.php renderer selection."
   ]
 }

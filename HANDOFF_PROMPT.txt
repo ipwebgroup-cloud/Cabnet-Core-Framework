@@ -51,6 +51,7 @@ The intended direction of this framework is:
 - `src/Presentation/Views` owns canonical PHP and Twig layouts, partials, and built-in CRUD views
 - CRUD field metadata now also supports uploads, relation-driven selects, and translatable inputs
 - request input merges uploaded files into the definition-driven CRUD payload
+- src-first CRUD generation can now optionally emit Twig admin view stubs alongside PHP output
 
 ## What I need from you first
 

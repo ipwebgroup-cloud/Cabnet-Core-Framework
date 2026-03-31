@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v3.5.0  
+**Version:** v3.6.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline
 
@@ -36,11 +36,13 @@
 - metadata-driven upload fields
 - metadata-driven relation selects
 - metadata-driven translatable fields
+- Twig-aware CRUD generator output for src-owned admin scaffolds
 
 ## Key Files to Know
 
 - `config/modules.php`
 - `config/storage.php`
+- `config/app.php`
 - `src/Application/Crud/CrudModuleRegistry.php`
 - `src/Application/Crud/CrudEntityDefinition.php`
 - `src/Application/Controllers/Admin/BaseCrudController.php`
@@ -50,6 +52,7 @@
 - `src/Presentation/Views/php/admin/crud/form_fields.php`
 - `src/Presentation/Views/twig/admin/crud/form_fields.twig`
 - `src/Generators/CrudScaffoldWriter.php`
+- `scripts/generate-crud-pack.php`
 
 ## Current delivery model
 

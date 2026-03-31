@@ -21,8 +21,17 @@ For each field, decide:
 - placeholder/help for admin forms
 - explicit rules only when inference is insufficient
 
-## v3.0 note
+## Generator view targets
 
-With v3.0, canonical field metadata is the preferred source for both validation and CRUD form behavior.
+- Default generation still emits PHP admin stubs under `src/Presentation/Views/php/admin/{module}`.
+- Add `"view_engine": "twig"` to emit Twig-only admin stubs.
+- Add `"view_engines": ["php", "twig"]` to emit both presentation variants in the same pack.
+- `php scripts/generate-crud-pack.php blueprint.json --twig` augments the blueprint with Twig output.
+- `php scripts/generate-crud-pack.php blueprint.json --twig-only` emits Twig stubs without PHP admin view stubs.
 
-- Generated admin PHP views now target `src/Presentation/Views/php/admin/{module}` first.
+## v3.0+ note
+
+With v3.0+, canonical field metadata is the preferred source for both validation and CRUD form behavior.
+
+- Generated admin PHP views target `src/Presentation/Views/php/admin/{module}` first.
+- Generated admin Twig views target `src/Presentation/Views/twig/admin/{module}` and extend canonical shared CRUD templates.

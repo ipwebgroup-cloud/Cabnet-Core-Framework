@@ -2,8 +2,8 @@
 
 ## Current bundle
 
-- Version: v3.5.0
-- Release: Richer Field Metadata
+- Version: v3.6.0
+- Release: Twig-Aware Generator Output
 - Delivery mode: patch-only overlay
 
 ## Apply order
@@ -16,6 +16,6 @@
 
 ## Highlights
 
-- CRUD field metadata now supports uploads, relation-driven selects, and translatable inputs
-- request input now merges uploaded files into the canonical CRUD payload
-- definition-driven CRUD services can hydrate relation options and persist uploads without controller rewrites
+- src-first CRUD generation now understands PHP and Twig presentation targets
+- generated Twig admin stubs extend canonical src shared CRUD templates
+- PHP generation remains the default so existing bootstrap and renderer behavior stay stable

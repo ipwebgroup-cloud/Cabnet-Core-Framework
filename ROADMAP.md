@@ -2,7 +2,7 @@
 
 ## Current release
 
-- v3.5.0 — Richer Field Metadata
+- v3.6.0 — Twig-Aware Generator Output
 
 ## Completed convergence phases
 
@@ -18,9 +18,10 @@
 - v3.3 — Twig layout and partial parity
 - v3.4 — module permissions and filter metadata
 - v3.5 — richer field metadata for uploads, relations, and multilingual content
+- v3.6 — Twig-aware generator output for src-owned CRUD module scaffolds
 
 ## Next strongest moves
 
-1. Twig-aware generator output so generated module packs can optionally emit src-owned Twig presentation files
-2. lightweight policy hooks so module permissions can expand beyond role arrays without controller rewrites
-3. generator/runtime parity cleanup so richer field metadata flows into generated modules with less manual follow-up
+1. lightweight policy hooks so module permissions can expand beyond role arrays without controller rewrites
+2. generator/runtime parity cleanup so richer field metadata flows into generated modules with less manual follow-up
+3. module blueprint authoring examples so patch-based continuation work has fewer ambiguous scaffold inputs

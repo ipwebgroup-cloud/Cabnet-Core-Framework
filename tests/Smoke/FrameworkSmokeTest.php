@@ -91,6 +91,7 @@ final class FrameworkSmokeTest
             'legacy_app_view_shims_delegate_to_src_presentation_templates' => 'legacyAppViewShimsDelegateToSrcPresentationTemplates',
             'built_in_services_view_resolves_from_src_presentation_layer' => 'builtInServicesViewResolvesFromSrcPresentationLayer',
             'src_crud_generator_targets_src_presentation_views' => 'srcCrudGeneratorTargetsSrcPresentationViews',
+            'src_crud_generator_can_emit_twig_presentation_views' => 'srcCrudGeneratorCanEmitTwigPresentationViews',
             'twig_renderer_maps_logical_php_templates_to_twig' => 'twigRendererMapsLogicalPhpTemplatesToTwig',
             'layered_twig_resolution_prefers_src_views_before_app_fallback' => 'layeredTwigResolutionPrefersSrcViewsBeforeAppFallback',
             'legacy_twig_layout_shim_delegates_to_src_layout' => 'legacyTwigLayoutShimDelegatesToSrcLayout',
@@ -789,6 +790,33 @@ final class FrameworkSmokeTest
         SmokeAssert::contains("include BASE_PATH . '/src/Presentation/Views/php/admin/crud/index_table.php';", $indexView, 'Generated CRUD index view should target the src presentation CRUD partial.');
         SmokeAssert::contains("include BASE_PATH . '/src/Presentation/Views/php/admin/crud/form_page.php';", $createView, 'Generated CRUD form view should target the src presentation CRUD form partial.');
         SmokeAssert::contains('src/Presentation/Views/php/admin', $notes, 'Generated implementation notes should describe src-owned admin presentation views as the preferred target.');
+    }
+
+    private function srcCrudGeneratorCanEmitTwigPresentationViews(): void
+    {
+        $writer = new CrudScaffoldWriter();
+        $files = $writer->buildCrudPack([
+            'entity_key' => 'products',
+            'singular_label' => 'Product',
+            'plural_label' => 'Products',
+            'table' => 'products',
+            'view_engines' => ['php', 'twig'],
+            'fields' => [
+                'title' => ['type' => 'text', 'required' => true],
+                'slug' => ['type' => 'text', 'required' => true],
+            ],
+            'list_columns' => ['id', 'title', 'slug'],
+            'searchable' => ['title', 'slug'],
+            'default_order' => 'id DESC',
+        ]);
+
+        $twigIndex = $files['src/Presentation/Views/twig/admin/products/index.twig'] ?? '';
+        $twigCreate = $files['src/Presentation/Views/twig/admin/products/create.twig'] ?? '';
+        $notes = $files['generated/products_implementation_notes.txt'] ?? '';
+
+        SmokeAssert::contains("{% extends '@src/admin/crud/index_table.twig' %}", $twigIndex, 'Generated Twig CRUD index view should extend the canonical src shared CRUD index template.');
+        SmokeAssert::contains("{% extends '@src/admin/crud/form_page.twig' %}", $twigCreate, 'Generated Twig CRUD form view should extend the canonical src shared CRUD form template.');
+        SmokeAssert::contains('Requested view engines: php, twig.', $notes, 'Generated implementation notes should record the requested presentation targets.');
     }
 
     private function srcCrudGeneratorUsesNamespacedBaseClasses(): void

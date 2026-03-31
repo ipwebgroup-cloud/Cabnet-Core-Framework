@@ -1,13 +1,13 @@
 {
   "name": "Cabnet Core Framework",
-  "version": "3.5.0",
-  "release_type": "richer_field_metadata",
+  "version": "3.6.0",
+  "release_type": "twig_aware_generator_output",
   "preferred_runtime": "src",
   "legacy_layer_status": "transitional_shims",
   "recommended_next_tracks": [
-    "twig_aware_generator_output",
     "lightweight_policy_hooks",
-    "generator_runtime_parity_cleanup"
+    "generator_runtime_parity_cleanup",
+    "module_blueprint_authoring_examples"
   ],
-  "generated_at": "2026-03-31T21:30:00+03:00"
+  "generated_at": "2026-03-31T22:25:00+03:00"
 }

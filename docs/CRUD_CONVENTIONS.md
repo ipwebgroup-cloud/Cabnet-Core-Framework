@@ -46,4 +46,9 @@ Prefer metadata-driven form rendering through the shared CRUD partials before cr
 
 Prefer registry-driven list filtering through `config/modules.php` before hand-writing module-specific search/filter forms.
 
-- Canonical CRUD presentation files now live under `src/Presentation/Views/php/admin`, with `app/Views/php` retained as a compatibility fallback.
+## Generator presentation direction
+
+- Canonical CRUD presentation files live under `src/Presentation/Views/php/admin` and `src/Presentation/Views/twig/admin`.
+- PHP remains the default generated admin presentation target for compatibility.
+- Twig generation should extend the canonical shared CRUD templates under `src/Presentation/Views/twig/admin/crud`.
+- Blueprint-driven view targeting should prefer `view_engines` over ad hoc post-generation file edits.
