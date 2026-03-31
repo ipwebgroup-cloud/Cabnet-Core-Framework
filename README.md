@@ -1,17 +1,18 @@
-# Cabnet Core Framework v3.9.0
+# Cabnet Core Framework v4.0.0
 
-Cabnet Core v3.9 adds a built-in blueprint library so scaffold authoring can start from verified framework examples instead of ad-hoc JSON memory.
+Cabnet Core v4.0 adds a lightweight runtime dependency-injection bridge so controllers and middleware can constructor-inject registered services and simple src-owned classes without replacing the transitional legacy `App` container.
 
 ## What this patch adds
 
-- a canonical built-in blueprint library under `blueprints/examples/`
-- example-aware generator commands via `example:<name>` and `--list-examples`
-- built-in scaffold examples for simple content CRUD, upload/media CRUD, and richer localized service CRUD
-- smoke coverage for example discovery, example resolution, and generation from a richer built-in blueprint
+- constructor-aware runtime resolution for route-dispatched controllers
+- constructor-aware runtime resolution for named middleware aliases
+- typed service bindings for the legacy app service map so common runtime services can be resolved by class/interface
+- a lightweight dependency resolver for src-owned class construction with legacy-app injection support
+- smoke coverage for app-level construction, controller dispatch, and middleware execution through the new bridge
 
 ## Start here
 
-- `docs/V3_9_BLUEPRINT_LIBRARY_AND_EXAMPLES.md`
+- `docs/V4_0_RUNTIME_DEPENDENCY_INJECTION_BRIDGE.md`
 - `docs/FRAMEWORK_HANDOFF.md`
 - `docs/CRUD_CONVENTIONS.md`
 - `docs/ADD_NEW_ENTITY.md`

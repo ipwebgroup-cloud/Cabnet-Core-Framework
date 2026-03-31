@@ -14,11 +14,24 @@ class RouteDispatcher
         if (is_array($handler) && count($handler) === 2) {
             [$class, $action] = $handler;
             if (class_exists($class) && method_exists($class, $action)) {
-                $controller = new $class();
+                $controller = $this->makeInstance($class, $app);
                 return $controller->{$action}($app, $params);
             }
         }
 
         return null;
+    }
+
+    private function makeInstance(string $class, object $app): object
+    {
+        if (method_exists($app, 'make')) {
+            try {
+                return $app->make($class);
+            } catch (\Throwable) {
+                // Fall back to direct instantiation to preserve transitional compatibility.
+            }
+        }
+
+        return new $class();
     }
 }

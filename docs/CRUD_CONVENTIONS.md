@@ -88,6 +88,18 @@ Policy classes must implement `Cabnet\Application\Crud\CrudModulePolicy`.
 - return `false` to deny the action
 - return `null` to fall back to the configured role arrays
 
+## Runtime construction rule
+
+Route-dispatched controllers and named middleware aliases may now use lightweight constructor injection.
+
+Safe constructor targets:
+
+- registered runtime services resolved by class or interface
+- the transitional `App` bridge
+- simple instantiable src-owned helper classes with recursively resolvable dependencies
+
+Avoid using constructor injection for heavy runtime graphs or configuration arrays that are not backed by registered services yet.
+
 ## Blueprint authoring rule
 
 Prefer starting from a built-in example whenever the module is broadly similar to one of the shipped scaffold packs. This reduces drift between docs, generator behavior, and actual framework runtime expectations.

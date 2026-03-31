@@ -109,6 +109,9 @@ final class FrameworkSmokeTest
             'crud_form_page_uses_multipart_for_upload_fields' => 'crudFormPageUsesMultipartForUploadFields',
             'crud_form_fields_render_upload_relation_and_translatable_inputs' => 'crudFormFieldsRenderUploadRelationAndTranslatableInputs',
             'definition_driven_service_persists_uploads_and_translatable_values' => 'definitionDrivenServicePersistsUploadsAndTranslatableValues',
+            'app_make_can_constructor_inject_registered_services' => 'appMakeCanConstructorInjectRegisteredServices',
+            'route_dispatcher_uses_app_resolver_for_controller_construction' => 'routeDispatcherUsesAppResolverForControllerConstruction',
+            'middleware_executor_uses_app_resolver_for_middleware_construction' => 'middlewareExecutorUsesAppResolverForMiddlewareConstruction',
         ];
     }
 
@@ -1381,4 +1384,86 @@ final class FrameworkSmokeTest
         SmokeAssert::contains('/assets/uploads/articles/', (string)($repository->created[0]['hero_image'] ?? ''), 'Upload manager should persist files into the configured public upload path.');
     }
 
+    private function appMakeCanConstructorInjectRegisteredServices(): void
+    {
+        $app = bootstrap_app('admin');
+        $controller = $app->make(TestConstructorInjectedController::class);
+
+        SmokeAssert::true($controller instanceof TestConstructorInjectedController, 'App::make should instantiate constructor-injected controllers.');
+        SmokeAssert::true($controller->registry instanceof \Cabnet\Application\Crud\CrudModuleRegistry, 'App::make should inject registered src services by type.');
+        SmokeAssert::true($controller->app === $app, 'App::make should inject the legacy app bridge when requested.');
+        SmokeAssert::same('recursive-ok', $controller->recursive->marker(), 'App::make should resolve plain instantiable src classes recursively.');
+    }
+
+    private function routeDispatcherUsesAppResolverForControllerConstruction(): void
+    {
+        $app = bootstrap_app('admin');
+        $dispatcher = new \Cabnet\Routing\RouteDispatcher();
+        $response = $dispatcher->dispatch([TestConstructorInjectedController::class, 'show'], $app, ['id' => '42']);
+        $snapshot = ResponseInspector::snapshot($response);
+
+        SmokeAssert::same(200, $snapshot['statusCode'], 'Route dispatcher should resolve constructor-injected controllers successfully.');
+        SmokeAssert::contains('services|42|admin', (string)$snapshot['body'], 'Route dispatcher should dispatch constructor-injected controller actions correctly.');
+    }
+
+    private function middlewareExecutorUsesAppResolverForMiddlewareConstruction(): void
+    {
+        $app = bootstrap_app('admin');
+        $executor = new \Cabnet\Middleware\MiddlewareExecutor([
+            'constructor.injected' => TestConstructorInjectedMiddleware::class,
+        ]);
+
+        $response = $executor->run(['constructor.injected'], $app);
+        $snapshot = ResponseInspector::snapshot($response);
+
+        SmokeAssert::same(302, $snapshot['statusCode'], 'Middleware executor should resolve constructor-injected middleware successfully.');
+        SmokeAssert::same('/services', $snapshot['headers']['Location'] ?? null, 'Constructor-injected middleware should be able to return a redirect response.');
+    }
+
+}
+
+
+
+final class TestRecursiveDependency
+{
+    public function marker(): string
+    {
+        return 'recursive-ok';
+    }
+}
+
+final class TestConstructorInjectedController
+{
+    public function __construct(
+        public \Cabnet\Application\Crud\CrudModuleRegistry $registry,
+        public TestRecursiveDependency $recursive,
+        public object $app
+    ) {
+    }
+
+    public function show(object $app, array $params = []): \Response
+    {
+        return $app->response()->html(sprintf(
+            '%s|%s|%s',
+            $this->registry->meta('services')['table'] ?? null,
+            $params['id'] ?? 'missing',
+            $app->context()
+        ));
+    }
+}
+
+final class TestConstructorInjectedMiddleware
+{
+    public function __construct(private \Cabnet\Application\Crud\CrudModuleRegistry $registry)
+    {
+    }
+
+    public function handle(\App $app): ?\Response
+    {
+        if ($this->registry->meta('services')['table'] ?? null === 'services') {
+            return $app->response()->redirect('/services');
+        }
+
+        return null;
+    }
 }

@@ -1,12 +1,12 @@
 {
   "bundle": "Cabnet Core Framework",
-  "version": "3.9.0",
-  "release_name": "Blueprint Library and Examples",
+  "version": "4.0.0",
+  "release_name": "Runtime Dependency-Injection Bridge",
   "package_mode": "patch_only",
   "notes": [
-    "Includes only files changed for v3.9.",
+    "Includes only files changed for v4.0.",
     "Overlay this patch on top of the current framework tree.",
-    "The generator and integration helper can now list and resolve built-in blueprint examples.",
-    "Canonical example blueprints now demonstrate simple editorial CRUD, upload-driven CRUD, and richer localized service scaffolds."
+    "Controllers and named middleware aliases can now use lightweight constructor injection through the transitional legacy app bridge.",
+    "Typed service bindings now allow common runtime services to be resolved by class or interface during constructor-aware runtime construction."
   ]
 }

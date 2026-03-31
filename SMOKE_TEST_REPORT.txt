@@ -53,6 +53,9 @@ Cabnet Core Smoke Tests
 [PASS] crud_form_page_uses_multipart_for_upload_fields
 [PASS] crud_form_fields_render_upload_relation_and_translatable_inputs
 [PASS] definition_driven_service_persists_uploads_and_translatable_values
+[PASS] app_make_can_constructor_inject_registered_services
+[PASS] route_dispatcher_uses_app_resolver_for_controller_construction
+[PASS] middleware_executor_uses_app_resolver_for_middleware_construction
 ------------------------
-Passed: 53
+Passed: 56
 Failed: 0

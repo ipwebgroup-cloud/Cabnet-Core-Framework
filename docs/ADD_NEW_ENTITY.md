@@ -38,6 +38,16 @@ If the module needs authorization logic that cannot be expressed cleanly with ro
 
 The policy should implement `Cabnet\Application\Crud\CrudModulePolicy` and return `true`, `false`, or `null`.
 
+## Constructor injection reminder
+
+Runtime-dispatched controllers and named middleware aliases can now constructor-inject:
+
+- the transitional `App` bridge via an `App`, `object`, or `$app` constructor parameter
+- registered runtime services such as `Cabnet\Application\Crud\CrudModuleRegistry`, `Cabnet\Support\UrlGenerator`, `Cabnet\View\Renderer`, `Cabnet\Security\Csrf`, and similar typed services
+- simple instantiable src-owned classes that can themselves be resolved recursively
+
+Keep constructor injection light and runtime-safe. Prefer services and small helper objects over deep graph construction.
+
 ## Generator reminder
 
 The src-first generator can now preserve:

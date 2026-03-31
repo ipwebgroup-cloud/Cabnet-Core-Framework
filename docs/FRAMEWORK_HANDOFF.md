@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v3.9.0  
+**Version:** v4.0.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline
 
@@ -40,6 +40,7 @@
 - lightweight module policy hooks for controller authorization and admin-menu visibility
 - generator/runtime metadata parity for permissions, filters, middleware, menu visibility, and field-level filter shortcuts
 - built-in blueprint library and example packs for safer scaffold authoring
+- lightweight runtime dependency-injection bridge for controller and middleware construction
 
 ## Key Files to Know
 
@@ -50,6 +51,8 @@
 - `src/Application/Crud/CrudModulePolicy.php`
 - `src/Application/Controllers/Admin/BaseCrudController.php`
 - `src/Application/Services/DefinitionCrudService.php`
+- `src/Bootstrap/DependencyResolver.php`
+- `src/Bootstrap/ServiceRegistry.php`
 - `src/Support/AdminMenu.php`
 - `src/Support/UploadManager.php`
 - `src/Http/Request.php`
@@ -74,4 +77,6 @@
 - controller authorization and admin-menu visibility now share the same policy-aware module access path
 - src-first CRUD generation can preserve optional `access_roles`, per-action `permissions`, `admin_middleware`, `show_in_admin_menu`, and explicit `filters`
 - field metadata may use `filter`, `filterable`, or `list_filter` shortcuts
-- the framework now ships with built-in blueprint examples that can be listed or resolved directly via `example:<name>` when generating CRUD scaffolds or integration patch notes
+- the framework ships with built-in blueprint examples that can be listed or resolved directly via `example:<name>` when generating CRUD scaffolds or integration patch notes
+- route-dispatched controllers and named middleware aliases can now constructor-inject registered services and simple src-owned helper classes through the transitional app bridge
+- runtime dispatch still falls back to direct instantiation if constructor-aware resolution cannot be completed, preserving compatibility during migration

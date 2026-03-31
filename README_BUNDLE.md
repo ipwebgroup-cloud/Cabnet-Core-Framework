@@ -2,8 +2,8 @@
 
 ## Current bundle
 
-- Version: v3.9.0
-- Release: Blueprint Library and Examples
+- Version: v4.0.0
+- Release: Runtime Dependency-Injection Bridge
 - Delivery mode: patch-only overlay
 
 ## Apply order
@@ -16,6 +16,6 @@
 
 ## Highlights
 
-- CRUD and integration generators can now list built-in examples and resolve them by `example:<name>`
-- canonical blueprint examples now demonstrate simple editorial CRUD, upload/media CRUD, and richer localized services with Twig, relations, translatable fields, permissions, and policy hooks
-- blueprint authoring is now easier to continue safely across patch-only chat sessions because the framework ships with executable examples, not just prose
+- runtime controller and middleware construction can now use lightweight constructor injection without replacing the legacy `App`
+- the app service map now publishes typed service bindings so common runtime services can be resolved by class/interface
+- the bridge remains compatibility-first because route and middleware dispatch still fall back to direct instantiation if constructor-aware resolution cannot be completed

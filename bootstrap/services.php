@@ -1,7 +1,11 @@
 <?php
 declare(strict_types=1);
 
+$serviceRegistry = new \Cabnet\Bootstrap\ServiceRegistry();
+
 $services = [
+    '__service_types' => $serviceRegistry->serviceTypeBindings(),
+
     'time' => function (App $app): string {
         $registry = new \Cabnet\Bootstrap\ServiceRegistry();
         return $registry->makeClockService()->now();

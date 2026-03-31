@@ -2,7 +2,7 @@
 
 ## Current release
 
-- v3.9.0 — Blueprint Library and Examples
+- v4.0.0 — Runtime Dependency-Injection Bridge
 
 ## Completed convergence phases
 
@@ -22,9 +22,10 @@
 - v3.7 — lightweight policy hooks for module authorization and admin menu visibility
 - v3.8 — generator/runtime metadata parity cleanup for CRUD scaffolds
 - v3.9 — built-in blueprint library and executable example packs for safer scaffold authoring
+- v4.0 — lightweight runtime dependency-injection bridge for controller and middleware construction
 
 ## Next strongest moves
 
-1. runtime dependency-injection bridge so middleware/controller/service construction becomes less dependent on direct instantiation
-2. relation-filter option hydration so relation-backed list filters can become first-class selects without custom per-project glue
-3. blueprint schema validation so malformed scaffold blueprints fail earlier with clearer authoring feedback
+1. relation-filter option hydration so relation-backed list filters can become first-class selects without custom per-project glue
+2. blueprint schema validation so malformed scaffold blueprints fail earlier with clearer authoring feedback
+3. service registry formalization so typed runtime bindings become easier to extend without touching the legacy service array directly

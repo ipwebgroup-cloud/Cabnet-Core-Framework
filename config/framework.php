@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '3.9.0',
-    'release_name' => 'Blueprint Library and Examples',
+    'version' => '4.0.0',
+    'release_name' => 'Runtime Dependency-Injection Bridge',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -42,5 +42,6 @@ return [
         'crud_policy_hooks' => true,
         'crud_generator_metadata_parity' => true,
         'builtin_blueprint_library' => true,
+        'runtime_dependency_injection_bridge' => true,
     ],
 ];

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use Cabnet\Bootstrap\DependencyResolver;
 use Cabnet\Http\Request as RuntimeRequest;
 use Cabnet\Http\Response as RuntimeResponse;
 use Cabnet\Http\ResponseEmitter;
@@ -25,6 +26,10 @@ final class App
     private RuntimeResponse $response;
     private RuntimeRouter $router;
     private array $serviceCache = [];
+    /** @var array<string, array<int, string>> */
+    private array $serviceTypes = [];
+    /** @var array<string, mixed> */
+    private array $serviceTypeCache = [];
     private MiddlewareExecutor $middlewareExecutor;
     private RouteDispatcher $routeDispatcher;
     private ResponseResolver $responseResolver;
@@ -33,6 +38,8 @@ final class App
     public function __construct(array $config, array $services, array $routes, string $context = 'public')
     {
         $this->config = $config;
+        $this->serviceTypes = is_array($services['__service_types'] ?? null) ? (array)$services['__service_types'] : [];
+        unset($services['__service_types']);
         $this->services = $services;
         $this->routes = $routes;
         $this->context = $context;
@@ -136,6 +143,69 @@ final class App
 
         $this->serviceCache[$name] = $service;
         return $service;
+    }
+
+    public function hasService(string $name): bool
+    {
+        return array_key_exists($name, $this->services);
+    }
+
+    public function serviceByType(string $type): mixed
+    {
+        if (array_key_exists($type, $this->serviceTypeCache)) {
+            return $this->serviceTypeCache[$type];
+        }
+
+        foreach ($this->serviceCache as $service) {
+            if (is_object($service) && is_a($service, $type)) {
+                return $this->serviceTypeCache[$type] = $service;
+            }
+        }
+
+        $preferredNames = [];
+        foreach ($this->serviceTypes as $serviceName => $declaredTypes) {
+            foreach ((array)$declaredTypes as $declaredType) {
+                if (is_string($declaredType) && ltrim($declaredType, '\\') === ltrim($type, '\\')) {
+                    $preferredNames[] = $serviceName;
+                    break;
+                }
+            }
+        }
+
+        foreach ($preferredNames as $serviceName) {
+            if (!$this->hasService($serviceName)) {
+                continue;
+            }
+
+            $service = $this->service($serviceName);
+            if (is_object($service) && is_a($service, $type)) {
+                return $this->serviceTypeCache[$type] = $service;
+            }
+        }
+
+        foreach (array_keys($this->services) as $serviceName) {
+            if (in_array($serviceName, $preferredNames, true)) {
+                continue;
+            }
+
+            $service = $this->service($serviceName);
+            if (is_object($service) && is_a($service, $type)) {
+                return $this->serviceTypeCache[$type] = $service;
+            }
+        }
+
+        return null;
+    }
+
+    public function make(string $class): object
+    {
+        $service = $this->serviceByType($class);
+        if (is_object($service)) {
+            return $service;
+        }
+
+        $resolver = new DependencyResolver($this);
+        return $resolver->resolve($class);
     }
 
     public function renderer(): ViewRenderer
