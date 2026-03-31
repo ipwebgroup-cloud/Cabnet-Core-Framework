@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+namespace Cabnet\Infrastructure\Repositories;
+
 final class {{repositoryClass}} extends BaseRepository
 {
     protected function table(): string

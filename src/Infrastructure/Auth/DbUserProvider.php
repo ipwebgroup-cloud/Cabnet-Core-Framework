@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Cabnet\Infrastructure\Auth;
 
-final class DbUserProvider
+class DbUserProvider
 {
     public function __construct(private \DatabaseManager $db)
     {

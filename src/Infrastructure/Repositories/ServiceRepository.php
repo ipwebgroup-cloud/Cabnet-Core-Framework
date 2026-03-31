@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Cabnet\Infrastructure\Repositories;
 
-final class ServiceRepository extends \BaseRepository
+class ServiceRepository extends BaseRepository
 {
     protected function table(): string
     {

@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '2.5.0',
-    'release_name' => 'Legacy Runtime Reduction',
+    'version' => '2.6.0',
+    'release_name' => 'Service Repository Convergence',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -15,5 +15,7 @@ return [
         'smoke_test_runner' => true,
         'src_view_renderer' => true,
         'src_controller_bases' => true,
+        'src_service_bases' => true,
+        'src_repository_bases' => true,
     ],
 ];

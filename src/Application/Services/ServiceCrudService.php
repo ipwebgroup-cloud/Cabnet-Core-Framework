@@ -6,7 +6,7 @@ namespace Cabnet\Application\Services;
 use Cabnet\Application\Crud\Definitions\ServiceEntityDefinition;
 use Cabnet\Infrastructure\Repositories\ServiceRepository;
 
-final class ServiceCrudService extends \BaseService
+class ServiceCrudService extends BaseService
 {
     public function __construct(
         private ServiceRepository $repository,

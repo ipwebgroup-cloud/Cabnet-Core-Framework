@@ -1,4 +1,4 @@
-# Cabnet Core Framework Bundle v1.0.0
+# Cabnet Core Framework Bundle v2.6.0
 
 This is the consolidated framework bundle built from the phase-by-phase starter process.
 
@@ -12,60 +12,37 @@ This is the consolidated framework bundle built from the phase-by-phase starter 
 
 ## Recommended entry docs
 - `docs/FRAMEWORK_HANDOFF.md`
-- `docs/FRAMEWORK_MASTER_CONTEXT.md`
-- `docs/ARCHITECTURE.md`
-- `docs/ROADMAP.md`
+- `FRAMEWORK_MASTER_CONTEXT.md`
+- `ARCHITECTURE.md`
+- `ROADMAP.md`
 
 ## Recommended next action
 Use this as the baseline repository/project starter for your future apps.
 
+## v2.1 Runtime bootstrap convergence additions
+- preferred kernel/bootstrap path active through front controllers
+- compatibility factory for the legacy app container
+- config loader convergence around `src/Bootstrap`
 
-## v1.1 Hardening additions
-- error handler and file logger
-- framework/modules/admin-menu/logging config split
-- DB-backed auth service path
-- users schema
-- migration runner
-- FormRequest base
-- Composer project file and .env example
+## v2.2 Auth hardening additions
+- safer admin credential defaults
+- DB-backed auth service path retained as the primary direction
+- smoke coverage for login/logout and CSRF handling
 
+## v2.3 Smoke baseline additions
+- native smoke runner under `scripts/run-smoke-tests.php`
+- reusable response inspection helpers for framework checks
 
-## v1.2 Modernization additions
-- PSR-4 autoload direction
-- namespaced `src/` layer
-- route middleware metadata
-- stub-template generator path
-- middleware config file
+## v2.4 Rendering convergence additions
+- canonical renderer ownership in `src/View`
+- legacy renderer wrappers preserved for compatibility
 
+## v2.5 Legacy runtime reduction additions
+- canonical controller base classes moved into `src/Application/Controllers`
+- `AppRuntime` reduced to a compatibility facade over `src/Bootstrap/Kernel`
 
-## v1.3 Runtime migration additions
-- executable `src/` HTTP and routing runtime pieces
-- route-specific middleware execution in active runtime
-- deeper hybrid migration toward namespaced core
-
-
-## v1.4 Core unification additions
-- `src/Bootstrap/Kernel.php`
-- preferred kernel-based front controllers
-- centralized config loader
-- legacy bridge factory
-- CLI admin user creation helper
-
-
-## v1.5 Service/controller migration additions
-- active `src/Application` controllers for home, dashboard, and health
-- namespaced clock and admin-menu services
-- service registry bridge for incremental migration
-
-
-## v1.6 CRUD migration additions
-- first full migrated CRUD module in `src/`
-- `services` controller/service/repository/definition now use the new layers
-- stronger proof that the new architecture is viable for real admin modules
-
-
-## v1.7 Legacy reduction additions
-- auth moved into `src/`
-- DB user provider moved into `src/Infrastructure`
-- view state and admin menu support moved into `src/Support`
-- deprecation guidance for the legacy layer
+## v2.6 Service/repository convergence additions
+- canonical service base in `src/Application/Services/BaseService.php`
+- canonical repository base in `src/Infrastructure/Repositories/BaseRepository.php`
+- legacy service/repository classes narrowed into compatibility shims
+- src-first generator output aligned to src-owned base inheritance

@@ -3,6 +3,6 @@ declare(strict_types=1);
 
 namespace Cabnet\Application\Services;
 
-final class {{serviceClass}} extends BaseService
+abstract class BaseService
 {
 }

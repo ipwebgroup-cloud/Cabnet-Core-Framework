@@ -6,7 +6,7 @@ This phase upgrades the scaffold generator so it emits actual starter PHP code a
 
 ## Generated outputs
 
-The generator now writes:
+The default generator now writes src-first framework files:
 
 - CRUD entity definition class
 - repository class
@@ -27,8 +27,17 @@ Generated files still go to a separate output folder for review first.
 php scripts/generate-crud-pack.php app/Generators/Stubs/product-blueprint.json
 ```
 
+## Legacy mode
+
+For older forks only:
+
+```bash
+php scripts/generate-crud-pack.php app/Generators/Stubs/product-blueprint.json generated/legacy_output --legacy
+```
+
 ## What still remains manual
 
 - route insertion into `bootstrap/routes.php`
 - service registration insertion into `bootstrap/services.php`
 - sidebar navigation updates
+- final review before merge

@@ -1,17 +1,6 @@
 <?php
 declare(strict_types=1);
 
-final class DbUserProvider
+final class DbUserProvider extends \Cabnet\Infrastructure\Auth\DbUserProvider
 {
-    public function __construct(private DatabaseManager $db)
-    {
-    }
-
-    public function findByUsername(string $username): ?array
-    {
-        return $this->db->first(
-            'SELECT * FROM users WHERE username = :username LIMIT 1',
-            ['username' => $username]
-        );
-    }
 }

@@ -3,9 +3,9 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v1.0.0  
+**Version:** v2.6.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
-**Status:** Stable starter bundle  
+**Status:** Stable transitional baseline  
 **Purpose:** Reusable base for business websites, catalogs, admin-heavy tools, and multilingual content systems
 
 ---
@@ -37,6 +37,7 @@ This bundle consolidates the latest framework state from the iterative phase bui
 - scaffold code generation
 - integration patch generation
 - documentation pack
+- smoke-test baseline for bootstrap/runtime/generator regressions
 
 ---
 
@@ -65,9 +66,10 @@ This framework is best suited for:
 5. For new entities:
    - create a blueprint JSON
    - generate scaffold output
-   - generate integration patches
    - review
    - merge
+6. Prefer `src/` for all new framework-facing code.
+7. Use `--legacy` generation only when extending an older fork that still requires the compatibility layer.
 
 ---
 
@@ -77,24 +79,27 @@ This framework is best suited for:
 - `bootstrap/app.php`
 - `bootstrap/routes.php`
 - `bootstrap/services.php`
+- `src/Bootstrap/Kernel.php`
 
 ### Main framework classes
+- `src/Application/Controllers/BaseController.php`
+- `src/Application/Controllers/Admin/BaseCrudController.php`
+- `src/Application/Services/BaseService.php`
+- `src/Infrastructure/Repositories/BaseRepository.php`
 - `app/Core/App.php`
-- `app/Core/Router.php`
-- `app/Core/Response.php`
-- `app/Core/Request.php`
 
 ### CRUD and admin reuse
-- `app/Controllers/Admin/BaseCrudController.php`
-- `app/Crud/CrudEntityDefinition.php`
+- `src/Application/Crud/Definitions/ServiceEntityDefinition.php`
+- `src/Application/Services/ServiceCrudService.php`
+- `src/Infrastructure/Repositories/ServiceRepository.php`
 - `app/Views/php/admin/crud/index_table.php`
 - `app/Views/php/admin/crud/form_page.php`
 - `app/Views/php/admin/crud/form_fields.php`
 
 ### Generators
-- `app/Generators/EntityGenerator.php`
-- `app/Generators/ScaffoldWriter.php`
-- `app/Generators/IntegrationPatcher.php`
+- `src/Generators/EntityGenerator.php`
+- `src/Generators/CrudScaffoldWriter.php`
+- `src/Generators/IntegrationPatcher.php`
 - `scripts/generate-entity.php`
 - `scripts/generate-crud-pack.php`
 - `scripts/generate-integration-patches.php`
@@ -113,26 +118,23 @@ This framework is best suited for:
 - validation/CSRF/session patterns
 - reusable rendering flow
 - generator-based extension workflow
+- safe incremental `src/` migration path
 
 ### Still starter-level
-- admin auth credentials are simple demo credentials
-- no password hashing/user management system yet
-- no role/permission matrix yet
-- no automatic live-file patching yet
+- role/permission matrix is not yet built
+- advanced media workflows are not yet built
+- legacy global CRUD entity definitions still exist for compatibility
 - Twig support requires Composer installation
-- no advanced media manager yet
+- some integration patching remains manual by design
 
 ---
 
 ## Recommended Next Steps
 
-### High-priority hardening
-- replace demo admin login with DB-backed users
-- add password hashing
-- add CSRF middleware enforcement
-- add request validation helper classes
-- add logging/error pages
-- add .env or environment override strategy
+### High-priority convergence
+- move canonical CRUD entity definitions fully into `src/`
+- reduce remaining runtime dependence on global legacy entity definition classes
+- expand smoke coverage around scaffold integration seams
 
 ### High-value framework upgrades
 - module auto-registration
@@ -141,28 +143,3 @@ This framework is best suited for:
 - multilingual content tables
 - media upload manager
 - audit logs
-
----
-
-## Suggested Project Startup Sequence
-
-For a new project:
-
-1. duplicate framework bundle
-2. set project name and DB config
-3. create `PROJECT_MASTER_CONTEXT.md`
-4. create project-specific schema
-5. keep or remove sample `services` entity
-6. generate first real entity module
-7. integrate patches
-8. test CRUD flow
-9. package first release
-
----
-
-## Final Notes
-
-This bundle is designed to solve a specific workflow problem:
-**long software chats become unstable, but files and docs remain stable.**
-
-Use this framework as a reusable source-of-truth artifact, not as something that only exists inside one conversation.

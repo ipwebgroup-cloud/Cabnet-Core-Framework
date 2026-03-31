@@ -8,6 +8,7 @@ use AdminAuthMiddleware;
 use Cabnet\Application\Controllers\Admin\AuthController;
 use Cabnet\AppRuntime;
 use Cabnet\Bootstrap\Kernel;
+use Cabnet\Generators\CrudScaffoldWriter;
 use Cabnet\Routing\Router;
 use Tests\Support\ResponseInspector;
 use Tests\Support\SmokeAssert;
@@ -66,6 +67,8 @@ final class FrameworkSmokeTest
             'legacy_php_renderer_wrapper_remains_compatible' => 'legacyPhpRendererWrapperRemainsCompatible',
             'app_runtime_named_routes_match_kernel_context' => 'appRuntimeNamedRoutesMatchKernelContext',
             'src_service_controller_uses_src_crud_base' => 'srcServiceControllerUsesSrcCrudBase',
+            'legacy_service_repository_layer_remains_shimmed_to_src' => 'legacyServiceRepositoryLayerRemainsShimmedToSrc',
+            'src_crud_generator_uses_namespaced_base_classes' => 'srcCrudGeneratorUsesNamespacedBaseClasses',
         ];
     }
 
@@ -186,7 +189,6 @@ final class FrameworkSmokeTest
         SmokeAssert::false($app->auth()->check(), 'Logout should clear authenticated admin state.');
     }
 
-
     private function rendererServiceUsesSrcContract(): void
     {
         $app = bootstrap_app('public');
@@ -254,6 +256,85 @@ final class FrameworkSmokeTest
             is_subclass_of('BaseController', \Cabnet\Application\Controllers\BaseController::class),
             'Legacy global BaseController should remain a shim over the src base controller.'
         );
+    }
+
+    private function legacyServiceRepositoryLayerRemainsShimmedToSrc(): void
+    {
+        $app = bootstrap_app('admin');
+
+        SmokeAssert::true(
+            is_subclass_of('BaseService', \Cabnet\Application\Services\BaseService::class),
+            'Legacy BaseService should remain a shim over the src service base.'
+        );
+
+        SmokeAssert::true(
+            is_subclass_of('BaseRepository', \Cabnet\Infrastructure\Repositories\BaseRepository::class),
+            'Legacy BaseRepository should remain a shim over the src repository base.'
+        );
+
+        SmokeAssert::true(
+            is_subclass_of('ServiceCrudService', \Cabnet\Application\Services\ServiceCrudService::class),
+            'Legacy service CRUD class should remain a shim over the src CRUD service.'
+        );
+
+        SmokeAssert::true(
+            is_subclass_of('ServiceRepository', \Cabnet\Infrastructure\Repositories\ServiceRepository::class),
+            'Legacy service repository should remain a shim over the src repository.'
+        );
+
+        SmokeAssert::true(
+            is_subclass_of('AdminAuthService', \Cabnet\Application\Services\AdminAuthService::class),
+            'Legacy admin auth service should remain a shim over the src auth service.'
+        );
+
+        SmokeAssert::true(
+            is_subclass_of('DbUserProvider', \Cabnet\Infrastructure\Auth\DbUserProvider::class),
+            'Legacy DB user provider should remain a shim over the src infrastructure provider.'
+        );
+
+        SmokeAssert::true(
+            $app->service('serviceRepository') instanceof \Cabnet\Infrastructure\Repositories\ServiceRepository,
+            'Active service repository registration should resolve to the src repository implementation.'
+        );
+
+        SmokeAssert::true(
+            $app->service('serviceCrud') instanceof \Cabnet\Application\Services\ServiceCrudService,
+            'Active service CRUD registration should resolve to the src service implementation.'
+        );
+    }
+
+    private function srcCrudGeneratorUsesNamespacedBaseClasses(): void
+    {
+        $writer = new CrudScaffoldWriter();
+        $files = $writer->buildCrudPack([
+            'entity_key' => 'products',
+            'singular_label' => 'Product',
+            'plural_label' => 'Products',
+            'table' => 'products',
+            'fields' => [
+                'title' => ['type' => 'text', 'required' => true],
+                'slug' => ['type' => 'text', 'required' => true],
+            ],
+            'list_columns' => ['id', 'title', 'slug'],
+            'searchable' => ['title', 'slug'],
+            'default_order' => 'id DESC',
+        ]);
+
+        $repository = $files['src/Infrastructure/Repositories/ProductRepository.php'] ?? '';
+        $service = $files['src/Application/Services/ProductCrudService.php'] ?? '';
+        $controller = $files['src/Application/Controllers/Admin/ProductController.php'] ?? '';
+
+        SmokeAssert::contains('namespace Cabnet\\Infrastructure\\Repositories;', $repository, 'Generated src repository should stay namespaced.');
+        SmokeAssert::contains('extends BaseRepository', $repository, 'Generated src repository should extend the src repository base.');
+        SmokeAssert::true(str_contains($repository, 'extends \\BaseRepository') === false, 'Generated src repository should not fall back to the legacy global base.');
+
+        SmokeAssert::contains('namespace Cabnet\\Application\\Services;', $service, 'Generated src service should stay namespaced.');
+        SmokeAssert::contains('extends BaseService', $service, 'Generated src service should extend the src service base.');
+        SmokeAssert::true(str_contains($service, 'extends \\BaseService') === false, 'Generated src service should not fall back to the legacy global base.');
+
+        SmokeAssert::contains('namespace Cabnet\\Application\\Controllers\\Admin;', $controller, 'Generated src controller should stay namespaced.');
+        SmokeAssert::contains('extends BaseCrudController', $controller, 'Generated src controller should extend the canonical src CRUD base.');
+        SmokeAssert::true(str_contains($controller, 'extends \\BaseCrudController') === false, 'Generated src controller should not fall back to the legacy global CRUD base.');
     }
 
     private function adminAuthMiddlewareRedirectsGuests(): void

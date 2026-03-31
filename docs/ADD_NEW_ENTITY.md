@@ -4,6 +4,10 @@
 
 This guide shows the standard way to add a new CRUD entity to Cabnet Core quickly.
 
+## Preferred path
+
+Use the `src/` path for all new framework-facing entities. Use the legacy `app/` path only for older forks that still require compatibility shims.
+
 ## 1. Decide the entity basics
 
 Example:
@@ -21,13 +25,13 @@ Use the helper script:
 php scripts/generate-entity.php products Product Products products
 ```
 
-This will output suggested class and route names.
+This will output suggested class, route, and service names for the src-first architecture.
 
 ## 3. Create the definition class
 
 Create:
 
-- `app/Crud/Definitions/ProductEntityDefinition.php`
+- `src/Application/Crud/Definitions/ProductEntityDefinition.php`
 
 It should return a `CrudEntityDefinition` with:
 - fields
@@ -39,7 +43,7 @@ It should return a `CrudEntityDefinition` with:
 
 Create:
 
-- `app/Repositories/ProductRepository.php`
+- `src/Infrastructure/Repositories/ProductRepository.php`
 
 It should extend `BaseRepository` and provide:
 - `table()`
@@ -50,7 +54,7 @@ It should extend `BaseRepository` and provide:
 
 Create:
 
-- `app/Services/ProductCrudService.php`
+- `src/Application/Services/ProductCrudService.php`
 
 It should provide:
 - `paginate()`
@@ -63,19 +67,17 @@ It should provide:
 
 Create:
 
-- `app/Controllers/Admin/ProductController.php`
+- `src/Application/Controllers/Admin/ProductController.php`
 
 It should extend `BaseCrudController`.
 
 ## 7. Create the views
 
-Create thin wrappers:
+Create thin wrappers under the active PHP view layer:
 
 - `app/Views/php/admin/products/index.php`
 - `app/Views/php/admin/products/create.php`
 - `app/Views/php/admin/products/edit.php`
-
-Each can point to the generic CRUD partials.
 
 ## 8. Add routes
 
@@ -103,6 +105,8 @@ In `bootstrap/services.php`, register:
 - `productRepository`
 - `productCrud`
 
+Point them at the src implementation classes.
+
 ## 10. Add database schema
 
 Create a schema file under:
@@ -126,6 +130,6 @@ Add the module to the admin sidebar.
 - sidebar link added
 - tested create/edit/delete
 
-## Summary
+## Legacy compatibility note
 
-The framework is now structured so that adding a new entity is mostly repetition of a known pattern, not architectural invention.
+If an older fork still depends on the legacy layer, keep `app/` classes as thin shims over the src implementation rather than duplicating the logic again.

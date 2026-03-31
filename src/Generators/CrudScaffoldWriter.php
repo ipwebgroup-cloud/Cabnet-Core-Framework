@@ -76,7 +76,7 @@ declare(strict_types=1);
 
 namespace Cabnet\\Infrastructure\\Repositories;
 
-final class {$repositoryClass} extends \\BaseRepository
+final class {$repositoryClass} extends BaseRepository
 {
     protected function table(): string
     {
@@ -144,7 +144,7 @@ namespace Cabnet\\Application\\Services;
 use {$definitionFqcn};
 use {$repositoryFqcn};
 
-final class {$serviceClass} extends \\BaseService
+final class {$serviceClass} extends BaseService
 {
     public function __construct(
         private {$repositoryClass} \$repository,
@@ -210,7 +210,7 @@ namespace Cabnet\\Application\\Controllers\\Admin;
 
 use {$definitionFqcn};
 
-final class {$controllerClass} extends \\BaseCrudController
+final class {$controllerClass} extends BaseCrudController
 {
     protected function entityDefinition(): \\CrudEntityDefinition
     {

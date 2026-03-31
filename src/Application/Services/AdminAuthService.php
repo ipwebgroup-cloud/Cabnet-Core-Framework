@@ -5,7 +5,7 @@ namespace Cabnet\Application\Services;
 
 use Cabnet\Infrastructure\Auth\DbUserProvider;
 
-final class AdminAuthService
+class AdminAuthService
 {
     public function __construct(
         private DbUserProvider $users,

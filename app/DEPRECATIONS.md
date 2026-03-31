@@ -12,13 +12,15 @@ This file marks legacy classes that should gradually stop being used as the `src
 - `app/Controllers/Api/HealthController.php`
 
 ### Services moving to `src/Application`
-- admin auth service
-- service CRUD service
+- `app/Services/BaseService.php`
+- `app/Services/AdminAuthService.php`
+- `app/Services/ServiceCrudService.php`
 - time/menu services
 
 ### Infrastructure moving to `src/Infrastructure`
-- repositories
-- auth providers
+- `app/Repositories/BaseRepository.php`
+- `app/Repositories/ServiceRepository.php`
+- `app/Core/Auth/DbUserProvider.php`
 
 ### Support moving to `src/Support`
 - view state
@@ -27,3 +29,5 @@ This file marks legacy classes that should gradually stop being used as the `src
 ## Rule
 
 Do not create new major framework features in legacy `app/` when a corresponding `src/` layer already exists.
+
+When compatibility is required, keep legacy classes as thin shims over the canonical `src/` implementation.
