@@ -9,6 +9,7 @@ use Cabnet\Application\Controllers\Admin\AuthController;
 use Cabnet\AppRuntime;
 use Cabnet\Bootstrap\Kernel;
 use Cabnet\Generators\BlueprintLibrary;
+use Cabnet\Generators\BlueprintValidator;
 use Cabnet\Generators\CrudScaffoldWriter;
 use Cabnet\Routing\Router;
 use Tests\Support\ResponseInspector;
@@ -101,6 +102,9 @@ final class FrameworkSmokeTest
             'src_crud_generator_derives_filter_metadata_from_field_shortcuts' => 'srcCrudGeneratorDerivesFilterMetadataFromFieldShortcuts',
             'blueprint_library_lists_built_in_examples' => 'blueprintLibraryListsBuiltInExamples',
             'blueprint_library_resolves_named_examples' => 'blueprintLibraryResolvesNamedExamples',
+            'blueprint_validator_rejects_missing_required_top_level_keys' => 'blueprintValidatorRejectsMissingRequiredTopLevelKeys',
+            'blueprint_validator_rejects_translatable_fields_without_locales' => 'blueprintValidatorRejectsTranslatableFieldsWithoutLocales',
+            'blueprint_validator_accepts_builtin_localized_service_example' => 'blueprintValidatorAcceptsBuiltInLocalizedServiceExample',
             'src_crud_generator_can_build_from_builtin_localized_service_example' => 'srcCrudGeneratorCanBuildFromBuiltInLocalizedServiceExample',
             'twig_renderer_maps_logical_php_templates_to_twig' => 'twigRendererMapsLogicalPhpTemplatesToTwig',
             'layered_twig_resolution_prefers_src_views_before_app_fallback' => 'layeredTwigResolutionPrefersSrcViewsBeforeAppFallback',
@@ -1137,6 +1141,53 @@ final class FrameworkSmokeTest
             $resolved,
             'Blueprint library should resolve built-in example aliases to canonical example files.'
         );
+    }
+
+
+    private function blueprintValidatorRejectsMissingRequiredTopLevelKeys(): void
+    {
+        $errors = BlueprintValidator::validate([
+            'entity_key' => 'pages',
+            'fields' => [
+                'title' => [
+                    'type' => 'text',
+                    'label' => 'Title',
+                ],
+            ],
+        ]);
+
+        SmokeAssert::true($errors !== [], 'Blueprint validator should reject malformed top-level metadata.');
+        SmokeAssert::contains('singular_label', implode(' ', $errors), 'Blueprint validator should report missing singular_label.');
+        SmokeAssert::contains('plural_label', implode(' ', $errors), 'Blueprint validator should report missing plural_label.');
+        SmokeAssert::contains('table', implode(' ', $errors), 'Blueprint validator should report missing table.');
+    }
+
+    private function blueprintValidatorRejectsTranslatableFieldsWithoutLocales(): void
+    {
+        $errors = BlueprintValidator::validate([
+            'entity_key' => 'pages',
+            'singular_label' => 'Page',
+            'plural_label' => 'Pages',
+            'table' => 'pages',
+            'fields' => [
+                'title' => [
+                    'type' => 'text',
+                    'label' => 'Title',
+                    'translatable' => true,
+                ],
+            ],
+        ]);
+
+        SmokeAssert::true($errors !== [], 'Blueprint validator should reject translatable fields without locales.');
+        SmokeAssert::contains('locales', implode(' ', $errors), 'Blueprint validator should explain the missing locales requirement.');
+    }
+
+    private function blueprintValidatorAcceptsBuiltInLocalizedServiceExample(): void
+    {
+        $blueprint = BlueprintLibrary::load(BASE_PATH, 'example:localized-services');
+        $errors = BlueprintValidator::validate($blueprint);
+
+        SmokeAssert::same([], $errors, 'Built-in localized service example should satisfy blueprint schema validation.');
     }
 
     private function srcCrudGeneratorCanBuildFromBuiltInLocalizedServiceExample(): void

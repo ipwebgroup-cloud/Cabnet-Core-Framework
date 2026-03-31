@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v4.1.0  
+**Version:** v4.2.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline
 
@@ -42,6 +42,9 @@
 - built-in blueprint library and example packs for safer scaffold authoring
 - lightweight runtime dependency-injection bridge for controller and middleware construction
 - shared relation-option hydration for forms and relation-backed list filters
+- executable blueprint library support with built-in examples
+- early blueprint schema validation for scaffold and integration generation
+- reconciled lightweight policy-hook and constructor-aware runtime behavior in the executable tree
 
 ## Key Files to Know
 
@@ -61,6 +64,8 @@
 - `src/Presentation/Views/php/admin/crud/form_fields.php`
 - `src/Presentation/Views/twig/admin/crud/form_fields.twig`
 - `src/Generators/CrudScaffoldWriter.php`
+- `src/Generators/BlueprintLibrary.php`
+- `src/Generators/BlueprintValidator.php`
 - `src/Generators/BlueprintLibrary.php`
 - `scripts/generate-crud-pack.php`
 - `scripts/generate-integration-patches.php`
@@ -82,4 +87,6 @@
 - the framework ships with built-in blueprint examples that can be listed or resolved directly via `example:<name>` when generating CRUD scaffolds or integration patch notes
 - route-dispatched controllers and named middleware aliases can now constructor-inject registered services and simple src-owned helper classes through the transitional app bridge
 - relation-backed filters can now hydrate select options from relation metadata through the module registry without project-specific filter glue
+- built-in blueprint examples can now be listed and resolved directly through the generator entry scripts
+- generator entry scripts now validate blueprint shape before generation and fail early on malformed blueprints
 - runtime dispatch still falls back to direct instantiation if constructor-aware resolution cannot be completed, preserving compatibility during migration

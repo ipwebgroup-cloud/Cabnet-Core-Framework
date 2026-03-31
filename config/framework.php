@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '4.1.0',
-    'release_name' => 'Relation Filter Option Hydration',
+    'version' => '4.2.0',
+    'release_name' => 'Blueprint Schema Validation',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -44,5 +44,6 @@ return [
         'builtin_blueprint_library' => true,
         'runtime_dependency_injection_bridge' => true,
         'relation_filter_option_hydration' => true,
+        'blueprint_schema_validation' => true,
     ],
 ];

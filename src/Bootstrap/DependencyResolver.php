@@ -3,12 +3,9 @@ declare(strict_types=1);
 
 namespace Cabnet\Bootstrap;
 
-use ReflectionIntersectionType;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
-use ReflectionType;
-use ReflectionUnionType;
 use RuntimeException;
 
 final class DependencyResolver
@@ -20,36 +17,29 @@ final class DependencyResolver
     {
     }
 
-    public function resolve(string $class): object
+    public function make(string $class): object
     {
-        if (method_exists($this->app, 'serviceByType')) {
-            $service = $this->app->serviceByType($class);
-            if (is_object($service)) {
-                return $service;
-            }
+        if (!class_exists($class)) {
+            throw new RuntimeException(sprintf('Cannot resolve [%s]; class does not exist.', $class));
         }
 
         if (isset($this->resolving[$class])) {
-            throw new RuntimeException('Circular dependency detected while resolving ' . $class . '.');
-        }
-
-        if (!class_exists($class)) {
-            throw new RuntimeException('Cannot resolve missing class ' . $class . '.');
-        }
-
-        $reflection = new ReflectionClass($class);
-        if (!$reflection->isInstantiable()) {
-            throw new RuntimeException('Cannot instantiate non-instantiable class ' . $class . '.');
-        }
-
-        $constructor = $reflection->getConstructor();
-        if ($constructor === null || $constructor->getNumberOfParameters() === 0) {
-            return $reflection->newInstance();
+            throw new RuntimeException(sprintf('Circular dependency detected while resolving [%s].', $class));
         }
 
         $this->resolving[$class] = true;
 
         try {
+            $reflection = new ReflectionClass($class);
+            if (!$reflection->isInstantiable()) {
+                throw new RuntimeException(sprintf('Cannot resolve [%s]; class is not instantiable.', $class));
+            }
+
+            $constructor = $reflection->getConstructor();
+            if ($constructor === null || $constructor->getNumberOfParameters() === 0) {
+                return $reflection->newInstance();
+            }
+
             $arguments = [];
             foreach ($constructor->getParameters() as $parameter) {
                 $arguments[] = $this->resolveParameter($parameter);
@@ -65,20 +55,28 @@ final class DependencyResolver
     {
         $type = $parameter->getType();
 
-        if ($this->isAppParameter($parameter, $type)) {
-            return $this->app;
-        }
+        if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
+            $typeName = $type->getName();
 
-        foreach ($this->candidateTypes($type) as $candidate) {
+            if ($this->isAppType($typeName)) {
+                return $this->app;
+            }
+
             if (method_exists($this->app, 'serviceByType')) {
-                $service = $this->app->serviceByType($candidate);
+                $service = $this->app->serviceByType($typeName);
                 if ($service !== null) {
                     return $service;
                 }
             }
 
-            if (class_exists($candidate)) {
-                return $this->resolve($candidate);
+            if (class_exists($typeName)) {
+                return $this->make($typeName);
+            }
+        }
+
+        if ($type instanceof ReflectionNamedType && $type->isBuiltin()) {
+            if ($type->getName() === 'object' && $parameter->getName() === 'app') {
+                return $this->app;
             }
         }
 
@@ -91,59 +89,14 @@ final class DependencyResolver
         }
 
         throw new RuntimeException(sprintf(
-            'Unable to resolve constructor parameter $%s for %s.',
+            'Cannot resolve constructor parameter [$%s] for [%s].',
             $parameter->getName(),
-            $parameter->getDeclaringClass()?->getName() ?? 'unknown class'
+            $parameter->getDeclaringClass()?->getName() ?? 'unknown'
         ));
     }
 
-    private function isAppParameter(ReflectionParameter $parameter, ?ReflectionType $type): bool
+    private function isAppType(string $typeName): bool
     {
-        if ($parameter->getName() !== 'app') {
-            foreach ($this->candidateTypes($type) as $candidate) {
-                if ($candidate !== 'object' && is_a($this->app, $candidate)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        if ($type === null) {
-            return true;
-        }
-
-        foreach ($this->candidateTypes($type) as $candidate) {
-            if ($candidate === 'object' || is_a($this->app, $candidate)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /** @return array<int, string> */
-    private function candidateTypes(?ReflectionType $type): array
-    {
-        if ($type === null || $type instanceof ReflectionIntersectionType) {
-            return [];
-        }
-
-        if ($type instanceof ReflectionNamedType) {
-            return [$type->getName()];
-        }
-
-        if ($type instanceof ReflectionUnionType) {
-            $names = [];
-            foreach ($type->getTypes() as $namedType) {
-                if ($namedType instanceof ReflectionNamedType) {
-                    $names[] = $namedType->getName();
-                }
-            }
-
-            return $names;
-        }
-
-        return [];
+        return $typeName === 'App' || $typeName === '\\App' || is_a($this->app, $typeName, true);
     }
 }

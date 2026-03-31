@@ -45,6 +45,9 @@ Cabnet Core Smoke Tests
 [PASS] src_crud_generator_derives_filter_metadata_from_field_shortcuts
 [PASS] blueprint_library_lists_built_in_examples
 [PASS] blueprint_library_resolves_named_examples
+[PASS] blueprint_validator_rejects_missing_required_top_level_keys
+[PASS] blueprint_validator_rejects_translatable_fields_without_locales
+[PASS] blueprint_validator_accepts_builtin_localized_service_example
 [PASS] src_crud_generator_can_build_from_builtin_localized_service_example
 [PASS] twig_renderer_maps_logical_php_templates_to_twig
 [PASS] layered_twig_resolution_prefers_src_views_before_app_fallback
@@ -59,5 +62,5 @@ Cabnet Core Smoke Tests
 [PASS] crud_module_registry_hydrates_relation_filter_options
 [PASS] src_crud_generator_preserves_relation_filter_select_type_without_inline_options
 ------------------------
-Passed: 58
+Passed: 61
 Failed: 0

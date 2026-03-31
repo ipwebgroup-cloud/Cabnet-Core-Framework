@@ -57,6 +57,7 @@ The intended direction of this framework is:
 - the framework ships with a built-in blueprint library under `blueprints/examples/`, and both generator scripts can resolve examples via `example:<name>` or show them with `--list-examples`
 - runtime controller and middleware construction can now use lightweight constructor injection for registered services and simple src-owned classes while preserving fallback compatibility with direct instantiation
 - relation-backed list filters can now hydrate select options from field relation metadata through the module registry, and relation-backed derived scaffold filters remain select controls without inline option arrays
+- generator entry scripts now validate blueprint structure before generation so malformed custom JSON fails early with actionable errors
 
 ## What I need from you first
 

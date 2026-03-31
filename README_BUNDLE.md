@@ -2,8 +2,8 @@
 
 ## Current bundle
 
-- Version: v4.1.0
-- Release: Relation Filter Option Hydration
+- Version: v4.2.0
+- Release: Blueprint Schema Validation
 - Delivery mode: patch-only overlay
 
 ## Apply order
@@ -16,6 +16,6 @@
 
 ## Highlights
 
-- relation-backed list filters now hydrate select options from relation metadata at runtime
-- CRUD form relation options and list-filter relation options now share the same hydration path
-- scaffolded relation filters stay `select` controls even when their options are expected to be provided by database-backed relation metadata
+- malformed CRUD blueprints now fail early with schema validation errors
+- built-in examples can now be listed and resolved directly through the generator scripts
+- the executable tree now matches the documented policy-hook and constructor-aware runtime behavior

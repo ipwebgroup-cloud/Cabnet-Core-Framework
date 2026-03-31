@@ -2,7 +2,7 @@
 
 ## Current release
 
-- v4.1.0 — Relation Filter Option Hydration
+- v4.2.0 — Blueprint Schema Validation
 
 ## Completed convergence phases
 
@@ -24,9 +24,10 @@
 - v3.9 — built-in blueprint library and executable example packs for safer scaffold authoring
 - v4.0 — lightweight runtime dependency-injection bridge for controller and middleware construction
 - v4.1 — relation filter option hydration for runtime and generator parity
+- v4.2 — blueprint schema validation and baseline reconciliation for documented example/policy/DI features
 
 ## Next strongest moves
 
-1. blueprint schema validation so malformed scaffold blueprints fail earlier with clearer authoring feedback
-2. service registry formalization so typed runtime bindings become easier to extend without touching the legacy service array directly
-3. controller/service autowiring refinements so runtime construction can remain compatibility-first while reducing manual service glue over time
+1. service registry formalization so typed runtime bindings become easier to extend without touching the legacy service array directly
+2. controller/service autowiring refinements so runtime construction can reduce manual service glue without losing compatibility
+3. blueprint authoring tooling so custom scaffold blueprints can be created from guided templates instead of raw JSON alone

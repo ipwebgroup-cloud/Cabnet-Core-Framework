@@ -20,7 +20,7 @@ final class MiddlewareExecutor
                 continue;
             }
 
-            $instance = $this->makeInstance($class, $app);
+            $instance = method_exists($app, 'make') ? $app->make($class) : new $class();
             if (!method_exists($instance, 'handle')) {
                 continue;
             }
@@ -32,18 +32,5 @@ final class MiddlewareExecutor
         }
 
         return null;
-    }
-
-    private function makeInstance(string $class, object $app): object
-    {
-        if (method_exists($app, 'make')) {
-            try {
-                return $app->make($class);
-            } catch (\Throwable) {
-                // Fall back to direct instantiation to preserve transitional compatibility.
-            }
-        }
-
-        return new $class();
     }
 }

@@ -6,8 +6,7 @@ namespace Cabnet\Application\Crud;
 interface CrudModulePolicy
 {
     /**
-     * Return true/false to make an explicit authorization decision.
-     * Return null to fall back to role-based module permissions.
+     * Return true to allow, false to deny, or null to fall back to role-array permissions.
      *
      * @param array<string, mixed> $moduleMeta
      * @param array<string, mixed> $context

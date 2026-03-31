@@ -119,3 +119,7 @@ Avoid using constructor injection for heavy runtime graphs or configuration arra
 ## Blueprint authoring rule
 
 Prefer starting from a built-in example whenever the module is broadly similar to one of the shipped scaffold packs. This reduces drift between docs, generator behavior, and actual framework runtime expectations.
+
+## Blueprint validation rule
+
+Custom scaffold blueprints should pass the built-in validator before generation. At minimum, define: `entity_key`, `singular_label`, `plural_label`, `table`, and a non-empty `fields` object with valid field `type` metadata.

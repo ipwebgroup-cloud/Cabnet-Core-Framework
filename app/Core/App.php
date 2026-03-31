@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-use Cabnet\Bootstrap\DependencyResolver;
 use Cabnet\Http\Request as RuntimeRequest;
 use Cabnet\Http\Response as RuntimeResponse;
 use Cabnet\Http\ResponseEmitter;
 use Cabnet\Http\ResponseResolver;
+use Cabnet\Bootstrap\DependencyResolver;
 use Cabnet\Middleware\MiddlewareExecutor;
 use Cabnet\Routing\RouteDispatcher;
 use Cabnet\Routing\Router as RuntimeRouter;
@@ -26,20 +26,15 @@ final class App
     private RuntimeResponse $response;
     private RuntimeRouter $router;
     private array $serviceCache = [];
-    /** @var array<string, array<int, string>> */
-    private array $serviceTypes = [];
-    /** @var array<string, mixed> */
-    private array $serviceTypeCache = [];
     private MiddlewareExecutor $middlewareExecutor;
     private RouteDispatcher $routeDispatcher;
     private ResponseResolver $responseResolver;
     private ResponseEmitter $responseEmitter;
+    private ?DependencyResolver $dependencyResolver = null;
 
     public function __construct(array $config, array $services, array $routes, string $context = 'public')
     {
         $this->config = $config;
-        $this->serviceTypes = is_array($services['__service_types'] ?? null) ? (array)$services['__service_types'] : [];
-        unset($services['__service_types']);
         $this->services = $services;
         $this->routes = $routes;
         $this->context = $context;
@@ -145,67 +140,66 @@ final class App
         return $service;
     }
 
-    public function hasService(string $name): bool
+    public function make(string $class): object
     {
-        return array_key_exists($name, $this->services);
+        try {
+            return $this->resolver()->make($class);
+        } catch (\Throwable $e) {
+            if (class_exists($class)) {
+                return new $class();
+            }
+
+            throw $e;
+        }
     }
 
     public function serviceByType(string $type): mixed
     {
-        if (array_key_exists($type, $this->serviceTypeCache)) {
-            return $this->serviceTypeCache[$type];
+        if ($this->matchesAppType($type)) {
+            return $this;
         }
 
-        foreach ($this->serviceCache as $service) {
-            if (is_object($service) && is_a($service, $type)) {
-                return $this->serviceTypeCache[$type] = $service;
+        $bindings = $this->services['__service_types'] ?? [];
+        if (!is_array($bindings)) {
+            return null;
+        }
+
+        foreach ($bindings as $serviceName => $aliases) {
+            if (!is_array($aliases)) {
+                continue;
             }
-        }
 
-        $preferredNames = [];
-        foreach ($this->serviceTypes as $serviceName => $declaredTypes) {
-            foreach ((array)$declaredTypes as $declaredType) {
-                if (is_string($declaredType) && ltrim($declaredType, '\\') === ltrim($type, '\\')) {
-                    $preferredNames[] = $serviceName;
-                    break;
+            foreach ($aliases as $alias) {
+                if (!is_string($alias) || $alias === '') {
+                    continue;
+                }
+
+                if ($alias === $type || ltrim($alias, '\\') === ltrim($type, '\\')) {
+                    return $this->service((string)$serviceName);
                 }
             }
-        }
 
-        foreach ($preferredNames as $serviceName) {
-            if (!$this->hasService($serviceName)) {
-                continue;
-            }
-
-            $service = $this->service($serviceName);
-            if (is_object($service) && is_a($service, $type)) {
-                return $this->serviceTypeCache[$type] = $service;
-            }
-        }
-
-        foreach (array_keys($this->services) as $serviceName) {
-            if (in_array($serviceName, $preferredNames, true)) {
-                continue;
-            }
-
-            $service = $this->service($serviceName);
-            if (is_object($service) && is_a($service, $type)) {
-                return $this->serviceTypeCache[$type] = $service;
+            $candidate = $this->service((string)$serviceName);
+            if (is_object($candidate) && is_a($candidate, $type)) {
+                return $candidate;
             }
         }
 
         return null;
     }
 
-    public function make(string $class): object
+    private function matchesAppType(string $type): bool
     {
-        $service = $this->serviceByType($class);
-        if (is_object($service)) {
-            return $service;
+        return $type === 'App' || $type === '\\App' || is_a($this, $type, true);
+    }
+
+    private function resolver(): DependencyResolver
+    {
+        if ($this->dependencyResolver === null) {
+            $this->dependencyResolver = new DependencyResolver($this);
         }
 
-        $resolver = new DependencyResolver($this);
-        return $resolver->resolve($class);
+        return $this->dependencyResolver;
     }
 
     public function renderer(): ViewRenderer

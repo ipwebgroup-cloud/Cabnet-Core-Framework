@@ -82,3 +82,7 @@ The src-first generator can now preserve:
 - explicit top-level `filters` metadata or field-level filter shortcuts via `filter`, `filterable`, or `list_filter`
 - relation-backed derived filters that stay `select` controls without requiring inline `options`
 - built-in example selection via `example:<name>`
+
+## Validation reminder
+
+The generator entry scripts now validate blueprint structure before writing output. If a blueprint is malformed, fix the reported schema errors before integrating any generated files.
