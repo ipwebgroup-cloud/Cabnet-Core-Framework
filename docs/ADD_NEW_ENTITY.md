@@ -86,3 +86,7 @@ The src-first generator can now preserve:
 ## Validation reminder
 
 The generator entry scripts now validate blueprint structure before writing output. If a blueprint is malformed, fix the reported schema errors before integrating any generated files.
+
+## Runtime note
+
+As of v4.3, typed runtime services are registered through `src/Bootstrap/ServiceRegistry.php`. When a generated module or custom controller needs constructor-injected framework services, prefer formal typed bindings there instead of adding ad-hoc alias wiring directly in `bootstrap/services.php`.

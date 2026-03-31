@@ -2,8 +2,8 @@
 
 ## Current bundle
 
-- Version: v4.2.0
-- Release: Blueprint Schema Validation
+- Version: v4.3.0
+- Release: Service Registry Formalization
 - Delivery mode: patch-only overlay
 
 ## Apply order
@@ -16,6 +16,6 @@
 
 ## Highlights
 
-- malformed CRUD blueprints now fail early with schema validation errors
-- built-in examples can now be listed and resolved directly through the generator scripts
-- the executable tree now matches the documented policy-hook and constructor-aware runtime behavior
+- runtime service definitions are now centralized in `src/Bootstrap/ServiceRegistry.php`
+- typed runtime lookup now prefers the formal service registry instead of depending only on `__service_types`
+- legacy alias-array fallback is still preserved for compatibility

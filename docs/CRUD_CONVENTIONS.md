@@ -123,3 +123,7 @@ Prefer starting from a built-in example whenever the module is broadly similar t
 ## Blueprint validation rule
 
 Custom scaffold blueprints should pass the built-in validator before generation. At minimum, define: `entity_key`, `singular_label`, `plural_label`, `table`, and a non-empty `fields` object with valid field `type` metadata.
+
+## Runtime service convention
+
+As of v4.3, framework-owned runtime services should be registered in `src/Bootstrap/ServiceRegistry.php`. Keep `bootstrap/services.php` thin and reserve direct edits there for transitional or project-specific overlays only.

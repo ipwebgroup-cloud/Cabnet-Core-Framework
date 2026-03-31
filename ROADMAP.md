@@ -2,7 +2,7 @@
 
 ## Current release
 
-- v4.2.0 — Blueprint Schema Validation
+- v4.3.0 — Service Registry Formalization
 
 ## Completed convergence phases
 
@@ -25,9 +25,10 @@
 - v4.0 — lightweight runtime dependency-injection bridge for controller and middleware construction
 - v4.1 — relation filter option hydration for runtime and generator parity
 - v4.2 — blueprint schema validation and baseline reconciliation for documented example/policy/DI features
+- v4.3 — service registry formalization for typed runtime service lookup and centralized default service definitions
 
 ## Next strongest moves
 
-1. service registry formalization so typed runtime bindings become easier to extend without touching the legacy service array directly
-2. controller/service autowiring refinements so runtime construction can reduce manual service glue without losing compatibility
-3. blueprint authoring tooling so custom scaffold blueprints can be created from guided templates instead of raw JSON alone
+1. controller/service autowiring refinements so runtime construction can reduce manual transitional service glue without losing compatibility
+2. blueprint authoring tooling so custom scaffold blueprints can be created from guided templates instead of raw JSON alone
+3. service override extension points so project forks can replace or decorate formal runtime services without editing core bootstrap files directly

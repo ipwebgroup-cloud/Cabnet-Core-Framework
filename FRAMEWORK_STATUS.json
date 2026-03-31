@@ -1,13 +1,13 @@
 {
   "name": "Cabnet Core Framework",
-  "version": "4.2.0",
-  "release_type": "blueprint_schema_validation",
+  "version": "4.3.0",
+  "release_type": "service_registry_formalization",
   "preferred_runtime": "src",
   "legacy_layer_status": "transitional_shims",
   "recommended_next_tracks": [
-    "service_registry_formalization",
     "controller_service_autowiring",
-    "blueprint_authoring_tooling"
+    "blueprint_authoring_tooling",
+    "service_override_extension_points"
   ],
-  "generated_at": "2026-04-01T01:05:00+03:00"
+  "generated_at": "2026-04-01T01:35:00+03:00"
 }

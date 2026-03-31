@@ -1,12 +1,12 @@
 {
   "bundle": "Cabnet Core Framework",
-  "version": "4.2.0",
-  "release_name": "Blueprint Schema Validation",
+  "version": "4.3.0",
+  "release_name": "Service Registry Formalization",
   "package_mode": "patch_only",
   "notes": [
-    "Includes only files changed for v4.2.",
+    "Includes only files changed for v4.3.",
     "Overlay this patch on top of the current framework tree.",
-    "Generator scripts now validate blueprint structure before writing output.",
-    "Built-in examples and earlier documented policy/DI bridge features are now present in the executable tree."
+    "Runtime service definitions are now centralized in ServiceRegistry.",
+    "App::serviceByType() now prefers the formal service registry before falling back to legacy alias-array bindings."
   ]
 }

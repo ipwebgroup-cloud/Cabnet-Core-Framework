@@ -6,6 +6,7 @@ use Cabnet\Http\Response as RuntimeResponse;
 use Cabnet\Http\ResponseEmitter;
 use Cabnet\Http\ResponseResolver;
 use Cabnet\Bootstrap\DependencyResolver;
+use Cabnet\Bootstrap\ServiceRegistry;
 use Cabnet\Middleware\MiddlewareExecutor;
 use Cabnet\Routing\RouteDispatcher;
 use Cabnet\Routing\Router as RuntimeRouter;
@@ -159,6 +160,14 @@ final class App
             return $this;
         }
 
+        $registry = $this->serviceRegistry();
+        if ($registry instanceof ServiceRegistry) {
+            $serviceName = $registry->serviceNameForType($type);
+            if (is_string($serviceName) && $serviceName !== '') {
+                return $this->service($serviceName);
+            }
+        }
+
         $bindings = $this->services['__service_types'] ?? [];
         if (!is_array($bindings)) {
             return null;
@@ -175,17 +184,32 @@ final class App
                 }
 
                 if ($alias === $type || ltrim($alias, '\\') === ltrim($type, '\\')) {
-                    return $this->service((string)$serviceName);
+                    return $this->service((string) $serviceName);
                 }
             }
 
-            $candidate = $this->service((string)$serviceName);
+            $candidate = $this->service((string) $serviceName);
             if (is_object($candidate) && is_a($candidate, $type)) {
                 return $candidate;
             }
         }
 
         return null;
+    }
+
+    private function serviceRegistry(): ?ServiceRegistry
+    {
+        $registry = $this->services['__service_registry'] ?? null;
+        if ($registry instanceof ServiceRegistry) {
+            return $registry;
+        }
+
+        $service = $this->services['serviceRegistry'] ?? null;
+        if (is_callable($service)) {
+            $service = $service($this);
+        }
+
+        return $service instanceof ServiceRegistry ? $service : null;
     }
 
     private function matchesAppType(string $type): bool

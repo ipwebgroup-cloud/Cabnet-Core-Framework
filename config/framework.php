@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '4.2.0',
-    'release_name' => 'Blueprint Schema Validation',
+    'version' => '4.3.0',
+    'release_name' => 'Service Registry Formalization',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -45,5 +45,6 @@ return [
         'runtime_dependency_injection_bridge' => true,
         'relation_filter_option_hydration' => true,
         'blueprint_schema_validation' => true,
+        'service_registry_formalization' => true,
     ],
 ];

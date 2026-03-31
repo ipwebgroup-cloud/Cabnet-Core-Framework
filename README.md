@@ -1,19 +1,18 @@
-# Cabnet Core Framework v4.2.0
+# Cabnet Core Framework v4.3.0
 
-Cabnet Core v4.2 adds early blueprint schema validation for scaffold generation and integration patch generation, while reconciling earlier documented policy-hook, built-in-example, and constructor-aware runtime features so the executable tree now matches the continuity files.
+Cabnet Core v4.3 formalizes runtime service registration around `Cabnet\Bootstrap\ServiceRegistry`, so typed runtime resolution no longer depends only on the legacy `__service_types` alias array embedded in the bootstrap service map.
 
 ## What this patch adds
 
-- early blueprint schema validation through `Cabnet\Generators\BlueprintValidator`
-- executable built-in blueprint library support through `Cabnet\Generators\BlueprintLibrary`
-- shipped example packs for `content-pages`, `media-assets`, and `localized-services`
-- restored `CrudModulePolicy` contract used by module registry and admin-menu visibility hooks
-- restored constructor-aware `App::make()` resolution for route-dispatched controllers and named middleware aliases
-- smoke coverage for malformed blueprints and reconciled runtime features
+- `ServiceRegistry` now owns the default runtime service definitions
+- formal type-to-service lookup through `ServiceRegistry::serviceNameForType()`
+- first-class typed services for `serviceRegistry`, `clock`, and `adminMenuService`
+- `App::serviceByType()` now prefers the formal registry path and falls back to legacy alias maps for compatibility
+- smoke coverage proving typed runtime resolution still works even when the legacy alias array is absent
 
 ## Start here
 
-- `docs/V4_2_BLUEPRINT_SCHEMA_VALIDATION.md`
+- `docs/V4_3_SERVICE_REGISTRY_FORMALIZATION.md`
 - `docs/FRAMEWORK_HANDOFF.md`
 - `docs/CRUD_CONVENTIONS.md`
 - `docs/ADD_NEW_ENTITY.md`

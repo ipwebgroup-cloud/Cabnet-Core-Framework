@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v4.2.0  
+**Version:** v4.3.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline
 
@@ -45,6 +45,7 @@
 - executable blueprint library support with built-in examples
 - early blueprint schema validation for scaffold and integration generation
 - reconciled lightweight policy-hook and constructor-aware runtime behavior in the executable tree
+- formalized runtime service registration and typed service lookup through `ServiceRegistry`
 
 ## Key Files to Know
 
@@ -90,3 +91,4 @@
 - built-in blueprint examples can now be listed and resolved directly through the generator entry scripts
 - generator entry scripts now validate blueprint shape before generation and fail early on malformed blueprints
 - runtime dispatch still falls back to direct instantiation if constructor-aware resolution cannot be completed, preserving compatibility during migration
+- runtime service definitions are now centralized in `ServiceRegistry`, and typed lookups prefer the formal registry before falling back to `__service_types`

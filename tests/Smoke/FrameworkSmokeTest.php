@@ -113,6 +113,8 @@ final class FrameworkSmokeTest
             'crud_form_page_uses_multipart_for_upload_fields' => 'crudFormPageUsesMultipartForUploadFields',
             'crud_form_fields_render_upload_relation_and_translatable_inputs' => 'crudFormFieldsRenderUploadRelationAndTranslatableInputs',
             'definition_driven_service_persists_uploads_and_translatable_values' => 'definitionDrivenServicePersistsUploadsAndTranslatableValues',
+            'service_registry_exposes_formal_type_alias_resolution' => 'serviceRegistryExposesFormalTypeAliasResolution',
+            'app_service_by_type_resolves_via_formal_service_registry_without_legacy_alias_map' => 'appServiceByTypeResolvesViaFormalServiceRegistryWithoutLegacyAliasMap',
             'app_make_can_constructor_inject_registered_services' => 'appMakeCanConstructorInjectRegisteredServices',
             'route_dispatcher_uses_app_resolver_for_controller_construction' => 'routeDispatcherUsesAppResolverForControllerConstruction',
             'middleware_executor_uses_app_resolver_for_middleware_construction' => 'middlewareExecutorUsesAppResolverForMiddlewareConstruction',
@@ -1435,6 +1437,33 @@ final class FrameworkSmokeTest
         SmokeAssert::true(isset($repository->created[0]['title']) && is_string($repository->created[0]['title']), 'Translatable data should be prepared for persistence.');
         SmokeAssert::contains('"en":"Hello"', $repository->created[0]['title'], 'Translatable persistence payload should be JSON encoded.');
         SmokeAssert::contains('/assets/uploads/articles/', (string)($repository->created[0]['hero_image'] ?? ''), 'Upload manager should persist files into the configured public upload path.');
+    }
+
+    private function serviceRegistryExposesFormalTypeAliasResolution(): void
+    {
+        $registry = new \Cabnet\Bootstrap\ServiceRegistry();
+
+        SmokeAssert::same('crudModuleRegistry', $registry->serviceNameForType(\Cabnet\Application\Crud\CrudModuleRegistry::class), 'Formal service registry should map CrudModuleRegistry by class name.');
+        SmokeAssert::same('renderer', $registry->serviceNameForType('RendererInterface'), 'Formal service registry should preserve compatibility aliases for renderer resolution.');
+        SmokeAssert::same('serviceRegistry', $registry->serviceNameForType(\Cabnet\Bootstrap\ServiceRegistry::class), 'Formal service registry should expose itself as a typed runtime service.');
+    }
+
+    private function appServiceByTypeResolvesViaFormalServiceRegistryWithoutLegacyAliasMap(): void
+    {
+        $app = bootstrap_app('admin');
+        $reflection = new \ReflectionClass($app);
+        $servicesProperty = $reflection->getProperty('services');
+        $servicesProperty->setAccessible(true);
+
+        $services = $servicesProperty->getValue($app);
+        unset($services['__service_types']);
+        $servicesProperty->setValue($app, $services);
+
+        $registry = $app->serviceByType(\Cabnet\Application\Crud\CrudModuleRegistry::class);
+        $serviceRegistry = $app->serviceByType(\Cabnet\Bootstrap\ServiceRegistry::class);
+
+        SmokeAssert::true($registry instanceof \Cabnet\Application\Crud\CrudModuleRegistry, 'App::serviceByType should resolve services through the formal service registry when legacy alias maps are absent.');
+        SmokeAssert::true($serviceRegistry instanceof \Cabnet\Bootstrap\ServiceRegistry, 'App::serviceByType should expose the formal service registry itself by type.');
     }
 
     private function appMakeCanConstructorInjectRegisteredServices(): void

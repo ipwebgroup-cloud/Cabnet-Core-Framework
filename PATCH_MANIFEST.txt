@@ -1,4 +1,4 @@
-Cabnet Core Framework v4.2 — Blueprint Schema Validation (patch-only overlay)
+Cabnet Core Framework v4.3 — Service Registry Formalization (patch-only overlay)
 
 Apply these files over your existing framework tree:
 
@@ -13,18 +13,8 @@ Apply these files over your existing framework tree:
 - docs/ADD_NEW_ENTITY.md
 - docs/CRUD_CONVENTIONS.md
 - docs/FRAMEWORK_HANDOFF.md
-- docs/V4_2_BLUEPRINT_SCHEMA_VALIDATION.md
-- blueprints/examples/README.md
-- blueprints/examples/content-pages.json
-- blueprints/examples/media-assets.json
-- scripts/generate-crud-pack.php
-- scripts/generate-integration-patches.php
+- docs/V4_3_SERVICE_REGISTRY_FORMALIZATION.md
 - app/Core/App.php
-- src/Application/Crud/CrudModulePolicy.php
-- src/Bootstrap/DependencyResolver.php
-- src/Generators/BlueprintLibrary.php
-- src/Generators/BlueprintValidator.php
-- src/Middleware/MiddlewareExecutor.php
-- src/Routing/RouteDispatcher.php
-- src/Support/AdminMenu.php
+- bootstrap/services.php
+- src/Bootstrap/ServiceRegistry.php
 - tests/Smoke/FrameworkSmokeTest.php
