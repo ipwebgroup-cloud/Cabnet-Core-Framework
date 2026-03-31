@@ -1,4 +1,4 @@
-# Cabnet Core Framework Bundle v2.7.0
+# Cabnet Core Framework Bundle v2.8.0
 
 This is the consolidated framework bundle built from the phase-by-phase starter process.
 
@@ -52,3 +52,10 @@ Use this as the baseline repository/project starter for your future apps.
 - canonical src route registry and URL generator
 - legacy runtime globals narrowed into compatibility shims
 - runtime smoke coverage expanded to redirects and src-owned URL generation
+
+
+## v2.8 highlights
+- src-owned `Cabnet\Application\Crud\CrudEntityDefinition`
+- legacy global CRUD definition aliases retained for compatibility
+- `crudModuleRegistry` service backed by `config/modules.php`
+- generator output updated to type against the canonical src CRUD definition model

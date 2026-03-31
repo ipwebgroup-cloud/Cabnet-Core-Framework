@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v2.7.0  
+**Version:** v2.8.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline  
 **Purpose:** Reusable base for business websites, catalogs, admin-heavy tools, and multilingual content systems
@@ -133,9 +133,9 @@ This framework is best suited for:
 ## Recommended Next Steps
 
 ### High-priority convergence
-- move canonical CRUD entity definitions fully into `src/`
-- reduce remaining runtime dependence on global legacy entity definition classes
-- expand smoke coverage around scaffold integration seams
+- adopt the new CRUD module registry more broadly in runtime helpers and generator integration patching
+- centralize more admin module metadata in `config/modules.php`
+- expand smoke coverage around scaffold integration seams and module registration
 
 ### High-value framework upgrades
 - module auto-registration
@@ -144,3 +144,10 @@ This framework is best suited for:
 - multilingual content tables
 - media upload manager
 - audit logs
+
+
+## v2.8 CRUD metadata convergence
+- canonical CRUD definition model now lives at `src/Application/Crud/CrudEntityDefinition.php`
+- legacy global `CrudEntityDefinition` and `ServiceEntityDefinition` remain as compatibility aliases
+- `config/modules.php` now carries CRUD module metadata for the built-in `services` module
+- `crudModuleRegistry` resolves module metadata and canonical definition instances from config

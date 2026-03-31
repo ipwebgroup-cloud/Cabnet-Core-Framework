@@ -43,3 +43,8 @@ spl_autoload_register(static function (string $class): void {
         require_once BASE_PATH . '/' . $file;
     }
 });
+
+// Eagerly register legacy CRUD aliases so instanceof/type checks remain stable
+// while canonical ownership lives under src/.
+class_exists('CrudEntityDefinition');
+class_exists('ServiceEntityDefinition');

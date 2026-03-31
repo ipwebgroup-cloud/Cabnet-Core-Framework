@@ -1,8 +1,8 @@
 {
   "bundle_name": "Cabnet Core Framework",
-  "version": "v2.7.0",
-  "generated_at": "2026-03-31T17:25:00+03:00",
-  "file_count": 224,
+  "version": "v2.8.0",
+  "generated_at": "2026-03-31T17:45:00+03:00",
+  "file_count": 227,
   "files": [
     {
       "path": ".env.example",
@@ -21,8 +21,8 @@
     },
     {
       "path": "FRAMEWORK_STATUS.json",
-      "size": 338,
-      "sha256": "2a2e77d4000f47776cbe3289f257040e544aba8153d56052927e2f72c8dcd547"
+      "size": 342,
+      "sha256": "c5df6974341b2f6bdfee13b285fe51193c815cd7dd90d6a6818e97d0525a2069"
     },
     {
       "path": "HANDOFF_PROMPT.txt",
@@ -31,18 +31,18 @@
     },
     {
       "path": "README.md",
-      "size": 1709,
-      "sha256": "b28ed3dfcbb07f317b53822269fd083be6bddac591d7f7e61bc09b9f4f0eb556"
+      "size": 1860,
+      "sha256": "413dd258850203c59fff391af20a56fb5345bb225a159104b4469db8abe22c4e"
     },
     {
       "path": "README_BUNDLE.md",
-      "size": 2025,
-      "sha256": "bc62edb8e13a46ef2cff21a8158496f51beada7fb3c121fb0b95179ca6a27fff"
+      "size": 2317,
+      "sha256": "1ae22a63bcf8bdb1cbb1eac2f4764acf2cc62f82a52b3029f7cad0c02ad51cad"
     },
     {
       "path": "ROADMAP.md",
-      "size": 7043,
-      "sha256": "a825436b9a2b412b6d4cc8eb31b4226f623ce921f0a44807b461ba166825e326"
+      "size": 542,
+      "sha256": "5f678b8a217fce2241b0f982f2f7acac8f870d6ef6d0ba7695d2ac3cbfe9b540"
     },
     {
       "path": "STARTER_FOLDER_TREE.md",
@@ -186,18 +186,18 @@
     },
     {
       "path": "app/Crud/CrudEntityDefinition.php",
-      "size": 950,
-      "sha256": "1947e7093205b10babdac58c31305c83ccf51671446ab8de82fa2cfb22421d24"
+      "size": 123,
+      "sha256": "c91c6fd1997fd58ed20e0198ece96d7392e6a8c258620cda88416217e57ff1d6"
     },
     {
       "path": "app/Crud/Definitions/ServiceEntityDefinition.php",
-      "size": 903,
-      "sha256": "c5f344790fb0c985c715b2bff2b81d569f6f954ec578234df4c657f05b40048f"
+      "size": 141,
+      "sha256": "072893f0422a5199308f0086ba12333513dab280032aef82d04619e917ad405f"
     },
     {
       "path": "app/DEPRECATIONS.md",
-      "size": 1448,
-      "sha256": "96d3f16ae2355fc70b669dcec0d588f59c70b114bee2456d7a3ecafe0749b1fe"
+      "size": 1767,
+      "sha256": "14b707b816483c0d8cf884fc8e996c65e287d9487cb30caa578264c7d7167b72"
     },
     {
       "path": "app/Generators/EntityGenerator.php",
@@ -381,8 +381,8 @@
     },
     {
       "path": "bootstrap/autoload.php",
-      "size": 1265,
-      "sha256": "106d17aab8b03480c31ca5fcb2295b507de7f8ef53b2998ec2746bb7c86f9f5f"
+      "size": 1472,
+      "sha256": "f0c7a5aa71500109368bfe6a13d77395af9c49afa785ee05164640ba891cd7f9"
     },
     {
       "path": "bootstrap/legacy_classmap.php",
@@ -396,8 +396,8 @@
     },
     {
       "path": "bootstrap/services.php",
-      "size": 3440,
-      "sha256": "18441ba900114e3774146b5f8f34122a66d2b316701d13fa0c05d1722a46e574"
+      "size": 3643,
+      "sha256": "1f8e21eadea8f0fe4d57b603fe25df9a8f0a0108b5d720f2cf2cdda50dbfbf1e"
     },
     {
       "path": "composer.json",
@@ -426,8 +426,8 @@
     },
     {
       "path": "config/framework.php",
-      "size": 693,
-      "sha256": "ceb2ff60cb8554795f2b71cda31799bbd0f4bb9b7704b56add4db9bcaf5939d6"
+      "size": 779,
+      "sha256": "79138a7876d88748b05d5b2377b66f226637befc408973f3870fa8dbd5168251"
     },
     {
       "path": "config/logging.php",
@@ -446,8 +446,8 @@
     },
     {
       "path": "config/modules.php",
-      "size": 168,
-      "sha256": "a03d97f2023fcd4a5598fc5654ad21243e9cdd59550c6e03a76a120acabbd352"
+      "size": 618,
+      "sha256": "2709216a4b43665c74503143a728104850d5b91cb5c3e687c5df84e1597ebbd4"
     },
     {
       "path": "config/seo.php",
@@ -471,23 +471,23 @@
     },
     {
       "path": "docs/ADD_NEW_ENTITY.md",
-      "size": 2586,
-      "sha256": "19dad8239dd50c14835ca65cb58e05534747efa37d33a0141abdbf60738eaf72"
+      "size": 2791,
+      "sha256": "78e6ce9f281a688e4c589174526179a119213f91f27008349a7cd3eae2492ffb"
     },
     {
       "path": "docs/CRUD_CONVENTIONS.md",
-      "size": 1165,
-      "sha256": "857b3f098c88f2d4cf8c6711d89c4481af545c317c0b4c419b6d8541f10c0cdc"
+      "size": 1403,
+      "sha256": "987893c1b10d3e9c4eb7db46492fc74b86ffaf2fcef7cbb56a14e5d08fc08c49"
     },
     {
       "path": "docs/DIRECT_CODE_GENERATION.md",
-      "size": 1000,
-      "sha256": "9974851f084618c5fd93105386b9679aba24d43b1b9c213dfca50c8be43d53d6"
+      "size": 1139,
+      "sha256": "531efafd57ba3c3f1c58cb4a5711a89f33ea789828f159ff9c201bbe85841cf0"
     },
     {
       "path": "docs/ENTITY_DEFINITIONS.md",
-      "size": 847,
-      "sha256": "6d22dfd414bd8b589cc7c9e77bdf909d4329c1bb4c2980a31ea27ed7d135edc8"
+      "size": 1061,
+      "sha256": "10d87dee12950b410959348188c30bcb266494bbd29395ff99d2483c483ca455"
     },
     {
       "path": "docs/FILE_WRITING_GENERATOR.md",
@@ -496,8 +496,8 @@
     },
     {
       "path": "docs/FRAMEWORK_HANDOFF.md",
-      "size": 4009,
-      "sha256": "7dd514431ddae7089092d12b500cad2ce04a1ca27fa77e49e26ed55f67b3f74a"
+      "size": 4479,
+      "sha256": "04bddbf265bcbd0f01f77cdbd5ce11670f090d7141c2f22609d073d9e5f2e51f"
     },
     {
       "path": "docs/MODULE_GENERATOR_PLAN.md",
@@ -680,6 +680,11 @@
       "sha256": "d9a2038e458ac917f56b487da4d17c293e26c9eb062d1d126ae20fe1fc378a39"
     },
     {
+      "path": "docs/V2_8_CRUD_METADATA_CONVERGENCE.md",
+      "size": 1816,
+      "sha256": "4703388b369f822b9aab52bbed29e8a3b535c7b20dfce91f7800d84324dc1669"
+    },
+    {
       "path": "generated/example_product_module/app/Controllers/Admin/ProductController.php",
       "size": 55,
       "sha256": "719d04571f3020489f8883c6de304f6d5c72b20f25b8e5d625ec46aa89a615b7"
@@ -841,8 +846,8 @@
     },
     {
       "path": "src/Application/Controllers/Admin/BaseCrudController.php",
-      "size": 2329,
-      "sha256": "975497025895cb7eddb603f8f172968b8ea196a0c3e112e5920b978ce77e9973"
+      "size": 2353,
+      "sha256": "732f3ee21662bf799cd54eaed5ef616da937234b86f865f9551b3818bef06c4b"
     },
     {
       "path": "src/Application/Controllers/Admin/DashboardController.php",
@@ -851,8 +856,8 @@
     },
     {
       "path": "src/Application/Controllers/Admin/ServiceController.php",
-      "size": 5722,
-      "sha256": "83c37b04c16c88b8ed17f8c5aa758e2e9c8743f5d736f73ff1e553d7688c7fd5"
+      "size": 5746,
+      "sha256": "315bb15140a06bc57017ec82423d7d8fd30b46db0a10d79fc8c240649b251332"
     },
     {
       "path": "src/Application/Controllers/Api/HealthController.php",
@@ -875,9 +880,19 @@
       "sha256": "78d48f71501bc9c03001da9235b011d28e75671372b2f7c0b39e6b77f5ccf025"
     },
     {
+      "path": "src/Application/Crud/CrudEntityDefinition.php",
+      "size": 980,
+      "sha256": "5d375d1fec26bbfe002d3f79eade500a77d0cd2034842506dfd68e48014dad36"
+    },
+    {
+      "path": "src/Application/Crud/CrudModuleRegistry.php",
+      "size": 1852,
+      "sha256": "26e4aa2dce3e378b4bcd0d7ee02f3982320fb5d3b5d3f45b37c8b653be871fb6"
+    },
+    {
       "path": "src/Application/Crud/Definitions/ServiceEntityDefinition.php",
-      "size": 953,
-      "sha256": "9d02bdae911dbf5d5eb70fd88ec84dbab571b862244eeb49ce3177bc4235122d"
+      "size": 1001,
+      "sha256": "5e73b9177c009eff6845f92f25fbbd307fc43483d1698dcc4408836718d41869"
     },
     {
       "path": "src/Application/Services/AdminAuthService.php",
@@ -941,8 +956,8 @@
     },
     {
       "path": "src/Generators/CrudScaffoldWriter.php",
-      "size": 16753,
-      "sha256": "770b37eef3024cf58dd5d073abc723a8b3501804cb553c5a0cf442966ce2a22d"
+      "size": 16807,
+      "sha256": "ab7f181f4a34511dfc4edc3f6125e82e9e042d87fbaa93932804dc236c9a0da8"
     },
     {
       "path": "src/Generators/EntityGenerator.php",
@@ -961,8 +976,8 @@
     },
     {
       "path": "src/Generators/Templates/controller.stub",
-      "size": 253,
-      "sha256": "7c951557a586a6d58e040d5dc096eb63815b3b20cb2db2a6d4408c8043c094c8"
+      "size": 278,
+      "sha256": "37c92cee3ed8064d428a8d421e7a7dbcddd52b6ece1e690df8a2e3cc6efd5289"
     },
     {
       "path": "src/Generators/Templates/repository.stub",
@@ -1101,8 +1116,8 @@
     },
     {
       "path": "tests/Smoke/FrameworkSmokeTest.php",
-      "size": 22516,
-      "sha256": "581282273f37ab8c4af2186c61622c4235ba9d673b912eedc50ad5fe2fa97131"
+      "size": 25715,
+      "sha256": "32a2e8cbc28baef65f3a28a43e87f4fbd809a0ccd3c8c23461da8a73ae21c9fc"
     },
     {
       "path": "tests/Support/ResponseInspector.php",

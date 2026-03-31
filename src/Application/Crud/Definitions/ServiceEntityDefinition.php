@@ -5,9 +5,9 @@ namespace Cabnet\Application\Crud\Definitions;
 
 final class ServiceEntityDefinition
 {
-    public static function make(): \CrudEntityDefinition
+    public static function make(): \Cabnet\Application\Crud\CrudEntityDefinition
     {
-        return new \CrudEntityDefinition(
+        return new \Cabnet\Application\Crud\CrudEntityDefinition(
             key: 'services',
             label: 'Services',
             table: 'services',

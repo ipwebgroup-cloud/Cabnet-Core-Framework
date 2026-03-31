@@ -10,7 +10,7 @@ use Cabnet\Application\Services\ServiceCrudService;
 
 final class ServiceController extends BaseCrudController
 {
-    protected function entityDefinition(): \CrudEntityDefinition
+    protected function entityDefinition(): \Cabnet\Application\Crud\CrudEntityDefinition
     {
         return ServiceEntityDefinition::make();
     }

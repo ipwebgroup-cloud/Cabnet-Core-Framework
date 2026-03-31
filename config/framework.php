@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '2.7.0',
-    'release_name' => 'HTTP Runtime Convergence',
+    'version' => '2.8.0',
+    'release_name' => 'CRUD Metadata Convergence',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -20,5 +20,7 @@ return [
         'src_http_runtime' => true,
         'src_session_runtime' => true,
         'src_url_generator' => true,
+        'src_crud_definition_model' => true,
+        'crud_module_registry' => true,
     ],
 ];

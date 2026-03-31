@@ -42,3 +42,8 @@ This file marks legacy classes that should gradually stop being used as the `src
 Do not create new major framework features in legacy `app/` when a corresponding `src/` layer already exists.
 
 When compatibility is required, keep legacy classes as thin shims over the canonical `src/` implementation.
+
+
+## CRUD definition aliases
+- `app/Crud/CrudEntityDefinition.php` now exists only as a compatibility alias to `Cabnet\Application\Crud\CrudEntityDefinition`.
+- `app/Crud/Definitions/ServiceEntityDefinition.php` now exists only as a compatibility alias to `Cabnet\Application\Crud\Definitions\ServiceEntityDefinition`.

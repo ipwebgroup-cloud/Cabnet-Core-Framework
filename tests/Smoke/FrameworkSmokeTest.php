@@ -73,6 +73,8 @@ final class FrameworkSmokeTest
             'invalid_service_update_csrf_redirects_to_edit_route' => 'invalidServiceUpdateCsrfRedirectsToEditRoute',
             'src_service_controller_uses_src_crud_base' => 'srcServiceControllerUsesSrcCrudBase',
             'legacy_service_repository_layer_remains_shimmed_to_src' => 'legacyServiceRepositoryLayerRemainsShimmedToSrc',
+            'src_crud_definition_model_is_canonical' => 'srcCrudDefinitionModelIsCanonical',
+            'crud_module_registry_resolves_services_definition' => 'crudModuleRegistryResolvesServicesDefinition',
             'src_crud_generator_uses_namespaced_base_classes' => 'srcCrudGeneratorUsesNamespacedBaseClasses',
         ];
     }
@@ -396,6 +398,55 @@ final class FrameworkSmokeTest
         );
     }
 
+    private function srcCrudDefinitionModelIsCanonical(): void
+    {
+        $definition = \Cabnet\Application\Crud\Definitions\ServiceEntityDefinition::make();
+
+        SmokeAssert::true(
+            $definition instanceof \Cabnet\Application\Crud\CrudEntityDefinition,
+            'Canonical service entity definition should return the src CRUD definition model.'
+        );
+
+        SmokeAssert::true(
+            $definition instanceof \CrudEntityDefinition,
+            'Legacy global CrudEntityDefinition references should remain compatible through the alias.'
+        );
+
+        SmokeAssert::same('services', $definition->key(), 'Canonical CRUD definition should preserve the service key.');
+        SmokeAssert::same('services', $definition->table(), 'Canonical CRUD definition should preserve the table name.');
+
+        SmokeAssert::true(
+            is_a('ServiceEntityDefinition', \Cabnet\Application\Crud\Definitions\ServiceEntityDefinition::class, true),
+            'Legacy global ServiceEntityDefinition should remain an alias to the src definition class.'
+        );
+    }
+
+    private function crudModuleRegistryResolvesServicesDefinition(): void
+    {
+        $app = bootstrap_app('admin');
+        $registry = $app->service('crudModuleRegistry');
+
+        SmokeAssert::true(
+            $registry instanceof \Cabnet\Application\Crud\CrudModuleRegistry,
+            'CRUD module registry service should resolve from the container.'
+        );
+
+        SmokeAssert::true($registry->has('services'), 'CRUD module registry should expose the built-in services module.');
+
+        $meta = $registry->meta('services');
+        $definition = $registry->definition('services');
+
+        SmokeAssert::same(
+            \Cabnet\Application\Crud\Definitions\ServiceEntityDefinition::class,
+            $meta['definition_class'] ?? null,
+            'Services module metadata should point to the canonical src entity definition class.'
+        );
+
+        SmokeAssert::same('serviceCrud', $meta['crud_service'] ?? null, 'Services module metadata should preserve the CRUD service key.');
+        SmokeAssert::same('admin.services', $meta['admin_route_base'] ?? null, 'Services module metadata should preserve the admin route base.');
+        SmokeAssert::same('Services', $definition->label(), 'Module registry should resolve the canonical services definition instance.');
+    }
+
     private function srcCrudGeneratorUsesNamespacedBaseClasses(): void
     {
         $writer = new CrudScaffoldWriter();
@@ -413,9 +464,14 @@ final class FrameworkSmokeTest
             'default_order' => 'id DESC',
         ]);
 
+        $definition = $files['src/Application/Crud/Definitions/ProductEntityDefinition.php'] ?? '';
         $repository = $files['src/Infrastructure/Repositories/ProductRepository.php'] ?? '';
         $service = $files['src/Application/Services/ProductCrudService.php'] ?? '';
         $controller = $files['src/Application/Controllers/Admin/ProductController.php'] ?? '';
+
+        SmokeAssert::contains('namespace Cabnet\Application\Crud\Definitions;', $definition, 'Generated src definition should stay namespaced.');
+        SmokeAssert::contains('Cabnet\Application\Crud\CrudEntityDefinition', $definition, 'Generated src definition should use the canonical src CRUD definition model.');
+        SmokeAssert::true(str_contains($definition, 'new \CrudEntityDefinition') === false, 'Generated src definition should not instantiate the legacy global CRUD definition model.');
 
         SmokeAssert::contains('namespace Cabnet\\Infrastructure\\Repositories;', $repository, 'Generated src repository should stay namespaced.');
         SmokeAssert::contains('extends BaseRepository', $repository, 'Generated src repository should extend the src repository base.');

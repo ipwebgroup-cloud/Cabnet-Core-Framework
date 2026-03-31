@@ -65,3 +65,9 @@ Later phases can convert this into:
 - entity metadata definitions
 - auto-generated form field rendering
 - route naming and URL helpers
+
+
+## v2.8 direction
+- canonical CRUD definition ownership now lives in `src/Application/Crud`
+- module-level CRUD metadata now begins in `config/modules.php`
+- legacy global CRUD definitions remain supported through compatibility aliases

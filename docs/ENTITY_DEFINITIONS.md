@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Entity definitions make CRUD behavior more reusable by moving display and metadata concerns into a dedicated definition class.
+Entity definitions make CRUD behavior more reusable by moving display and metadata concerns into a dedicated definition class. As of v2.8, the canonical model lives in `src/Application/Crud/CrudEntityDefinition.php`.
 
 ## Structure
 
@@ -19,7 +19,7 @@ Each definition should describe:
 ## Example
 
 ```php
-return new CrudEntityDefinition(
+return new Cabnet\Application\Crud\CrudEntityDefinition(
     key: 'services',
     label: 'Services',
     table: 'services',
@@ -39,6 +39,8 @@ return new CrudEntityDefinition(
 
 ## Current implementation
 
+- `src/Application/Crud/CrudEntityDefinition`
 - `ServiceEntityDefinition`
 - `BaseCrudController`
+- `CrudModuleRegistry` backed by `config/modules.php`
 - paginated searchable list flow for `services`

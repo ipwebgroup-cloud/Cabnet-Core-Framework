@@ -7,7 +7,7 @@ use Cabnet\Application\Controllers\BaseController;
 
 abstract class BaseCrudController extends BaseController
 {
-    abstract protected function entityDefinition(): \CrudEntityDefinition;
+    abstract protected function entityDefinition(): \Cabnet\Application\Crud\CrudEntityDefinition;
 
     protected function listViewData(
         object $app,

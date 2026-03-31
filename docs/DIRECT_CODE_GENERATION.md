@@ -41,3 +41,7 @@ php scripts/generate-crud-pack.php app/Generators/Stubs/product-blueprint.json g
 - service registration insertion into `bootstrap/services.php`
 - sidebar navigation updates
 - final review before merge
+
+
+## v2.8 update
+Generated src CRUD definitions should return `Cabnet\Application\Crud\CrudEntityDefinition`, not the legacy global model.

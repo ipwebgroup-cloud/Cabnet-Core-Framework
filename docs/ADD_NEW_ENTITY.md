@@ -33,7 +33,7 @@ Create:
 
 - `src/Application/Crud/Definitions/ProductEntityDefinition.php`
 
-It should return a `CrudEntityDefinition` with:
+It should return a `Cabnet\Application\Crud\CrudEntityDefinition` with:
 - fields
 - list columns
 - searchable columns
@@ -133,3 +133,7 @@ Add the module to the admin sidebar.
 ## Legacy compatibility note
 
 If an older fork still depends on the legacy layer, keep `app/` classes as thin shims over the src implementation rather than duplicating the logic again.
+
+
+## v2.8 note
+After generating a new src CRUD pack, add or update the module entry in `config/modules.php` so the built-in CRUD module registry can expose the new entity metadata.

@@ -31,6 +31,10 @@ return [
         return new \Cabnet\Support\ViewState($app->session());
     },
 
+    'crudModuleRegistry' => function (App $app): \Cabnet\Application\Crud\CrudModuleRegistry {
+        return new \Cabnet\Application\Crud\CrudModuleRegistry((array)$app->config('modules', []));
+    },
+
     'routeRegistry' => function (App $app): \Cabnet\Routing\RouteRegistry {
         return new \Cabnet\Routing\RouteRegistry($app->namedRoutes());
     },
