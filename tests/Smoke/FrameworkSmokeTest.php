@@ -83,6 +83,9 @@ final class FrameworkSmokeTest
             'crud_module_bootstrap_appends_admin_menu_items' => 'crudModuleBootstrapAppendsAdminMenuItems',
             'src_crud_generator_uses_namespaced_base_classes' => 'srcCrudGeneratorUsesNamespacedBaseClasses',
             'layered_php_renderer_prefers_src_views_before_app_fallback' => 'layeredPhpRendererPrefersSrcViewsBeforeAppFallback',
+            'canonical_shared_templates_resolve_from_src_presentation_layer' => 'canonicalSharedTemplatesResolveFromSrcPresentationLayer',
+            'legacy_app_view_shims_delegate_to_src_presentation_templates' => 'legacyAppViewShimsDelegateToSrcPresentationTemplates',
+            'built_in_services_view_resolves_from_src_presentation_layer' => 'builtInServicesViewResolvesFromSrcPresentationLayer',
             'src_crud_generator_targets_src_presentation_views' => 'srcCrudGeneratorTargetsSrcPresentationViews',
         ];
     }
@@ -563,6 +566,77 @@ final class FrameworkSmokeTest
 
         $last = $items[count($items) - 1] ?? [];
         SmokeAssert::same('/logout', $last['path'] ?? null, 'Logout should remain the trailing admin menu action.');
+    }
+
+    private function canonicalSharedTemplatesResolveFromSrcPresentationLayer(): void
+    {
+        $resolver = new \Cabnet\View\TemplateResolver([
+            'src' => BASE_PATH . '/src/Presentation/Views/php',
+            'app' => BASE_PATH . '/app/Views/php',
+        ]);
+
+        SmokeAssert::same(
+            BASE_PATH . '/src/Presentation/Views/php/layouts/admin.php',
+            $resolver->resolve('layouts/admin.php'),
+            'Canonical admin layout should now resolve from the src presentation layer.'
+        );
+
+        SmokeAssert::same(
+            BASE_PATH . '/src/Presentation/Views/php/partials/flash.php',
+            $resolver->resolve('partials/flash.php'),
+            'Canonical flash partial should now resolve from the src presentation layer.'
+        );
+
+        SmokeAssert::same(
+            BASE_PATH . '/src/Presentation/Views/php/public/home.php',
+            $resolver->resolve('public/home.php'),
+            'Canonical public home view should now resolve from the src presentation layer.'
+        );
+    }
+
+    private function legacyAppViewShimsDelegateToSrcPresentationTemplates(): void
+    {
+        $adminLayoutShim = (string) file_get_contents(BASE_PATH . '/app/Views/php/layouts/admin.php');
+        $flashShim = (string) file_get_contents(BASE_PATH . '/app/Views/php/partials/flash.php');
+        $serviceIndexShim = (string) file_get_contents(BASE_PATH . '/app/Views/php/admin/services/index.php');
+
+        SmokeAssert::contains(
+            "/src/Presentation/Views/php/layouts/admin.php",
+            $adminLayoutShim,
+            'Legacy app admin layout should now delegate to the src-owned layout.'
+        );
+
+        SmokeAssert::contains(
+            "/src/Presentation/Views/php/partials/flash.php",
+            $flashShim,
+            'Legacy app flash partial should now delegate to the src-owned partial.'
+        );
+
+        SmokeAssert::contains(
+            "/src/Presentation/Views/php/admin/services/index.php",
+            $serviceIndexShim,
+            'Legacy app services index view should now delegate to the src-owned view.'
+        );
+    }
+
+    private function builtInServicesViewResolvesFromSrcPresentationLayer(): void
+    {
+        $resolver = new \Cabnet\View\TemplateResolver([
+            'src' => BASE_PATH . '/src/Presentation/Views/php',
+            'app' => BASE_PATH . '/app/Views/php',
+        ]);
+
+        SmokeAssert::same(
+            BASE_PATH . '/src/Presentation/Views/php/admin/services/index.php',
+            $resolver->resolve('admin/services/index.php'),
+            'Built-in services index view should resolve from the src presentation layer.'
+        );
+
+        SmokeAssert::same(
+            BASE_PATH . '/app/Views/php/admin/services/index.php',
+            $resolver->resolve('@app/admin/services/index.php'),
+            'Explicit app aliasing should still resolve the compatibility shim.'
+        );
     }
 
     private function layeredPhpRendererPrefersSrcViewsBeforeAppFallback(): void

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 if (!($definition ?? null) instanceof CrudEntityDefinition) {
     throw new RuntimeException('CRUD index table requires a CrudEntityDefinition.');
 }

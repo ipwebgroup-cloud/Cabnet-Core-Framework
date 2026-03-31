@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v3.1.0  
+**Version:** v3.2.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline  
 **Purpose:** Reusable base for business websites, catalogs, admin-heavy tools, and multilingual content systems

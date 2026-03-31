@@ -1,33 +1,40 @@
-Cabnet Core Framework v3.1.0 — View Packaging Convergence
-Package mode: patch-only overlay
+Cabnet Core Framework v3.2.0 PATCH MANIFEST
+Package mode: patch_only
 
-Apply these files on top of your current framework tree.
-This patch includes only files changed for v3.1.
+Overlay these files onto the current framework tree.
 
 Changed files:
+config/framework.php
 FRAMEWORK_STATUS.json
+ROADMAP.md
+app/DEPRECATIONS.md
 README.md
 README_BUNDLE.md
-ROADMAP.md
-bundle-manifest.json
-config/framework.php
-docs/ADD_NEW_ENTITY.md
-docs/CRUD_CONVENTIONS.md
 docs/FRAMEWORK_HANDOFF.md
-docs/V3_1_VIEW_PACKAGING_CONVERGENCE.md
-src/Generators/CrudScaffoldWriter.php
-src/View/PhpRenderer.php
-src/View/TemplateResolver.php
-src/View/TwigRenderer.php
-src/View/ViewEngineFactory.php
+docs/V3_2_SHARED_LAYOUT_PARTIAL_CONVERGENCE.md
+bundle-manifest.json
 tests/Smoke/FrameworkSmokeTest.php
+app/Views/php/layouts/admin.php
+app/Views/php/layouts/public.php
+app/Views/php/partials/flash.php
+app/Views/php/admin/crud/index_table.php
+app/Views/php/admin/crud/form_page.php
+app/Views/php/admin/crud/form_fields.php
+app/Views/php/admin/dashboard.php
+app/Views/php/admin/login.php
+app/Views/php/admin/services/index.php
+app/Views/php/admin/services/create.php
+app/Views/php/admin/services/edit.php
+app/Views/php/public/home.php
+src/Presentation/Views/php/layouts/admin.php
+src/Presentation/Views/php/layouts/public.php
+src/Presentation/Views/php/partials/flash.php
 src/Presentation/Views/php/admin/crud/index_table.php
-src/Presentation/Views/php/admin/crud/form_fields.php
 src/Presentation/Views/php/admin/crud/form_page.php
+src/Presentation/Views/php/admin/crud/form_fields.php
+src/Presentation/Views/php/admin/dashboard.php
+src/Presentation/Views/php/admin/login.php
 src/Presentation/Views/php/admin/services/index.php
 src/Presentation/Views/php/admin/services/create.php
 src/Presentation/Views/php/admin/services/edit.php
-
-Validation:
-- PHP lint passed for all changed PHP files
-- Smoke suite passed: 29/29
+src/Presentation/Views/php/public/home.php

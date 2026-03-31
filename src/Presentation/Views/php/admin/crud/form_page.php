@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 if (!($definition ?? null) instanceof CrudEntityDefinition) {
     throw new RuntimeException('CRUD form page requires a CrudEntityDefinition.');
 }
@@ -43,4 +45,4 @@ ob_start();
 <?php
 $content = (string)ob_get_clean();
 $title = $titleText;
-include BASE_PATH . '/app/Views/php/layouts/admin.php';
+include BASE_PATH . '/src/Presentation/Views/php/layouts/admin.php';

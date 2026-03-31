@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '3.1.0',
-    'release_name' => 'View Packaging Convergence',
+    'version' => '3.2.0',
+    'release_name' => 'Shared Layout and Partial Convergence',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -29,5 +29,7 @@ return [
         'metadata_driven_crud_forms' => true,
         'layered_view_resolution' => true,
         'src_presentation_view_packages' => true,
+        'src_shared_layouts_and_partials' => true,
+        'legacy_app_view_shims' => true,
     ],
 ];

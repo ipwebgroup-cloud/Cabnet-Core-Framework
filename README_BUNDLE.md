@@ -1,4 +1,4 @@
-# Cabnet Core Framework Bundle v3.1.0
+# Cabnet Core Framework Bundle v3.2.0
 
 This patch continues the consolidated framework bundle with the next convergence phase.
 

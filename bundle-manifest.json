@@ -1,12 +1,12 @@
 {
   "bundle": "Cabnet Core Framework",
-  "version": "3.1.0",
-  "release_name": "View Packaging Convergence",
+  "version": "3.2.0",
+  "release_name": "Shared Layout and Partial Convergence",
   "package_mode": "patch_only",
   "notes": [
-    "Includes only files changed for v3.1.",
+    "Includes only files changed for v3.2.",
     "Overlay this patch on top of the current framework tree.",
-    "Renderer now prefers src/Presentation/Views before app/Views.",
-    "Generated CRUD admin views now target src-owned presentation files."
+    "Canonical shared PHP layouts and partials now live in src/Presentation/Views/php.",
+    "Built-in app/Views/php files now act as compatibility shims over src-owned templates."
   ]
 }

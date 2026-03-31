@@ -1,4 +1,4 @@
-# Cabnet Core Framework v3.1.0
+# Cabnet Core Framework v3.2.0
 
 Cabnet Core v3.1 adds layered view resolution and src-owned admin presentation packaging on top of the earlier definition-driven CRUD validation, module-registry, CRUD metadata, HTTP/runtime, controller, service/repository, and renderer convergence work.
 

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 $definition = $definition ?? null;
 $old = is_array($old ?? null) ? $old : [];
 $errors = is_array($errors ?? null) ? $errors : [];
