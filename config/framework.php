@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '2.8.0',
-    'release_name' => 'CRUD Metadata Convergence',
+    'version' => '2.9.0',
+    'release_name' => 'Module Registry Adoption',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -22,5 +22,8 @@ return [
         'src_url_generator' => true,
         'src_crud_definition_model' => true,
         'crud_module_registry' => true,
+        'crud_module_runtime_bootstrap' => true,
+        'crud_module_menu_bootstrap' => true,
+        'crud_module_generator_integration' => true,
     ],
 ];

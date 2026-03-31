@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v2.8.0  
+**Version:** v2.9.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline  
 **Purpose:** Reusable base for business websites, catalogs, admin-heavy tools, and multilingual content systems
@@ -39,6 +39,7 @@ This bundle consolidates the latest framework state from the iterative phase bui
 - documentation pack
 - smoke-test baseline for bootstrap/runtime/generator regressions
 - src-owned HTTP/runtime helpers with legacy shim compatibility
+- module-registry-driven CRUD service, route, and admin menu bootstrapping
 
 ---
 
@@ -90,6 +91,8 @@ This framework is best suited for:
 - `app/Core/App.php`
 
 ### CRUD and admin reuse
+- `src/Application/Crud/CrudModuleBootstrap.php`
+- `src/Application/Crud/CrudModuleRegistry.php`
 - `src/Application/Crud/Definitions/ServiceEntityDefinition.php`
 - `src/Application/Services/ServiceCrudService.php`
 - `src/Infrastructure/Repositories/ServiceRepository.php`
@@ -126,6 +129,7 @@ This framework is best suited for:
 - advanced media workflows are not yet built
 - legacy global CRUD entity definitions still exist for compatibility
 - Twig support requires Composer installation
+- validation rules still live primarily in CRUD services instead of canonical field metadata
 - some integration patching remains manual by design
 
 ---
@@ -133,9 +137,9 @@ This framework is best suited for:
 ## Recommended Next Steps
 
 ### High-priority convergence
-- adopt the new CRUD module registry more broadly in runtime helpers and generator integration patching
-- centralize more admin module metadata in `config/modules.php`
-- expand smoke coverage around scaffold integration seams and module registration
+- converge validation/form rules into canonical CRUD field metadata
+- thin legacy admin controller wrappers further as more modules move to `moduleKey()` ownership
+- continue expanding smoke coverage around generated module onboarding and registry-driven runtime behavior
 
 ### High-value framework upgrades
 - module auto-registration
@@ -151,3 +155,10 @@ This framework is best suited for:
 - legacy global `CrudEntityDefinition` and `ServiceEntityDefinition` remain as compatibility aliases
 - `config/modules.php` now carries CRUD module metadata for the built-in `services` module
 - `crudModuleRegistry` resolves module metadata and canonical definition instances from config
+
+
+## v2.9 module registry adoption
+- `config/modules.php` now acts as the primary registration seam for built-in admin CRUD modules
+- admin CRUD routes, repository services, CRUD services, and admin menu links now derive from module metadata
+- canonical src CRUD controllers can now resolve runtime behavior through `moduleKey()` instead of hardcoded service/route names
+- generator output now emits a module metadata config block for `config/modules.php`

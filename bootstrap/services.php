@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-return [
+$services = [
     'time' => function (App $app): string {
         $registry = new \Cabnet\Bootstrap\ServiceRegistry();
         return $registry->makeClockService()->now();
@@ -54,17 +54,6 @@ return [
         return new DatabaseManager($connection);
     },
 
-    'serviceRepository' => function (App $app): \Cabnet\Infrastructure\Repositories\ServiceRepository {
-        return new \Cabnet\Infrastructure\Repositories\ServiceRepository($app->service('db'));
-    },
-
-    'serviceCrud' => function (App $app): \Cabnet\Application\Services\ServiceCrudService {
-        return new \Cabnet\Application\Services\ServiceCrudService(
-            $app->service('serviceRepository'),
-            $app->validator()
-        );
-    },
-
     'logger' => function (App $app): LoggerInterface {
         $channel = $app->config('logging.channels.file', []);
         return new FileLogger(
@@ -104,3 +93,8 @@ return [
         ];
     },
 ];
+
+return \Cabnet\Application\Crud\CrudModuleBootstrap::registerServices(
+    $services,
+    require BASE_PATH . '/config/modules.php'
+);

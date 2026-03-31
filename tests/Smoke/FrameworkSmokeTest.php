@@ -75,6 +75,9 @@ final class FrameworkSmokeTest
             'legacy_service_repository_layer_remains_shimmed_to_src' => 'legacyServiceRepositoryLayerRemainsShimmedToSrc',
             'src_crud_definition_model_is_canonical' => 'srcCrudDefinitionModelIsCanonical',
             'crud_module_registry_resolves_services_definition' => 'crudModuleRegistryResolvesServicesDefinition',
+            'crud_module_bootstrap_registers_dynamic_services' => 'crudModuleBootstrapRegistersDynamicServices',
+            'crud_module_bootstrap_appends_admin_routes' => 'crudModuleBootstrapAppendsAdminRoutes',
+            'crud_module_bootstrap_appends_admin_menu_items' => 'crudModuleBootstrapAppendsAdminMenuItems',
             'src_crud_generator_uses_namespaced_base_classes' => 'srcCrudGeneratorUsesNamespacedBaseClasses',
         ];
     }
@@ -447,6 +450,55 @@ final class FrameworkSmokeTest
         SmokeAssert::same('Services', $definition->label(), 'Module registry should resolve the canonical services definition instance.');
     }
 
+    private function crudModuleBootstrapRegistersDynamicServices(): void
+    {
+        $services = require BASE_PATH . '/bootstrap/services.php';
+
+        SmokeAssert::true(isset($services['serviceRepository']), 'Module bootstrap should register the repository service from config/modules.php.');
+        SmokeAssert::true(isset($services['serviceCrud']), 'Module bootstrap should register the CRUD service from config/modules.php.');
+
+        $app = bootstrap_app('admin');
+
+        SmokeAssert::true(
+            $app->service('serviceRepository') instanceof \Cabnet\Infrastructure\Repositories\ServiceRepository,
+            'Dynamic repository registration should resolve the canonical src repository class.'
+        );
+
+        SmokeAssert::true(
+            $app->service('serviceCrud') instanceof \Cabnet\Application\Services\ServiceCrudService,
+            'Dynamic CRUD registration should resolve the canonical src service class.'
+        );
+    }
+
+    private function crudModuleBootstrapAppendsAdminRoutes(): void
+    {
+        $routes = require BASE_PATH . '/bootstrap/routes.php';
+        $adminRoutes = $routes['admin'] ?? [];
+
+        SmokeAssert::true(is_array($adminRoutes) && $adminRoutes !== [], 'Admin route table should remain an array after module bootstrapping.');
+
+        $serviceIndex = array_values(array_filter($adminRoutes, static fn (array $route): bool => ($route['name'] ?? null) === 'admin.services.index'));
+        SmokeAssert::same(1, count($serviceIndex), 'Module bootstrap should append exactly one admin services index route.');
+        SmokeAssert::same('/services', $serviceIndex[0]['path'] ?? null, 'Module bootstrap should preserve the admin services index path.');
+        SmokeAssert::same(
+            \Cabnet\Application\Controllers\Admin\ServiceController::class,
+            $serviceIndex[0]['handler'][0] ?? null,
+            'Module bootstrap should preserve the canonical src service controller binding.'
+        );
+    }
+
+    private function crudModuleBootstrapAppendsAdminMenuItems(): void
+    {
+        $items = require BASE_PATH . '/config/admin_menu.php';
+
+        SmokeAssert::same('Dashboard', $items[0]['label'] ?? null, 'Dashboard should remain the first admin menu item.');
+        SmokeAssert::same('Services', $items[1]['label'] ?? null, 'Module bootstrap should append the services menu item from config/modules.php.');
+        SmokeAssert::same('/services', $items[1]['path'] ?? null, 'Module bootstrap should preserve the services admin menu path.');
+
+        $last = $items[count($items) - 1] ?? [];
+        SmokeAssert::same('/logout', $last['path'] ?? null, 'Logout should remain the trailing admin menu action.');
+    }
+
     private function srcCrudGeneratorUsesNamespacedBaseClasses(): void
     {
         $writer = new CrudScaffoldWriter();
@@ -468,22 +520,28 @@ final class FrameworkSmokeTest
         $repository = $files['src/Infrastructure/Repositories/ProductRepository.php'] ?? '';
         $service = $files['src/Application/Services/ProductCrudService.php'] ?? '';
         $controller = $files['src/Application/Controllers/Admin/ProductController.php'] ?? '';
+        $moduleConfig = $files['generated/products_module_config.php.txt'] ?? '';
 
         SmokeAssert::contains('namespace Cabnet\Application\Crud\Definitions;', $definition, 'Generated src definition should stay namespaced.');
         SmokeAssert::contains('Cabnet\Application\Crud\CrudEntityDefinition', $definition, 'Generated src definition should use the canonical src CRUD definition model.');
         SmokeAssert::true(str_contains($definition, 'new \CrudEntityDefinition') === false, 'Generated src definition should not instantiate the legacy global CRUD definition model.');
 
-        SmokeAssert::contains('namespace Cabnet\\Infrastructure\\Repositories;', $repository, 'Generated src repository should stay namespaced.');
+        SmokeAssert::contains('namespace Cabnet\Infrastructure\Repositories;', $repository, 'Generated src repository should stay namespaced.');
         SmokeAssert::contains('extends BaseRepository', $repository, 'Generated src repository should extend the src repository base.');
-        SmokeAssert::true(str_contains($repository, 'extends \\BaseRepository') === false, 'Generated src repository should not fall back to the legacy global base.');
+        SmokeAssert::true(str_contains($repository, 'extends \BaseRepository') === false, 'Generated src repository should not fall back to the legacy global base.');
 
-        SmokeAssert::contains('namespace Cabnet\\Application\\Services;', $service, 'Generated src service should stay namespaced.');
+        SmokeAssert::contains('namespace Cabnet\Application\Services;', $service, 'Generated src service should stay namespaced.');
         SmokeAssert::contains('extends BaseService', $service, 'Generated src service should extend the src service base.');
-        SmokeAssert::true(str_contains($service, 'extends \\BaseService') === false, 'Generated src service should not fall back to the legacy global base.');
+        SmokeAssert::true(str_contains($service, 'extends \BaseService') === false, 'Generated src service should not fall back to the legacy global base.');
 
-        SmokeAssert::contains('namespace Cabnet\\Application\\Controllers\\Admin;', $controller, 'Generated src controller should stay namespaced.');
+        SmokeAssert::contains('namespace Cabnet\Application\Controllers\Admin;', $controller, 'Generated src controller should stay namespaced.');
         SmokeAssert::contains('extends BaseCrudController', $controller, 'Generated src controller should extend the canonical src CRUD base.');
-        SmokeAssert::true(str_contains($controller, 'extends \\BaseCrudController') === false, 'Generated src controller should not fall back to the legacy global CRUD base.');
+        SmokeAssert::contains("return 'products';", $controller, 'Generated src controller should now resolve CRUD behavior by module key.');
+        SmokeAssert::true(str_contains($controller, 'extends \BaseCrudController') === false, 'Generated src controller should not fall back to the legacy global CRUD base.');
+
+        SmokeAssert::contains("'products' => [", $moduleConfig, 'Generated CRUD pack should emit a module metadata block for config/modules.php.');
+        SmokeAssert::contains("'repository_service' => 'productRepository'", $moduleConfig, 'Generated module metadata should preserve the repository service key.');
+        SmokeAssert::contains("'crud_service' => 'productCrud'", $moduleConfig, 'Generated module metadata should preserve the CRUD service key.');
     }
 
     private function adminAuthMiddlewareRedirectsGuests(): void

@@ -1,16 +1,11 @@
 <?php
 declare(strict_types=1);
 
-return [
+$items = [
     [
         'label' => 'Dashboard',
         'path' => '/',
         'match' => '/',
-    ],
-    [
-        'label' => 'Services',
-        'path' => '/services',
-        'match' => '/services',
     ],
     [
         'label' => 'Logout',
@@ -20,3 +15,8 @@ return [
         'requires_auth' => true,
     ],
 ];
+
+return \Cabnet\Application\Crud\CrudModuleBootstrap::appendAdminMenu(
+    $items,
+    require BASE_PATH . '/config/modules.php'
+);

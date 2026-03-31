@@ -1,0 +1,45 @@
+Cabnet Core Framework v2.9.0 Patch Pack
+=======================================
+Release: Module Registry Adoption
+Base expected: v2.8.0 local working tree from prior session pack
+Packaging mode: changed files only
+
+What this patch does
+- makes config/modules.php an active runtime seam
+- derives built-in CRUD services from module metadata
+- derives built-in admin CRUD routes from module metadata
+- derives built-in admin menu items for CRUD modules from module metadata
+- converts ServiceController into a thin moduleKey wrapper over the shared src CRUD base
+- updates generator output to emit module config snippets for config/modules.php
+- expands smoke coverage to 24 passing checks
+
+Validation
+- PHP lint: changed PHP files passed
+- Smoke suite: 24/24 passed
+
+Changed files
+- FRAMEWORK_STATUS.json
+- README.md
+- README_BUNDLE.md
+- ROADMAP.md
+- app/Controllers/Admin/ServiceController.php
+- app/DEPRECATIONS.md
+- bootstrap/routes.php
+- bootstrap/services.php
+- config/admin_menu.php
+- config/framework.php
+- config/modules.php
+- docs/ADD_NEW_ENTITY.md
+- docs/CRUD_CONVENTIONS.md
+- docs/DIRECT_CODE_GENERATION.md
+- docs/FRAMEWORK_HANDOFF.md
+- docs/V2_9_MODULE_REGISTRY_ADOPTION.md
+- src/Application/Controllers/Admin/BaseCrudController.php
+- src/Application/Controllers/Admin/ServiceController.php
+- src/Application/Crud/CrudEntityDefinition.php
+- src/Application/Crud/CrudModuleBootstrap.php
+- src/Application/Crud/CrudModuleRegistry.php
+- src/Generators/CrudScaffoldWriter.php
+- src/Generators/IntegrationPatcher.php
+- src/Generators/Templates/controller.stub
+- tests/Smoke/FrameworkSmokeTest.php

@@ -71,3 +71,10 @@ Later phases can convert this into:
 - canonical CRUD definition ownership now lives in `src/Application/Crud`
 - module-level CRUD metadata now begins in `config/modules.php`
 - legacy global CRUD definitions remain supported through compatibility aliases
+
+
+## v2.9 direction
+- built-in admin CRUD routes now derive from module metadata in `config/modules.php`
+- built-in CRUD repository and service registrations now derive from module metadata in `config/modules.php`
+- built-in admin menu items for CRUD modules now derive from module metadata in `config/modules.php`
+- canonical src CRUD controllers should prefer `moduleKey()` plus the shared base controller over repeating hardcoded route/service/view names

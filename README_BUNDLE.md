@@ -1,4 +1,4 @@
-# Cabnet Core Framework Bundle v2.8.0
+# Cabnet Core Framework Bundle v2.9.0
 
 This is the consolidated framework bundle built from the phase-by-phase starter process.
 
@@ -59,3 +59,10 @@ Use this as the baseline repository/project starter for your future apps.
 - legacy global CRUD definition aliases retained for compatibility
 - `crudModuleRegistry` service backed by `config/modules.php`
 - generator output updated to type against the canonical src CRUD definition model
+
+
+## v2.9 highlights
+- `config/modules.php` now drives CRUD service wiring, admin CRUD routes, and admin menu entries
+- canonical src admin CRUD controllers can now resolve behavior by module key instead of hardcoding route/service names
+- generator output now emits module config blocks for `config/modules.php` instead of route/service patch snippets
+- smoke coverage expanded for dynamic module-driven service, route, and menu registration

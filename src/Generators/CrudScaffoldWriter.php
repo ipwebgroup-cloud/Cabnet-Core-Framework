@@ -5,6 +5,10 @@ namespace Cabnet\Generators;
 
 final class CrudScaffoldWriter
 {
+    /**
+     * @param array<string, mixed> $blueprint
+     * @return array<string, string>
+     */
     public function buildCrudPack(array $blueprint): array
     {
         $entityKey = (string)($blueprint['entity_key'] ?? 'items');
@@ -25,15 +29,11 @@ final class CrudScaffoldWriter
         $serviceClass = $classBase . 'CrudService';
         $controllerClass = $classBase . 'Controller';
 
-        $definitionFqcn = '\\Cabnet\\Application\\Crud\\Definitions\\' . $definitionClass;
-        $repositoryFqcn = '\\Cabnet\\Infrastructure\\Repositories\\' . $repositoryClass;
-        $serviceFqcn = '\\Cabnet\\Application\\Services\\' . $serviceClass;
-
-        $files = [];
-
         $definitionExport = var_export($fields, true);
         $listColumnsExport = var_export($listColumns, true);
         $searchableExport = var_export($searchable, true);
+
+        $files = [];
 
         $files["src/Application/Crud/Definitions/{$definitionClass}.php"] = "<?php
 declare(strict_types=1);
@@ -109,31 +109,18 @@ final class {$repositoryClass} extends BaseRepository
 ";
 
         $rules = [];
-        $inputMap = [];
         foreach ($fields as $fieldName => $meta) {
             $fieldRules = [];
             if (!empty($meta['required'])) {
                 $fieldRules[] = "'required'";
             }
             $type = (string)($meta['type'] ?? 'text');
-            if ($type === 'email') {
-                $fieldRules[] = "'email'";
-            } else {
-                $fieldRules[] = "'string'";
-            }
+            $fieldRules[] = $type === 'email' ? "'email'" : "'string'";
             if ($fieldName === 'slug') {
                 $fieldRules[] = "'slug'";
             }
             $fieldRules[] = $type === 'textarea' ? "'max:2000'" : "'max:255'";
             $rules[] = "            '{$fieldName}' => [" . implode(', ', $fieldRules) . "],";
-
-            $default = "''";
-            if ($type === 'select') {
-                $options = (array)($meta['options'] ?? []);
-                $keys = array_keys($options);
-                $default = isset($keys[0]) ? "'" . (string)$keys[0] . "'" : "''";
-            }
-            $inputMap[] = "            '{$fieldName}' => \$app->request()->input('{$fieldName}', {$default}),";
         }
 
         $files["src/Application/Services/{$serviceClass}.php"] = "<?php
@@ -141,8 +128,8 @@ declare(strict_types=1);
 
 namespace Cabnet\\Application\\Services;
 
-use {$definitionFqcn};
-use {$repositoryFqcn};
+use Cabnet\\Application\\Crud\\Definitions\\{$definitionClass};
+use Cabnet\\Infrastructure\\Repositories\\{$repositoryClass};
 
 final class {$serviceClass} extends BaseService
 {
@@ -208,149 +195,11 @@ declare(strict_types=1);
 
 namespace Cabnet\\Application\\Controllers\\Admin;
 
-use {$definitionFqcn};
-
 final class {$controllerClass} extends BaseCrudController
 {
-    protected function entityDefinition(): \\CrudEntityDefinition
+    protected function moduleKey(): string
     {
-        return {$definitionClass}::make();
-    }
-
-    public function index(object \$app, array \$params = []): \\Cabnet\\Http\\Response
-    {
-        /** @var {$serviceFqcn} \$service */
-        \$service = \$app->service('{$singularBase}Crud');
-        \$search = trim((string)\$app->request()->query('q', ''));
-        \$page = (int)\$app->request()->query('page', 1);
-
-        \$pageData = \$service->paginate(\$search, \$page, 10);
-
-        return \$this->render(\$app, 'admin/{$routeBase}/index.php', \$this->listViewData(
-            \$app,
-            \$pageData,
-            \$search,
-            'admin.{$routeBase}'
-        ));
-    }
-
-    public function createForm(object \$app, array \$params = []): \\Cabnet\\Http\\Response
-    {
-        return \$this->render(\$app, 'admin/{$routeBase}/create.php', \$this->formViewData(
-            \$app,
-            'create',
-            \$app->url()->route('admin.{$routeBase}.store'),
-            \$app->url()->route('admin.{$routeBase}.index')
-        ));
-    }
-
-    public function store(object \$app, array \$params = []): \\Cabnet\\Http\\Response
-    {
-        if (!\$app->csrf()->validate((string)\$app->request()->input('_token', ''))) {
-            \$this->flash(\$app, 'danger', 'Invalid CSRF token.');
-            return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.create'));
-        }
-
-        /** @var {$serviceFqcn} \$service */
-        \$service = \$app->service('{$singularBase}Crud');
-
-        \$input = [
-" . implode("\n", $inputMap) . "
-        ];
-
-        \$result = \$service->create(\$input);
-
-        if (!\$result->valid()) {
-            \$app->viewState()->putOld(\$input);
-            \$app->viewState()->putErrors(\$result->errors());
-            \$this->flash(\$app, 'danger', 'Please correct the form errors.');
-            return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.create'));
-        }
-
-        \$app->viewState()->clearFormState();
-        \$this->flash(\$app, 'success', '{$singularLabel} created successfully.');
-        return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.index'));
-    }
-
-    public function editForm(object \$app, array \$params = []): \\Cabnet\\Http\\Response
-    {
-        \$id = (int)(\$params['id'] ?? 0);
-
-        /** @var {$serviceFqcn} \$service */
-        \$service = \$app->service('{$singularBase}Crud');
-        \$row = \$service->find(\$id);
-
-        if (!\$row) {
-            \$this->flash(\$app, 'warning', '{$singularLabel} not found.');
-            return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.index'));
-        }
-
-        return \$this->render(\$app, 'admin/{$routeBase}/edit.php', \$this->formViewData(
-            \$app,
-            'edit',
-            \$app->url()->route('admin.{$routeBase}.update', ['id' => \$id]),
-            \$app->url()->route('admin.{$routeBase}.index'),
-            \$row
-        ));
-    }
-
-    public function update(object \$app, array \$params = []): \\Cabnet\\Http\\Response
-    {
-        \$id = (int)(\$params['id'] ?? 0);
-
-        if (!\$app->csrf()->validate((string)\$app->request()->input('_token', ''))) {
-            \$this->flash(\$app, 'danger', 'Invalid CSRF token.');
-            return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.edit', ['id' => \$id]));
-        }
-
-        /** @var {$serviceFqcn} \$service */
-        \$service = \$app->service('{$singularBase}Crud');
-        \$row = \$service->find(\$id);
-
-        if (!\$row) {
-            \$this->flash(\$app, 'warning', '{$singularLabel} not found.');
-            return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.index'));
-        }
-
-        \$input = [
-" . implode("\n", $inputMap) . "
-        ];
-
-        \$result = \$service->update(\$id, \$input);
-
-        if (!\$result->valid()) {
-            \$app->viewState()->putOld(\$input);
-            \$app->viewState()->putErrors(\$result->errors());
-            \$this->flash(\$app, 'danger', 'Please correct the form errors.');
-            return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.edit', ['id' => \$id]));
-        }
-
-        \$app->viewState()->clearFormState();
-        \$this->flash(\$app, 'success', '{$singularLabel} updated successfully.');
-        return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.index'));
-    }
-
-    public function destroy(object \$app, array \$params = []): \\Cabnet\\Http\\Response
-    {
-        \$id = (int)(\$params['id'] ?? 0);
-
-        if (!\$app->csrf()->validate((string)\$app->request()->input('_token', ''))) {
-            \$this->flash(\$app, 'danger', 'Invalid CSRF token.');
-            return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.index'));
-        }
-
-        /** @var {$serviceFqcn} \$service */
-        \$service = \$app->service('{$singularBase}Crud');
-        \$row = \$service->find(\$id);
-
-        if (!\$row) {
-            \$this->flash(\$app, 'warning', '{$singularLabel} not found.');
-            return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.index'));
-        }
-
-        \$service->delete(\$id);
-        \$this->flash(\$app, 'success', '{$singularLabel} deleted successfully.');
-        return \$this->redirect(\$app, \$app->url()->route('admin.{$routeBase}.index'));
+        return '{$routeBase}';
     }
 }
 ";
@@ -359,28 +208,26 @@ final class {$controllerClass} extends BaseCrudController
         $files["app/Views/php/admin/{$routeBase}/create.php"] = "<?php\ninclude BASE_PATH . '/app/Views/php/admin/crud/form_page.php';\n";
         $files["app/Views/php/admin/{$routeBase}/edit.php"] = "<?php\ninclude BASE_PATH . '/app/Views/php/admin/crud/form_page.php';\n";
 
-        $files["generated/{$routeBase}_route_snippets.php.txt"] = implode("\n", [
-            "['method' => 'GET', 'path' => '/{$routeBase}', 'handler' => [\\Cabnet\\Application\\Controllers\\Admin\\{$controllerClass}::class, 'index'], 'name' => 'admin.{$routeBase}.index'],",
-            "['method' => 'GET', 'path' => '/{$routeBase}/create', 'handler' => [\\Cabnet\\Application\\Controllers\\Admin\\{$controllerClass}::class, 'createForm'], 'name' => 'admin.{$routeBase}.create'],",
-            "['method' => 'POST', 'path' => '/{$routeBase}', 'handler' => [\\Cabnet\\Application\\Controllers\\Admin\\{$controllerClass}::class, 'store'], 'name' => 'admin.{$routeBase}.store'],",
-            "['method' => 'GET', 'path' => '/{$routeBase}/{id}/edit', 'handler' => [\\Cabnet\\Application\\Controllers\\Admin\\{$controllerClass}::class, 'editForm'], 'name' => 'admin.{$routeBase}.edit'],",
-            "['method' => 'POST', 'path' => '/{$routeBase}/{id}/update', 'handler' => [\\Cabnet\\Application\\Controllers\\Admin\\{$controllerClass}::class, 'update'], 'name' => 'admin.{$routeBase}.update'],",
-            "['method' => 'POST', 'path' => '/{$routeBase}/{id}/delete', 'handler' => [\\Cabnet\\Application\\Controllers\\Admin\\{$controllerClass}::class, 'destroy'], 'name' => 'admin.{$routeBase}.delete'],",
-            ''
-        ]);
-
-        $files["generated/{$routeBase}_service_registration.php.txt"] = implode("\n", [
-            "'{$singularBase}Repository' => function (App \$app): \\Cabnet\\Infrastructure\\Repositories\\{$repositoryClass} {",
-            "    return new \\Cabnet\\Infrastructure\\Repositories\\{$repositoryClass}(\$app->service('db'));",
-            '},',
+        $files["generated/{$routeBase}_module_config.php.txt"] = implode("\n", [
+            "'{$routeBase}' => [",
+            "    'enabled' => true,",
+            "    'label' => '{$pluralLabel}',",
+            "    'singular_label' => '{$singularLabel}',",
+            "    'route_prefix' => '/{$routeBase}',",
+            "    'table' => '{$table}',",
+            "    'definition_class' => \\Cabnet\\Application\\Crud\\Definitions\\{$definitionClass}::class,",
+            "    'controller_class' => \\Cabnet\\Application\\Controllers\\Admin\\{$controllerClass}::class,",
+            "    'repository_class' => \\Cabnet\\Infrastructure\\Repositories\\{$repositoryClass}::class,",
+            "    'service_class' => \\Cabnet\\Application\\Services\\{$serviceClass}::class,",
+            "    'repository_service' => '{$singularBase}Repository',",
+            "    'crud_service' => '{$singularBase}Crud',",
+            "    'admin_route_base' => 'admin.{$routeBase}',",
+            "    'admin_view_path' => 'admin/{$routeBase}',",
+            "    'admin_middleware' => ['session', 'admin.auth'],",
+            "    'show_in_admin_menu' => true,",
+            "    'generator_target' => 'src',",
+            "],",
             '',
-            "'{$singularBase}Crud' => function (App \$app): \\Cabnet\\Application\\Services\\{$serviceClass} {",
-            "    return new \\Cabnet\\Application\\Services\\{$serviceClass}(",
-            "        \$app->service('{$singularBase}Repository'),",
-            "        \$app->validator()",
-            '    );',
-            '},',
-            ''
         ]);
 
         $schemaLines = [];
@@ -408,9 +255,10 @@ final class {$controllerClass} extends BaseCrudController
 
         $files["generated/{$routeBase}_implementation_notes.txt"] = implode("\n", [
             'Target: src-first',
-            'Code files are generated into src/Application and src/Infrastructure.',
+            'Add the generated module metadata block to config/modules.php.',
+            'Admin routes, admin menu items, repository services, and CRUD services now derive from module metadata automatically.',
             'Admin PHP views remain under app/Views/php/admin until rendering is migrated fully to src/View.',
-            ''
+            '',
         ]);
 
         return $files;

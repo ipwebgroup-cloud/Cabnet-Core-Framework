@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 final class {{controllerClass}} extends \Cabnet\Application\Controllers\Admin\BaseCrudController
 {
-    protected function entityDefinition(): \Cabnet\Application\Crud\CrudEntityDefinition
+    protected function moduleKey(): string
     {
-        return {{definitionClass}}::make();
+        return '{{moduleKey}}';
     }
 }

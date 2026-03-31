@@ -47,3 +47,10 @@ When compatibility is required, keep legacy classes as thin shims over the canon
 ## CRUD definition aliases
 - `app/Crud/CrudEntityDefinition.php` now exists only as a compatibility alias to `Cabnet\Application\Crud\CrudEntityDefinition`.
 - `app/Crud/Definitions/ServiceEntityDefinition.php` now exists only as a compatibility alias to `Cabnet\Application\Crud\Definitions\ServiceEntityDefinition`.
+
+
+## Module registry convergence
+- direct service registration for built-in CRUD modules should now prefer `config/modules.php` over manual entries in `bootstrap/services.php`.
+- direct admin CRUD route registration should now prefer `config/modules.php` over manual entries in `bootstrap/routes.php`.
+- direct admin sidebar item registration for CRUD modules should now prefer `config/modules.php` over hardcoded entries in `config/admin_menu.php`.
+- legacy/global CRUD controllers should continue shrinking toward thin `moduleKey()` wrappers over the canonical src CRUD base controller.

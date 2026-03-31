@@ -79,55 +79,43 @@ Create thin wrappers under the active PHP view layer:
 - `app/Views/php/admin/products/create.php`
 - `app/Views/php/admin/products/edit.php`
 
-## 8. Add routes
+## 8. Register the module
 
-In `bootstrap/routes.php`, add:
+Add the new entity to `config/modules.php`.
 
-- index
-- create
-- store
-- edit
-- update
-- delete
+That metadata now drives:
 
-Use route names:
-- `admin.products.index`
-- `admin.products.create`
-- `admin.products.store`
-- `admin.products.edit`
-- `admin.products.update`
-- `admin.products.delete`
+- admin CRUD routes
+- repository service registration
+- CRUD service registration
+- admin menu link registration
 
-## 9. Register services
+Use keys like:
+- `definition_class`
+- `controller_class`
+- `repository_class`
+- `service_class`
+- `repository_service`
+- `crud_service`
+- `admin_route_base`
+- `admin_view_path`
 
-In `bootstrap/services.php`, register:
-
-- `productRepository`
-- `productCrud`
-
-Point them at the src implementation classes.
-
-## 10. Add database schema
+## 9. Add database schema
 
 Create a schema file under:
 
 - `database/schema/products.sql`
 
-## 11. Add admin navigation
-
-Add the module to the admin sidebar.
-
-## 12. Recommended minimum checklist
+## 10. Recommended minimum checklist
 
 - definition created
 - repository created
 - service created
 - controller created
-- routes added
-- services registered
+- module entry added to `config/modules.php`
 - views added
 - schema added
-- sidebar link added
+- admin menu exposure confirmed
 - tested create/edit/delete
 
 ## Legacy compatibility note
@@ -137,3 +125,7 @@ If an older fork still depends on the legacy layer, keep `app/` classes as thin 
 
 ## v2.8 note
 After generating a new src CRUD pack, add or update the module entry in `config/modules.php` so the built-in CRUD module registry can expose the new entity metadata.
+
+
+## v2.9 note
+With v2.9, module metadata is no longer just documentation. It is now the preferred runtime integration seam for admin CRUD onboarding.
