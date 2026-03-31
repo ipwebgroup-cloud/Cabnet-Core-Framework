@@ -2,7 +2,7 @@
 
 ## Current release
 
-- v3.7.0 — Lightweight Policy Hooks
+- v3.8.0 — Generator Metadata Parity Cleanup
 
 ## Completed convergence phases
 
@@ -20,9 +20,10 @@
 - v3.5 — richer field metadata for uploads, relations, and multilingual content
 - v3.6 — Twig-aware generator output for src-owned CRUD module scaffolds
 - v3.7 — lightweight policy hooks for module authorization and admin menu visibility
+- v3.8 — generator/runtime metadata parity cleanup for CRUD scaffolds
 
 ## Next strongest moves
 
-1. generator/runtime parity cleanup so richer field metadata and policy metadata flow into generated modules with less manual follow-up
-2. module blueprint authoring examples so patch-based continuation work has fewer ambiguous scaffold inputs
-3. runtime dependency-injection bridge so middleware/controller/service construction becomes less dependent on direct instantiation
+1. module blueprint authoring examples so patch-based continuation work has fewer ambiguous scaffold inputs
+2. runtime dependency-injection bridge so middleware/controller/service construction becomes less dependent on direct instantiation
+3. relation-filter option hydration so relation-backed list filters can become first-class selects without custom per-project glue

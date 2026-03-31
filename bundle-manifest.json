@@ -1,12 +1,12 @@
 {
   "bundle": "Cabnet Core Framework",
-  "version": "3.7.0",
-  "release_name": "Lightweight Policy Hooks",
+  "version": "3.8.0",
+  "release_name": "Generator Metadata Parity Cleanup",
   "package_mode": "patch_only",
   "notes": [
-    "Includes only files changed for v3.7.",
+    "Includes only files changed for v3.8.",
     "Overlay this patch on top of the current framework tree.",
-    "CRUD modules can now declare optional policy hooks while retaining role-array fallback permissions.",
-    "Admin menu visibility can now follow module policy decisions, and generated config stubs can preserve policy_class metadata."
+    "CRUD generation now preserves more module metadata that the runtime already understands.",
+    "Blueprints can now drive access roles, permissions, filters, middleware overrides, and admin menu visibility with less manual follow-up."
   ]
 }

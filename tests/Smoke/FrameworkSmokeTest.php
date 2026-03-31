@@ -95,6 +95,9 @@ final class FrameworkSmokeTest
             'src_crud_generator_targets_src_presentation_views' => 'srcCrudGeneratorTargetsSrcPresentationViews',
             'src_crud_generator_can_emit_twig_presentation_views' => 'srcCrudGeneratorCanEmitTwigPresentationViews',
             'src_crud_generator_preserves_policy_class_metadata' => 'srcCrudGeneratorPreservesPolicyClassMetadata',
+            'src_crud_generator_preserves_module_permission_metadata' => 'srcCrudGeneratorPreservesModulePermissionMetadata',
+            'src_crud_generator_preserves_explicit_filter_metadata' => 'srcCrudGeneratorPreservesExplicitFilterMetadata',
+            'src_crud_generator_derives_filter_metadata_from_field_shortcuts' => 'srcCrudGeneratorDerivesFilterMetadataFromFieldShortcuts',
             'twig_renderer_maps_logical_php_templates_to_twig' => 'twigRendererMapsLogicalPhpTemplatesToTwig',
             'layered_twig_resolution_prefers_src_views_before_app_fallback' => 'layeredTwigResolutionPrefersSrcViewsBeforeAppFallback',
             'legacy_twig_layout_shim_delegates_to_src_layout' => 'legacyTwigLayoutShimDelegatesToSrcLayout',
@@ -986,6 +989,122 @@ final class FrameworkSmokeTest
 
         $configSnippet = (string)($files['generated/products_module_config.php.txt'] ?? '');
         SmokeAssert::contains("'policy_class' => \App\Policies\ProductPolicy::class", $configSnippet, 'Generated module config should preserve optional policy_class metadata.');
+    }
+
+    private function srcCrudGeneratorPreservesModulePermissionMetadata(): void
+    {
+        $writer = new CrudScaffoldWriter();
+        $files = $writer->buildCrudPack([
+            'entity_key' => 'products',
+            'singular_label' => 'Product',
+            'plural_label' => 'Products',
+            'table' => 'products',
+            'access_roles' => ['admin', 'editor'],
+            'permissions' => [
+                'view' => ['admin', 'editor'],
+                'create' => ['admin'],
+                'edit' => ['admin'],
+                'delete' => ['admin'],
+            ],
+            'admin_middleware' => ['session', 'admin.auth', 'audit'],
+            'show_in_admin_menu' => false,
+        ]);
+
+        $configSnippet = (string)($files['generated/products_module_config.php.txt'] ?? '');
+        SmokeAssert::contains("'admin_middleware' => array (", $configSnippet, 'Generated module config should preserve admin_middleware metadata.');
+        SmokeAssert::contains("'audit'", $configSnippet, 'Generated module config should preserve custom middleware entries.');
+        SmokeAssert::contains("'access_roles' => array (", $configSnippet, 'Generated module config should preserve optional access_roles metadata.');
+        SmokeAssert::contains("'editor'", $configSnippet, 'Generated module config should preserve non-admin access roles.');
+        SmokeAssert::contains("'permissions' => array (", $configSnippet, 'Generated module config should preserve explicit permission metadata.');
+        SmokeAssert::contains("'show_in_admin_menu' => false", $configSnippet, 'Generated module config should preserve explicit admin menu visibility metadata.');
+    }
+
+    private function srcCrudGeneratorPreservesExplicitFilterMetadata(): void
+    {
+        $writer = new CrudScaffoldWriter();
+        $files = $writer->buildCrudPack([
+            'entity_key' => 'products',
+            'singular_label' => 'Product',
+            'plural_label' => 'Products',
+            'table' => 'products',
+            'fields' => [
+                'status' => [
+                    'type' => 'select',
+                    'label' => 'Status',
+                    'options' => [
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                    ],
+                ],
+                'category' => [
+                    'type' => 'select',
+                    'label' => 'Category',
+                    'options' => [
+                        'a' => 'A',
+                        'b' => 'B',
+                    ],
+                ],
+            ],
+            'filters' => [
+                'status' => [
+                    'field' => 'status',
+                    'type' => 'select',
+                    'placeholder' => 'All statuses',
+                ],
+                'category' => 'category',
+            ],
+        ]);
+
+        $configSnippet = (string)($files['generated/products_module_config.php.txt'] ?? '');
+        SmokeAssert::contains("'filters' => array (", $configSnippet, 'Generated module config should preserve explicit filter metadata.');
+        SmokeAssert::contains("'field' => 'status'", $configSnippet, 'Generated module config should preserve named filters.');
+        SmokeAssert::contains("'placeholder' => 'All statuses'", $configSnippet, 'Generated module config should preserve filter placeholders.');
+        SmokeAssert::contains("'query_key' => 'category'", $configSnippet, 'Generated module config should support shorthand string filters.');
+        SmokeAssert::contains("'field' => 'category'", $configSnippet, 'Generated module config should resolve shorthand filter fields correctly.');
+    }
+
+    private function srcCrudGeneratorDerivesFilterMetadataFromFieldShortcuts(): void
+    {
+        $writer = new CrudScaffoldWriter();
+        $files = $writer->buildCrudPack([
+            'entity_key' => 'products',
+            'singular_label' => 'Product',
+            'plural_label' => 'Products',
+            'table' => 'products',
+            'fields' => [
+                'status' => [
+                    'type' => 'select',
+                    'label' => 'Status',
+                    'options' => [
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                    ],
+                    'filterable' => true,
+                ],
+                'title' => [
+                    'type' => 'text',
+                    'label' => 'Title',
+                    'filter' => [
+                        'placeholder' => 'Search title',
+                    ],
+                ],
+                'image_path' => [
+                    'type' => 'image',
+                    'label' => 'Image',
+                    'filterable' => true,
+                ],
+            ],
+        ]);
+
+        $configSnippet = (string)($files['generated/products_module_config.php.txt'] ?? '');
+        $notes = (string)($files['generated/products_implementation_notes.txt'] ?? '');
+
+        SmokeAssert::contains("'field' => 'status'", $configSnippet, 'Field-level filterable metadata should derive a status filter entry.');
+        SmokeAssert::contains("'type' => 'select'", $configSnippet, 'Derived select filters should preserve select typing when options are available.');
+        SmokeAssert::contains("'field' => 'title'", $configSnippet, 'Field-level filter metadata should derive named text filters.');
+        SmokeAssert::contains("'placeholder' => 'Search title'", $configSnippet, 'Derived field filters should preserve custom placeholder metadata.');
+        SmokeAssert::false(str_contains($configSnippet, "'image_path' => array ("), 'Upload fields should not automatically derive list filters.');
+        SmokeAssert::contains('Generated filters: status, title.', $notes, 'Implementation notes should summarize derived filters for the scaffold.');
     }
 
     private function twigRendererMapsLogicalPhpTemplatesToTwig(): void

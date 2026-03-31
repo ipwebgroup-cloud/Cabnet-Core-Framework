@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '3.7.0',
-    'release_name' => 'Lightweight Policy Hooks',
+    'version' => '3.8.0',
+    'release_name' => 'Generator Metadata Parity Cleanup',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -40,5 +40,6 @@ return [
         'crud_translatable_metadata' => true,
         'twig_aware_generator_output' => true,
         'crud_policy_hooks' => true,
+        'crud_generator_metadata_parity' => true,
     ],
 ];

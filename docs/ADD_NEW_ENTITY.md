@@ -30,3 +30,30 @@ The src-first generator can now preserve:
 - translatable metadata
 - requested PHP and/or Twig view targets
 - optional `policy_class` metadata in generated module config stubs
+- optional `access_roles`, `permissions`, `admin_middleware`, and `show_in_admin_menu` module metadata
+- explicit top-level `filters` metadata or field-level filter shortcuts via `filter`, `filterable`, or `list_filter`
+
+## Filter shortcut example
+
+```json
+{
+  "fields": {
+    "status": {
+      "type": "select",
+      "label": "Status",
+      "options": {
+        "draft": "Draft",
+        "published": "Published"
+      },
+      "filterable": true
+    },
+    "title": {
+      "type": "text",
+      "label": "Title",
+      "filter": {
+        "placeholder": "Search title"
+      }
+    }
+  }
+}
+```

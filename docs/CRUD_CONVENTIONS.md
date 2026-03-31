@@ -27,6 +27,7 @@ Common keys:
 - `admin_route_base`
 - `admin_view_path`
 - `admin_middleware`
+- `access_roles`
 - `permissions`
 - `filters`
 - `policy_class` (optional)
@@ -45,6 +46,32 @@ The default permission model is still role-array based:
     'delete' => ['admin'],
 ],
 ```
+
+If a module wants the same fallback role list across all actions, it can also declare:
+
+```php
+'access_roles' => ['admin', 'editor'],
+```
+
+## Filter model
+
+List filters live in module metadata and are resolved against the entity definition:
+
+```php
+'filters' => [
+    'status' => [
+        'field' => 'status',
+        'type' => 'select',
+        'placeholder' => 'All statuses',
+    ],
+],
+```
+
+The generator can now also derive filters from field metadata shortcuts:
+
+- `filterable: true`
+- `list_filter: true`
+- `filter: { ... }`
 
 ## Optional policy hooks
 

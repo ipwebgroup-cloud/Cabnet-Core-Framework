@@ -53,6 +53,8 @@ The intended direction of this framework is:
 - request input merges uploaded files into the definition-driven CRUD payload
 - src-first CRUD generation can now optionally emit Twig admin view stubs alongside PHP output
 - module authorization can now stay role-based by default or be extended with lightweight `policy_class` / `policy` hooks
+- src-first CRUD generation now also preserves optional module metadata such as `access_roles`, `permissions`, `admin_middleware`, `show_in_admin_menu`, and list `filters`
+- field metadata can now expose filter shortcuts through `filter`, `filterable`, or `list_filter`
 
 ## What I need from you first
 

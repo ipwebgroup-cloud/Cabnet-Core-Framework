@@ -24,6 +24,12 @@ final class CrudScaffoldWriter
         $policyClass = is_string($blueprint['policy_class'] ?? null) && (string)$blueprint['policy_class'] !== ''
             ? (string)$blueprint['policy_class']
             : null;
+        $accessRoles = $this->normalizeRoles($blueprint['access_roles'] ?? null);
+        $permissions = $this->normalizePermissions($blueprint['permissions'] ?? null, $accessRoles);
+        $adminMiddleware = $this->normalizeAdminMiddleware($blueprint['admin_middleware'] ?? null);
+        $showInAdminMenu = array_key_exists('show_in_admin_menu', $blueprint)
+            ? (bool)$blueprint['show_in_admin_menu']
+            : true;
 
         $classBase = $this->studly($this->singularize($entityKey));
         $routeBase = strtolower($this->pluralize($entityKey));
@@ -39,9 +45,18 @@ final class CrudScaffoldWriter
             $normalizedFields[$fieldName] = $this->normalizeFieldMetadata($fieldName, is_array($meta) ? $meta : []);
         }
 
+        $filters = $this->mergeFilters(
+            $this->deriveFiltersFromFields($normalizedFields),
+            $this->normalizeFilters($blueprint['filters'] ?? null, $normalizedFields)
+        );
+
         $definitionExport = var_export($normalizedFields, true);
         $listColumnsExport = var_export($listColumns, true);
         $searchableExport = var_export($searchable, true);
+        $accessRolesExport = var_export($accessRoles, true);
+        $permissionsExport = var_export($permissions, true);
+        $adminMiddlewareExport = var_export($adminMiddleware, true);
+        $filtersExport = var_export($filters, true);
 
         $files = [];
 
@@ -176,16 +191,12 @@ final class {$controllerClass} extends BaseCrudController
             "    'crud_service' => '{$singularBase}Crud',",
             "    'admin_route_base' => 'admin.{$routeBase}',",
             "    'admin_view_path' => 'admin/{$routeBase}',",
-            "    'admin_middleware' => ['session', 'admin.auth'],",
-            "    'permissions' => [",
-            "        'view' => ['admin'],",
-            "        'create' => ['admin'],",
-            "        'edit' => ['admin'],",
-            "        'delete' => ['admin'],",
-            "    ],",
-            "    'filters' => [],",
+            "    'admin_middleware' => " . $adminMiddlewareExport . ",",
+            "    'access_roles' => " . $accessRolesExport . ",",
+            "    'permissions' => " . $permissionsExport . ",",
+            "    'filters' => " . $filtersExport . ",",
             "    'policy_class' => " . ($policyClass !== null ? $policyClass . '::class' : 'null') . ",",
-            "    'show_in_admin_menu' => true,",
+            "    'show_in_admin_menu' => " . ($showInAdminMenu ? 'true' : 'false') . ",",
             "    'generator_target' => 'src',",
             '],',
             '',
@@ -219,11 +230,12 @@ final class {$controllerClass} extends BaseCrudController
             'Add the generated module metadata block to config/modules.php.',
             'Field metadata now carries validation and form rendering hints. Prefer editing the definition before editing the service or form partials.',
             'Admin routes, admin menu items, repository services, and CRUD services now derive from module metadata automatically.',
-            'Module metadata can now also declare per-action roles, optional policy hooks, and list-filter metadata for cleaner admin behavior.',
+            'Module metadata can now also declare access_roles, per-action roles, optional policy hooks, admin middleware overrides, admin-menu visibility, and list-filter metadata for cleaner admin behavior.',
             'Generated admin PHP views now target src/Presentation/Views/php/admin first, with app/Views/php remaining as a compatibility fallback.',
             'Generated admin Twig views now target src/Presentation/Views/twig/admin and extend the canonical shared CRUD Twig templates.',
-            'Field metadata can now also describe uploads, relation-driven selects, and translatable inputs.',
+            'Field metadata can now also describe uploads, relation-driven selects, translatable inputs, and filter shortcuts via filter/filterable/list_filter.',
             'Requested view engines: ' . implode(', ', $viewEngines) . '.',
+            'Generated filters: ' . ($filters !== [] ? implode(', ', array_keys($filters)) : 'none') . '.',
             'Keep config/app.php renderer on php unless the project explicitly switches to twig and has twig/twig installed.',
             '',
         ]);
@@ -237,23 +249,21 @@ final class {$controllerClass} extends BaseCrudController
     private function normalizeFieldMetadata(string $fieldName, array $meta): array
     {
         $type = (string)($meta['type'] ?? 'text');
-        $label = (string)($meta['label'] ?? $this->studly(str_replace(['-', '_'], ' ', $fieldName)));
+        $label = (string)($meta['label'] ?? $this->studly(str_replace('_', ' ', $fieldName)));
+
         $normalized = [
             'type' => $type,
             'label' => $label,
-            'required' => !empty($meta['required']),
+            'required' => (bool)($meta['required'] ?? false),
+            'default' => $meta['default'] ?? '',
         ];
-
-        if (isset($meta['options']) && is_array($meta['options'])) {
-            $normalized['options'] = $meta['options'];
-            $optionKeys = array_keys($meta['options']);
-            $normalized['default'] = $meta['default'] ?? (string)($optionKeys[0] ?? '');
-        } elseif (array_key_exists('default', $meta)) {
-            $normalized['default'] = $meta['default'];
-        }
 
         if (array_key_exists('placeholder', $meta)) {
             $normalized['placeholder'] = (string)$meta['placeholder'];
+        }
+
+        if ($type === 'select') {
+            $normalized['options'] = is_array($meta['options'] ?? null) ? $meta['options'] : [];
         }
 
         if (array_key_exists('help', $meta)) {
@@ -307,6 +317,18 @@ final class {$controllerClass} extends BaseCrudController
             $normalized['rules'] = $meta['rules'];
         }
 
+        if (array_key_exists('filter', $meta)) {
+            $normalized['filter'] = $meta['filter'];
+        }
+
+        if (array_key_exists('filterable', $meta)) {
+            $normalized['filterable'] = (bool)$meta['filterable'];
+        }
+
+        if (array_key_exists('list_filter', $meta)) {
+            $normalized['list_filter'] = $meta['list_filter'];
+        }
+
         return $normalized;
     }
 
@@ -342,6 +364,196 @@ final class {$controllerClass} extends BaseCrudController
 
         $normalized = array_values(array_unique($normalized));
         return $normalized !== [] ? $normalized : ['php'];
+    }
+
+    /** @return array<int, string> */
+    private function normalizeRoles(mixed $roles): array
+    {
+        if (is_string($roles) && trim($roles) !== '') {
+            $roles = [trim($roles)];
+        }
+
+        if (!is_array($roles) || $roles === []) {
+            return [];
+        }
+
+        return array_values(array_unique(array_filter(array_map(
+            static function (mixed $role): ?string {
+                if (!is_string($role)) {
+                    return null;
+                }
+
+                $role = trim($role);
+                return $role !== '' ? $role : null;
+            },
+            $roles
+        ))));
+    }
+
+    /**
+     * @param array<string, mixed>|mixed $configured
+     * @param array<int, string> $accessRoles
+     * @return array<string, array<int, string>>
+     */
+    private function normalizePermissions(mixed $configured, array $accessRoles): array
+    {
+        $configured = is_array($configured) ? $configured : [];
+        $fallback = $accessRoles !== [] ? $accessRoles : ['admin'];
+        $permissions = [];
+
+        foreach (['view', 'create', 'edit', 'delete'] as $action) {
+            $roles = $this->normalizeRoles($configured[$action] ?? null);
+            $permissions[$action] = $roles !== [] ? $roles : $fallback;
+        }
+
+        return $permissions;
+    }
+
+    /** @return array<int, string> */
+    private function normalizeAdminMiddleware(mixed $middleware): array
+    {
+        $middleware = $this->normalizeRoles($middleware);
+        return $middleware !== [] ? $middleware : ['session', 'admin.auth'];
+    }
+
+    /**
+     * @param array<string, array<string, mixed>> $fields
+     * @return array<string, array<string, mixed>>
+     */
+    private function normalizeFilters(mixed $configured, array $fields): array
+    {
+        if (!is_array($configured) || $configured === []) {
+            return [];
+        }
+
+        $filters = [];
+        foreach ($configured as $filterKey => $filterMeta) {
+            if (is_string($filterMeta)) {
+                $field = $filterMeta;
+                $filterMeta = [];
+            } elseif (is_array($filterMeta)) {
+                $field = (string)($filterMeta['field'] ?? $filterKey);
+            } else {
+                continue;
+            }
+
+            if (!isset($fields[$field])) {
+                continue;
+            }
+
+            $metaArray = is_array($filterMeta) ? $filterMeta : [];
+            $filters[(string)$filterKey] = $this->buildFilterDefinition((string)$filterKey, $field, $fields[$field], $metaArray);
+        }
+
+        return $filters;
+    }
+
+    /**
+     * @param array<string, array<string, mixed>> $fields
+     * @return array<string, array<string, mixed>>
+     */
+    private function deriveFiltersFromFields(array $fields): array
+    {
+        $filters = [];
+
+        foreach ($fields as $fieldName => $fieldMeta) {
+            $shortcut = $fieldMeta['filter'] ?? ($fieldMeta['list_filter'] ?? ($fieldMeta['filterable'] ?? null));
+            if ($shortcut === null || $shortcut === false) {
+                continue;
+            }
+
+            $meta = [];
+            if (is_array($shortcut)) {
+                $meta = $shortcut;
+            } elseif (is_string($shortcut) && trim($shortcut) !== '') {
+                $meta = ['label' => trim($shortcut)];
+            }
+
+            if (!$this->canDeriveFilterFromField($fieldMeta, $meta)) {
+                continue;
+            }
+
+            $filterKey = (string)($meta['query_key'] ?? $fieldName);
+            $filters[$filterKey] = $this->buildFilterDefinition($filterKey, $fieldName, $fieldMeta, $meta);
+        }
+
+        return $filters;
+    }
+
+    /**
+     * @param array<string, array<string, mixed>> $derived
+     * @param array<string, array<string, mixed>> $configured
+     * @return array<string, array<string, mixed>>
+     */
+    private function mergeFilters(array $derived, array $configured): array
+    {
+        if ($derived === []) {
+            return $configured;
+        }
+
+        if ($configured === []) {
+            return $derived;
+        }
+
+        return array_replace($derived, $configured);
+    }
+
+    /**
+     * @param array<string, mixed> $fieldMeta
+     * @param array<string, mixed> $filterMeta
+     * @return array<string, mixed>
+     */
+    private function buildFilterDefinition(string $filterKey, string $field, array $fieldMeta, array $filterMeta): array
+    {
+        $options = [];
+        if (is_array($filterMeta['options'] ?? null)) {
+            $options = (array)$filterMeta['options'];
+        } elseif (is_array($fieldMeta['options'] ?? null)) {
+            $options = (array)$fieldMeta['options'];
+        }
+
+        $type = (string)($filterMeta['type'] ?? $fieldMeta['type'] ?? 'text');
+        if ($type === 'select' && $options === []) {
+            $type = 'text';
+        }
+
+        $filter = [
+            'field' => $field,
+            'query_key' => (string)($filterMeta['query_key'] ?? $filterKey),
+            'label' => (string)($filterMeta['label'] ?? $fieldMeta['label'] ?? ucfirst($field)),
+            'type' => $type,
+            'placeholder' => (string)($filterMeta['placeholder'] ?? ''),
+            'default' => $filterMeta['default'] ?? null,
+            'help' => (string)($filterMeta['help'] ?? $fieldMeta['help'] ?? ''),
+        ];
+
+        if ($type === 'select') {
+            $filter['options'] = $options;
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param array<string, mixed> $fieldMeta
+     * @param array<string, mixed> $filterMeta
+     */
+    private function canDeriveFilterFromField(array $fieldMeta, array $filterMeta): bool
+    {
+        if (!empty($fieldMeta['upload']) || !empty($fieldMeta['translatable'])) {
+            return false;
+        }
+
+        if (isset($filterMeta['type']) && is_string($filterMeta['type']) && trim($filterMeta['type']) !== '') {
+            return true;
+        }
+
+        $type = (string)($fieldMeta['type'] ?? 'text');
+        if ($type === 'select') {
+            return true;
+        }
+
+        return in_array($type, ['text', 'email', 'integer', 'number', 'textarea'], true);
     }
 
     /**

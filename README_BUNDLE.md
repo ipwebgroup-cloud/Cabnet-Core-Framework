@@ -2,8 +2,8 @@
 
 ## Current bundle
 
-- Version: v3.7.0
-- Release: Lightweight Policy Hooks
+- Version: v3.8.0
+- Release: Generator Metadata Parity Cleanup
 - Delivery mode: patch-only overlay
 
 ## Apply order
@@ -16,6 +16,6 @@
 
 ## Highlights
 
-- CRUD modules can now attach optional policy hooks while keeping role arrays as the safe default
-- admin menu visibility can now follow module policy decisions instead of relying only on static roles
-- generated module config stubs can now preserve optional `policy_class` metadata
+- CRUD generation now preserves more runtime-ready module metadata instead of hardcoding admin-only defaults
+- scaffold blueprints can now drive access roles, explicit per-action permissions, admin middleware overrides, admin menu visibility, and list filters
+- field-level filter shortcuts reduce manual config work after generation while leaving runtime behavior backward compatible

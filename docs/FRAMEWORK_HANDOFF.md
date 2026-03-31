@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v3.7.0  
+**Version:** v3.8.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline
 
@@ -38,6 +38,7 @@
 - metadata-driven translatable fields
 - Twig-aware CRUD generator output for src-owned admin scaffolds
 - lightweight module policy hooks for controller authorization and admin-menu visibility
+- generator/runtime metadata parity for permissions, filters, middleware, menu visibility, and field-level filter shortcuts
 
 ## Key Files to Know
 
@@ -68,3 +69,5 @@
 - modules may now optionally declare a `policy_class` or in-memory `policy` object that implements `Cabnet\Application\Crud\CrudModulePolicy`
 - policy hooks can return `true` or `false` to make an explicit decision, or `null` to defer to the existing role-array fallback
 - controller authorization and admin-menu visibility now share the same policy-aware module access path
+- src-first CRUD generation can now preserve optional `access_roles`, per-action `permissions`, `admin_middleware`, `show_in_admin_menu`, and explicit `filters`
+- field metadata may now use `filter`, `filterable`, or `list_filter` shortcuts so list filters survive generation with less manual editing
