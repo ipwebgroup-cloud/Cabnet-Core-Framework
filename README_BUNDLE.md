@@ -2,8 +2,8 @@
 
 ## Current bundle
 
-- Version: v3.6.0
-- Release: Twig-Aware Generator Output
+- Version: v3.7.0
+- Release: Lightweight Policy Hooks
 - Delivery mode: patch-only overlay
 
 ## Apply order
@@ -16,6 +16,6 @@
 
 ## Highlights
 
-- src-first CRUD generation now understands PHP and Twig presentation targets
-- generated Twig admin stubs extend canonical src shared CRUD templates
-- PHP generation remains the default so existing bootstrap and renderer behavior stay stable
+- CRUD modules can now attach optional policy hooks while keeping role arrays as the safe default
+- admin menu visibility can now follow module policy decisions instead of relying only on static roles
+- generated module config stubs can now preserve optional `policy_class` metadata

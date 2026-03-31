@@ -5,8 +5,10 @@ namespace Cabnet\Support;
 
 final class AdminMenu
 {
-    public function __construct(private array $items = [])
-    {
+    public function __construct(
+        private array $items = [],
+        private $visibilityResolver = null
+    ) {
     }
 
     public function items(): array
@@ -19,7 +21,14 @@ final class AdminMenu
     {
         $role = is_array($user) && isset($user['role']) && is_string($user['role']) ? $user['role'] : null;
 
-        return array_values(array_filter($this->items, static function (array $item) use ($role): bool {
+        return array_values(array_filter($this->items, function (array $item) use ($user, $role): bool {
+            if (is_callable($this->visibilityResolver)) {
+                $resolved = ($this->visibilityResolver)($item, $user);
+                if (is_bool($resolved)) {
+                    return $resolved;
+                }
+            }
+
             $roles = $item['roles'] ?? null;
             if ($roles === null) {
                 return true;

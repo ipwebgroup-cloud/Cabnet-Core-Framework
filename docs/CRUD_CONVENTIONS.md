@@ -1,54 +1,63 @@
 # CRUD_CONVENTIONS.md
 
-## Canonical direction
+## Canonical CRUD ownership
 
-- define module metadata in `config/modules.php`
-- define field metadata in `src/Application/Crud/Definitions/*EntityDefinition.php`
-- let services inherit shared validation flow from `DefinitionCrudService`
-- let admin CRUD partials read display attributes from the same field metadata
-- let module metadata declare per-action access roles and list-filter controls
+- entity definition: `src/Application/Crud/Definitions/*EntityDefinition.php`
+- controller: `src/Application/Controllers/Admin/*Controller.php`
+- service: `src/Application/Services/*CrudService.php`
+- repository: `src/Infrastructure/Repositories/*Repository.php`
+- admin views: `src/Presentation/Views/php/admin/<module>/` or `src/Presentation/Views/twig/admin/<module>/`
+- module registry metadata: `config/modules.php`
 
-## Field metadata conventions
+## Module metadata keys
 
-Supported keys include:
+Common keys:
 
-- `type`
+- `enabled`
 - `label`
-- `required`
-- `default`
-- `min`
-- `max`
-- `placeholder`
-- `help`
-- `rows`
-- `options`
-- `slug`
-- `rules` for explicit overrides when inference is not enough
-
-## Module metadata conventions
-
-Supported runtime keys now include:
-
-- `permissions` for `view`, `create`, `edit`, and `delete`
-- `filters` for list-only query controls
+- `singular_label`
+- `route_prefix`
+- `table`
+- `definition_class`
+- `controller_class`
+- `repository_class`
+- `service_class`
+- `repository_service`
+- `crud_service`
+- `admin_route_base`
+- `admin_view_path`
 - `admin_middleware`
+- `permissions`
+- `filters`
+- `policy_class` (optional)
 - `show_in_admin_menu`
+- `generator_target`
 
-## Validation direction
+## Permission model
 
-Prefer metadata-driven validation through `CrudEntityDefinition::validationRules()` before adding custom per-service rule arrays.
+The default permission model is still role-array based:
 
-## Form direction
+```php
+'permissions' => [
+    'view' => ['admin', 'editor'],
+    'create' => ['admin'],
+    'edit' => ['admin'],
+    'delete' => ['admin'],
+],
+```
 
-Prefer metadata-driven form rendering through the shared CRUD partials before creating custom hand-written field markup.
+## Optional policy hooks
 
-## List behavior direction
+For modules that need richer access logic, add a policy class:
 
-Prefer registry-driven list filtering through `config/modules.php` before hand-writing module-specific search/filter forms.
+```php
+'policy_class' => \App\Policies\ServicePolicy::class,
+```
 
-## Generator presentation direction
+Policy classes must implement `Cabnet\Application\Crud\CrudModulePolicy`.
 
-- Canonical CRUD presentation files live under `src/Presentation/Views/php/admin` and `src/Presentation/Views/twig/admin`.
-- PHP remains the default generated admin presentation target for compatibility.
-- Twig generation should extend the canonical shared CRUD templates under `src/Presentation/Views/twig/admin/crud`.
-- Blueprint-driven view targeting should prefer `view_engines` over ad hoc post-generation file edits.
+- return `true` to allow the action
+- return `false` to deny the action
+- return `null` to fall back to the configured role arrays
+
+This keeps the baseline safe while allowing project-specific authorization rules without forking controllers.

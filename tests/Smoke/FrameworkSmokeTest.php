@@ -82,7 +82,9 @@ final class FrameworkSmokeTest
             'crud_module_bootstrap_appends_admin_routes' => 'crudModuleBootstrapAppendsAdminRoutes',
             'crud_module_bootstrap_appends_admin_menu_items' => 'crudModuleBootstrapAppendsAdminMenuItems',
             'crud_module_registry_resolves_permissions_and_filters' => 'crudModuleRegistryResolvesPermissionsAndFilters',
+            'crud_module_policy_can_expand_action_access_beyond_roles' => 'crudModulePolicyCanExpandActionAccessBeyondRoles',
             'admin_menu_service_filters_items_by_role' => 'adminMenuServiceFiltersItemsByRole',
+            'admin_menu_can_apply_policy_aware_visibility_rules' => 'adminMenuCanApplyPolicyAwareVisibilityRules',
             'service_create_form_redirects_when_role_lacks_permission' => 'serviceCreateFormRedirectsWhenRoleLacksPermission',
             'crud_index_view_renders_registry_filters_and_hides_disallowed_actions' => 'crudIndexViewRendersRegistryFiltersAndHidesDisallowedActions',
             'src_crud_generator_uses_namespaced_base_classes' => 'srcCrudGeneratorUsesNamespacedBaseClasses',
@@ -92,6 +94,7 @@ final class FrameworkSmokeTest
             'built_in_services_view_resolves_from_src_presentation_layer' => 'builtInServicesViewResolvesFromSrcPresentationLayer',
             'src_crud_generator_targets_src_presentation_views' => 'srcCrudGeneratorTargetsSrcPresentationViews',
             'src_crud_generator_can_emit_twig_presentation_views' => 'srcCrudGeneratorCanEmitTwigPresentationViews',
+            'src_crud_generator_preserves_policy_class_metadata' => 'srcCrudGeneratorPreservesPolicyClassMetadata',
             'twig_renderer_maps_logical_php_templates_to_twig' => 'twigRendererMapsLogicalPhpTemplatesToTwig',
             'layered_twig_resolution_prefers_src_views_before_app_fallback' => 'layeredTwigResolutionPrefersSrcViewsBeforeAppFallback',
             'legacy_twig_layout_shim_delegates_to_src_layout' => 'legacyTwigLayoutShimDelegatesToSrcLayout',
@@ -602,6 +605,42 @@ final class FrameworkSmokeTest
         SmokeAssert::same('draft', $payload['status'] ?? null, 'Module filter payload should normalize active filter values through the canonical CRUD definition.');
     }
 
+
+    private function crudModulePolicyCanExpandActionAccessBeyondRoles(): void
+    {
+        $policy = new class () implements \Cabnet\Application\Crud\CrudModulePolicy {
+            public function allows(
+                string $moduleKey,
+                string $action,
+                mixed $user,
+                array $moduleMeta,
+                \Cabnet\Application\Crud\CrudEntityDefinition $definition,
+                array $context = []
+            ): ?bool {
+                $role = is_array($user) ? ($user['role'] ?? null) : null;
+                if ($moduleKey === 'services' && $action === 'create' && $role === 'editor') {
+                    return true;
+                }
+
+                return null;
+            }
+        };
+
+        $modules = require BASE_PATH . '/config/modules.php';
+        $modules['services']['policy'] = $policy;
+        $registry = new \Cabnet\Application\Crud\CrudModuleRegistry($modules);
+
+        SmokeAssert::same(['admin'], $registry->permissions('services')['create'] ?? null, 'Role-array permissions should remain unchanged when a policy hook is attached.');
+        SmokeAssert::true(
+            $registry->allowsForUser('services', 'create', ['role' => 'editor'], ['surface' => 'create']),
+            'Policy hooks should be able to expand module action access without controller rewrites.'
+        );
+        SmokeAssert::false(
+            $registry->allowsForUser('services', 'delete', ['role' => 'editor']),
+            'Policy hooks should still fall back to role arrays for actions they do not override.'
+        );
+    }
+
     private function adminMenuServiceFiltersItemsByRole(): void
     {
         $app = bootstrap_app('admin');
@@ -616,6 +655,58 @@ final class FrameworkSmokeTest
 
         SmokeAssert::true(in_array('Services', $editorLabels, true), 'Editor role should see the Services admin menu item when module view permission allows it.');
         SmokeAssert::false(in_array('Services', $viewerLabels, true), 'Unknown viewer role should not see the Services admin menu item.');
+    }
+
+    private function adminMenuCanApplyPolicyAwareVisibilityRules(): void
+    {
+        $policy = new class () implements \Cabnet\Application\Crud\CrudModulePolicy {
+            public function allows(
+                string $moduleKey,
+                string $action,
+                mixed $user,
+                array $moduleMeta,
+                \Cabnet\Application\Crud\CrudEntityDefinition $definition,
+                array $context = []
+            ): ?bool {
+                $role = is_array($user) ? ($user['role'] ?? null) : null;
+                if (($context['surface'] ?? null) === 'admin_menu' && $moduleKey === 'services' && $action === 'view' && $role === 'viewer') {
+                    return true;
+                }
+
+                return null;
+            }
+        };
+
+        $modules = require BASE_PATH . '/config/modules.php';
+        $modules['services']['policy'] = $policy;
+        $registry = new \Cabnet\Application\Crud\CrudModuleRegistry($modules);
+
+        $menu = new \Cabnet\Support\AdminMenu([
+            [
+                'label' => 'Services',
+                'path' => '/services',
+                'match' => '/services',
+                'roles' => ['editor'],
+                'module_key' => 'services',
+                'permission_action' => 'view',
+            ],
+        ], static function (array $item, mixed $user) use ($registry): ?bool {
+            $moduleKey = $item['module_key'] ?? null;
+            $action = $item['permission_action'] ?? 'view';
+            if (!is_string($moduleKey) || $moduleKey === '') {
+                return null;
+            }
+
+            return $registry->allowsForUser($moduleKey, is_string($action) ? $action : 'view', $user, [
+                'surface' => 'admin_menu',
+                'menu_item' => $item,
+            ]);
+        });
+
+        $viewerItems = $menu->visibleFor(['role' => 'viewer']);
+        $labels = array_map(static fn (array $item): string => (string)($item['label'] ?? ''), $viewerItems);
+
+        SmokeAssert::true(in_array('Services', $labels, true), 'Policy-aware menu visibility should be able to expose a module beyond its fallback role list.');
     }
 
     private function serviceCreateFormRedirectsWhenRoleLacksPermission(): void
@@ -879,6 +970,22 @@ final class FrameworkSmokeTest
         SmokeAssert::same(302, $snapshot['statusCode'], 'Guest admin access should redirect.');
         SmokeAssert::same('/login', $snapshot['headers']['Location'] ?? null, 'Guest admin access should redirect to login route.');
         SmokeAssert::contains('Please sign in', implode(' ', $flash['warning'] ?? []), 'Middleware should explain why access was blocked.');
+    }
+
+
+    private function srcCrudGeneratorPreservesPolicyClassMetadata(): void
+    {
+        $writer = new CrudScaffoldWriter();
+        $files = $writer->buildCrudPack([
+            'entity_key' => 'products',
+            'singular_label' => 'Product',
+            'plural_label' => 'Products',
+            'table' => 'products',
+            'policy_class' => '\App\Policies\ProductPolicy',
+        ]);
+
+        $configSnippet = (string)($files['generated/products_module_config.php.txt'] ?? '');
+        SmokeAssert::contains("'policy_class' => \App\Policies\ProductPolicy::class", $configSnippet, 'Generated module config should preserve optional policy_class metadata.');
     }
 
     private function twigRendererMapsLogicalPhpTemplatesToTwig(): void

@@ -74,9 +74,28 @@ $services = [
     },
 
     'adminMenu' => function (App $app): \Cabnet\Support\AdminMenu {
-        $registry = new \Cabnet\Bootstrap\ServiceRegistry();
-        $items = $registry->makeAdminMenuService($app->config('admin_menu', []))->items();
-        return new \Cabnet\Support\AdminMenu($items);
+        $serviceRegistry = new \Cabnet\Bootstrap\ServiceRegistry();
+        $items = $serviceRegistry->makeAdminMenuService($app->config('admin_menu', []))->items();
+
+        return new \Cabnet\Support\AdminMenu($items, static function (array $item, mixed $user) use ($app): ?bool {
+            $moduleKey = $item['module_key'] ?? null;
+            $action = $item['permission_action'] ?? 'view';
+
+            if (!is_string($moduleKey) || $moduleKey === '') {
+                return null;
+            }
+
+            $registry = $app->service('crudModuleRegistry');
+            if (!$registry instanceof \Cabnet\Application\Crud\CrudModuleRegistry || !$registry->has($moduleKey)) {
+                return null;
+            }
+
+            $permissionAction = is_string($action) && $action !== '' ? $action : 'view';
+            return $registry->allowsForUser($moduleKey, $permissionAction, $user, [
+                'surface' => 'admin_menu',
+                'menu_item' => $item,
+            ]);
+        });
     },
 
     'userProvider' => function (App $app): \Cabnet\Infrastructure\Auth\DbUserProvider {

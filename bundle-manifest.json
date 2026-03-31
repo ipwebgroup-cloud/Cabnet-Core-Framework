@@ -1,12 +1,12 @@
 {
   "bundle": "Cabnet Core Framework",
-  "version": "3.6.0",
-  "release_name": "Twig-Aware Generator Output",
+  "version": "3.7.0",
+  "release_name": "Lightweight Policy Hooks",
   "package_mode": "patch_only",
   "notes": [
-    "Includes only files changed for v3.6.",
+    "Includes only files changed for v3.7.",
     "Overlay this patch on top of the current framework tree.",
-    "The src-first CRUD generator now understands renderer targets and can emit src-owned Twig admin view stubs.",
-    "Generated implementation notes now explain how PHP and Twig presentation outputs map to config/app.php renderer selection."
+    "CRUD modules can now declare optional policy hooks while retaining role-array fallback permissions.",
+    "Admin menu visibility can now follow module policy decisions, and generated config stubs can preserve policy_class metadata."
   ]
 }

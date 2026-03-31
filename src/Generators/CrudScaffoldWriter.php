@@ -21,6 +21,9 @@ final class CrudScaffoldWriter
         $searchable = (array)($blueprint['searchable'] ?? []);
         $defaultOrder = (string)($blueprint['default_order'] ?? 'id DESC');
         $viewEngines = $this->normalizeViewEngines($blueprint);
+        $policyClass = is_string($blueprint['policy_class'] ?? null) && (string)$blueprint['policy_class'] !== ''
+            ? (string)$blueprint['policy_class']
+            : null;
 
         $classBase = $this->studly($this->singularize($entityKey));
         $routeBase = strtolower($this->pluralize($entityKey));
@@ -181,6 +184,7 @@ final class {$controllerClass} extends BaseCrudController
             "        'delete' => ['admin'],",
             "    ],",
             "    'filters' => [],",
+            "    'policy_class' => " . ($policyClass !== null ? $policyClass . '::class' : 'null') . ",",
             "    'show_in_admin_menu' => true,",
             "    'generator_target' => 'src',",
             '],',
@@ -215,7 +219,7 @@ final class {$controllerClass} extends BaseCrudController
             'Add the generated module metadata block to config/modules.php.',
             'Field metadata now carries validation and form rendering hints. Prefer editing the definition before editing the service or form partials.',
             'Admin routes, admin menu items, repository services, and CRUD services now derive from module metadata automatically.',
-            'Module metadata can now also declare per-action roles and list-filter metadata for cleaner admin behavior.',
+            'Module metadata can now also declare per-action roles, optional policy hooks, and list-filter metadata for cleaner admin behavior.',
             'Generated admin PHP views now target src/Presentation/Views/php/admin first, with app/Views/php remaining as a compatibility fallback.',
             'Generated admin Twig views now target src/Presentation/Views/twig/admin and extend the canonical shared CRUD Twig templates.',
             'Field metadata can now also describe uploads, relation-driven selects, and translatable inputs.',

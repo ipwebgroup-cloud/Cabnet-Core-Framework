@@ -1,4 +1,4 @@
-Cabnet Core Framework v3.6 — Twig-Aware Generator Output (patch-only overlay)
+Cabnet Core Framework v3.7 — Lightweight Policy Hooks (patch-only overlay)
 
 Apply these files over your existing framework tree:
 
@@ -9,11 +9,16 @@ Apply these files over your existing framework tree:
 - README_BUNDLE.md
 - ROADMAP.md
 - bundle-manifest.json
+- bootstrap/services.php
 - config/framework.php
 - docs/ADD_NEW_ENTITY.md
 - docs/CRUD_CONVENTIONS.md
 - docs/FRAMEWORK_HANDOFF.md
-- docs/V3_6_TWIG_AWARE_GENERATOR_OUTPUT.md
-- scripts/generate-crud-pack.php
+- docs/V3_7_LIGHTWEIGHT_POLICY_HOOKS.md
+- src/Application/Controllers/Admin/BaseCrudController.php
+- src/Application/Crud/CrudModuleBootstrap.php
+- src/Application/Crud/CrudModulePolicy.php
+- src/Application/Crud/CrudModuleRegistry.php
 - src/Generators/CrudScaffoldWriter.php
+- src/Support/AdminMenu.php
 - tests/Smoke/FrameworkSmokeTest.php

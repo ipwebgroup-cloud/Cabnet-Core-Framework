@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 return [
-    'version' => '3.6.0',
-    'release_name' => 'Twig-Aware Generator Output',
+    'version' => '3.7.0',
+    'release_name' => 'Lightweight Policy Hooks',
     'feature_flags' => [
         'db_auth' => true,
         'twig_renderer' => false,
@@ -39,5 +39,6 @@ return [
         'crud_relation_metadata' => true,
         'crud_translatable_metadata' => true,
         'twig_aware_generator_output' => true,
+        'crud_policy_hooks' => true,
     ],
 ];

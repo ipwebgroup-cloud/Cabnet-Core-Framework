@@ -27,7 +27,9 @@ Cabnet Core Smoke Tests
 [PASS] crud_module_bootstrap_appends_admin_routes
 [PASS] crud_module_bootstrap_appends_admin_menu_items
 [PASS] crud_module_registry_resolves_permissions_and_filters
+[PASS] crud_module_policy_can_expand_action_access_beyond_roles
 [PASS] admin_menu_service_filters_items_by_role
+[PASS] admin_menu_can_apply_policy_aware_visibility_rules
 [PASS] service_create_form_redirects_when_role_lacks_permission
 [PASS] crud_index_view_renders_registry_filters_and_hides_disallowed_actions
 [PASS] src_crud_generator_uses_namespaced_base_classes
@@ -37,6 +39,7 @@ Cabnet Core Smoke Tests
 [PASS] built_in_services_view_resolves_from_src_presentation_layer
 [PASS] src_crud_generator_targets_src_presentation_views
 [PASS] src_crud_generator_can_emit_twig_presentation_views
+[PASS] src_crud_generator_preserves_policy_class_metadata
 [PASS] twig_renderer_maps_logical_php_templates_to_twig
 [PASS] layered_twig_resolution_prefers_src_views_before_app_fallback
 [PASS] legacy_twig_layout_shim_delegates_to_src_layout
@@ -45,5 +48,5 @@ Cabnet Core Smoke Tests
 [PASS] crud_form_fields_render_upload_relation_and_translatable_inputs
 [PASS] definition_driven_service_persists_uploads_and_translatable_values
 ------------------------
-Passed: 44
+Passed: 47
 Failed: 0

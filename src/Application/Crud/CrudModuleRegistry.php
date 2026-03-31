@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Cabnet\Application\Crud;
 
 use InvalidArgumentException;
+use Throwable;
 
 final class CrudModuleRegistry
 {
@@ -143,16 +144,50 @@ final class CrudModuleRegistry
 
     public function allows(string $key, string $action, ?string $role): bool
     {
+        $user = $role !== null && $role !== '' ? ['role' => $role] : null;
+        return $this->allowsForUser($key, $action, $user);
+    }
+
+    /** @param array<string, mixed> $context */
+    public function allowsForUser(string $key, string $action, mixed $user = null, array $context = []): bool
+    {
+        $policy = $this->policy($key);
+        if ($policy instanceof CrudModulePolicy) {
+            try {
+                $decision = $policy->allows($key, $action, $user, $this->meta($key), $this->definition($key), $context);
+            } catch (Throwable $e) {
+                throw new InvalidArgumentException(
+                    sprintf('CRUD policy evaluation failed for module [%s] action [%s]: %s', $key, $action, $e->getMessage()),
+                    0,
+                    $e
+                );
+            }
+
+            if (is_bool($decision)) {
+                return $decision;
+            }
+        }
+
         $roles = $this->actionRoles($key, $action);
         if (in_array('*', $roles, true)) {
             return true;
         }
 
+        $role = $this->roleFromUser($user);
         if ($role === null || $role === '') {
             return false;
         }
 
         return in_array($role, $roles, true);
+    }
+
+
+    public function policyClass(string $key): ?string
+    {
+        $meta = $this->meta($key);
+        $value = $meta['policy_class'] ?? null;
+
+        return is_string($value) && $value !== '' ? $value : null;
     }
 
     /** @return array<string, array<string, mixed>> */
@@ -226,6 +261,45 @@ final class CrudModuleRegistry
         }
 
         return $value;
+    }
+
+
+    private function roleFromUser(mixed $user): ?string
+    {
+        if (is_string($user) && $user !== '') {
+            return $user;
+        }
+
+        if (!is_array($user)) {
+            return null;
+        }
+
+        $role = $user['role'] ?? null;
+        return is_string($role) && $role !== '' ? $role : null;
+    }
+
+    private function policy(string $key): ?CrudModulePolicy
+    {
+        $meta = $this->meta($key);
+        $candidate = $meta['policy'] ?? ($meta['policy_class'] ?? null);
+
+        if ($candidate === null) {
+            return null;
+        }
+
+        if (is_string($candidate) && $candidate !== '') {
+            if (!class_exists($candidate)) {
+                throw new InvalidArgumentException("CRUD policy class [{$candidate}] was not found for module [{$key}].");
+            }
+
+            $candidate = new $candidate();
+        }
+
+        if (!$candidate instanceof CrudModulePolicy) {
+            throw new InvalidArgumentException("CRUD policy for module [{$key}] must implement " . CrudModulePolicy::class . '.');
+        }
+
+        return $candidate;
     }
 
     /** @return array<int, string> */

@@ -47,11 +47,12 @@ The intended direction of this framework is:
 
 - `src/` is the canonical home for bootstrap-aligned runtime, controllers, CRUD metadata, services/repositories, and presentation packages
 - `app/` remains a compatibility layer with legacy shims and wrappers
-- `config/modules.php` now drives CRUD services, admin routes, admin menu visibility, module action permissions, and list-filter metadata
+- `config/modules.php` now drives CRUD services, admin routes, admin menu visibility, module action permissions, list-filter metadata, and optional policy hooks
 - `src/Presentation/Views` owns canonical PHP and Twig layouts, partials, and built-in CRUD views
 - CRUD field metadata now also supports uploads, relation-driven selects, and translatable inputs
 - request input merges uploaded files into the definition-driven CRUD payload
 - src-first CRUD generation can now optionally emit Twig admin view stubs alongside PHP output
+- module authorization can now stay role-based by default or be extended with lightweight `policy_class` / `policy` hooks
 
 ## What I need from you first
 

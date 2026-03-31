@@ -134,7 +134,7 @@ final class CrudModuleBootstrap
             $menuItems[] = $item;
         }
 
-        foreach ($modules as $meta) {
+        foreach ($modules as $key => $meta) {
             if (!self::enabled($meta) || empty($meta['show_in_admin_menu'])) {
                 continue;
             }
@@ -149,6 +149,8 @@ final class CrudModuleBootstrap
                 'path' => $path,
                 'match' => $path,
                 'roles' => self::permissionRoles($meta, 'view'),
+                'module_key' => $key,
+                'permission_action' => 'view',
             ];
             $existingPaths[$path] = true;
         }

@@ -3,7 +3,7 @@
 ## Bundle Identity
 
 **Name:** Cabnet Core Framework Bundle  
-**Version:** v3.6.0  
+**Version:** v3.7.0  
 **Type:** Consolidated reusable PHP MVC-lite starter framework  
 **Status:** Stable transitional baseline
 
@@ -37,6 +37,7 @@
 - metadata-driven relation selects
 - metadata-driven translatable fields
 - Twig-aware CRUD generator output for src-owned admin scaffolds
+- lightweight module policy hooks for controller authorization and admin-menu visibility
 
 ## Key Files to Know
 
@@ -44,9 +45,10 @@
 - `config/storage.php`
 - `config/app.php`
 - `src/Application/Crud/CrudModuleRegistry.php`
-- `src/Application/Crud/CrudEntityDefinition.php`
+- `src/Application/Crud/CrudModulePolicy.php`
 - `src/Application/Controllers/Admin/BaseCrudController.php`
 - `src/Application/Services/DefinitionCrudService.php`
+- `src/Support/AdminMenu.php`
 - `src/Support/UploadManager.php`
 - `src/Http/Request.php`
 - `src/Presentation/Views/php/admin/crud/form_fields.php`
@@ -59,3 +61,10 @@
 - patch packages may include only changed files
 - read `FRAMEWORK_STATUS.json`, `PATCH_MANIFEST.txt`, and this handoff file first when resuming from a patch-only zip
 - `HANDOFF_PROMPT.txt` is continuity-critical and should be kept aligned with the current phase and delivery model
+
+## Current phase notes
+
+- role-array permissions remain the default safe authorization path
+- modules may now optionally declare a `policy_class` or in-memory `policy` object that implements `Cabnet\Application\Crud\CrudModulePolicy`
+- policy hooks can return `true` or `false` to make an explicit decision, or `null` to defer to the existing role-array fallback
+- controller authorization and admin-menu visibility now share the same policy-aware module access path

@@ -72,7 +72,7 @@ abstract class BaseCrudController extends BaseController
 
     public function index(object $app, array $params = []): Response
     {
-        if ($response = $this->authorize($app, 'view')) {
+        if ($response = $this->authorize($app, 'view', ['surface' => 'index'])) {
             return $response;
         }
 
@@ -93,7 +93,7 @@ abstract class BaseCrudController extends BaseController
 
     public function createForm(object $app, array $params = []): Response
     {
-        if ($response = $this->authorize($app, 'create')) {
+        if ($response = $this->authorize($app, 'create', ['surface' => 'create'])) {
             return $response;
         }
 
@@ -107,7 +107,7 @@ abstract class BaseCrudController extends BaseController
 
     public function store(object $app, array $params = []): Response
     {
-        if ($response = $this->authorize($app, 'create')) {
+        if ($response = $this->authorize($app, 'create', ['surface' => 'store', 'input' => (array)$app->request()->input()])) {
             return $response;
         }
 
@@ -134,7 +134,7 @@ abstract class BaseCrudController extends BaseController
 
     public function editForm(object $app, array $params = []): Response
     {
-        if ($response = $this->authorize($app, 'edit')) {
+        if ($response = $this->authorize($app, 'edit', ['surface' => 'edit', 'params' => $params, 'record_id' => (int)($params['id'] ?? 0)])) {
             return $response;
         }
 
@@ -158,7 +158,7 @@ abstract class BaseCrudController extends BaseController
 
     public function update(object $app, array $params = []): Response
     {
-        if ($response = $this->authorize($app, 'edit')) {
+        if ($response = $this->authorize($app, 'edit', ['surface' => 'update', 'params' => $params, 'record_id' => (int)($params['id'] ?? 0), 'input' => (array)$app->request()->input()])) {
             return $response;
         }
 
@@ -194,7 +194,7 @@ abstract class BaseCrudController extends BaseController
 
     public function destroy(object $app, array $params = []): Response
     {
-        if ($response = $this->authorize($app, 'delete')) {
+        if ($response = $this->authorize($app, 'delete', ['surface' => 'delete', 'params' => $params, 'record_id' => (int)($params['id'] ?? 0)])) {
             return $response;
         }
 
@@ -283,15 +283,14 @@ abstract class BaseCrudController extends BaseController
         ];
     }
 
-    protected function can(object $app, string $action): bool
+    protected function can(object $app, string $action, array $context = []): bool
     {
-        $role = $this->currentRole($app);
-        return $this->registry($app)->allows($this->moduleKey(), $action, $role);
+        return $this->registry($app)->allowsForUser($this->moduleKey(), $action, $app->auth()->user(), $context);
     }
 
-    protected function authorize(object $app, string $action): ?Response
+    protected function authorize(object $app, string $action, array $context = []): ?Response
     {
-        if ($this->can($app, $action)) {
+        if ($this->can($app, $action, $context)) {
             return null;
         }
 
@@ -314,14 +313,4 @@ abstract class BaseCrudController extends BaseController
         return $this->registry($app)->filterPayload($this->moduleKey(), (array)$app->request()->query());
     }
 
-    private function currentRole(object $app): ?string
-    {
-        $user = $app->auth()->user();
-        if (!is_array($user)) {
-            return null;
-        }
-
-        $role = $user['role'] ?? null;
-        return is_string($role) && $role !== '' ? $role : null;
-    }
 }
